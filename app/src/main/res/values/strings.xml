@@ -1,3 +1,9 @@
 <resources>
     <string name="app_name">Caregiver</string>
+    <string name="alert_status">ALERT! Status</string>
+    <string name="check_in_status">Check-In Status</string>
+    <string name="schedule_new_medication">Schedule New Medication</string>
+    <string name="na">NA</string>
+    <string name="recipient">Recipient: </string>
+    <string name="list_of_todays_medication">List of Today\'s Medication</string>
 </resources>
