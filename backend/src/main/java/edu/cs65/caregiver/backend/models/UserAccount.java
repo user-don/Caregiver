@@ -1,6 +1,7 @@
 package edu.cs65.caregiver.backend.models;
 
 import java.security.MessageDigest;
+import java.util.ArrayList;
 import java.util.UUID;
 
 /**
@@ -13,11 +14,14 @@ public class UserAccount {
     private String hashedPw;
     private String email;
     private UUID id;
+    private ArrayList<Patient> patients;
 
     public UserAccount(String email, String password) {
         setHashedPw(password);
         this.email = email;
-        this.id = UUID.fromString(password);
+        // Create unique identifier
+        this.id = UUID.fromString(this.hashedPw);
+        this.patients = new ArrayList<>();
     }
 
     public UUID getId() {
@@ -41,6 +45,11 @@ public class UserAccount {
         this.hashedPw = hashedPw;
     }
 
+    /**
+     * Computes MD5 Hash for password. Taken from tutorial here: http://bit.ly/1R9lIZc
+     *
+     * @param password password to hash
+     */
     public void computeMD5Hash(String password) {
         try {
             MessageDigest digest = java.security.MessageDigest.getInstance("MD5");
