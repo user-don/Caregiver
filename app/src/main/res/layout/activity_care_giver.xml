@@ -9,28 +9,10 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="edu.cs65.caregiver.caregiver.CareGiverActivity">
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceLarge"
-        android:text="CareGiver Dashboard"
-        android:id="@+id/textView"
-        android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true" />
-
-    <Space
-        android:layout_width="fill_parent"
-        android:layout_height="15dp"
-        android:layout_below="@+id/textView"
-        android:layout_centerHorizontal="true"
-        android:id="@+id/space"
-        android:layout_alignParentEnd="true" />
-
     <LinearLayout
         android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/space"
         android:layout_centerHorizontal="true"
         android:gravity="center_horizontal"
         android:id="@+id/linearLayout">
@@ -38,16 +20,17 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:textAppearance="?android:attr/textAppearanceLarge"
             android:text="@string/recipient"
-            android:id="@+id/textView2" />
+            android:id="@+id/textView" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:textAppearance="?android:attr/textAppearanceLarge"
             android:text="@string/na"
-            android:id="@+id/textView3" />
+            android:id="@+id/textView2" />
+
     </LinearLayout>
 
     <Space
@@ -55,17 +38,61 @@
         android:layout_height="15dp"
         android:id="@+id/space2"
         android:layout_below="@+id/linearLayout"
-        android:layout_centerHorizontal="true"
         android:layout_alignParentEnd="true" />
 
-    <TextView
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:id="@+id/table_header"
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceMedium"
-        android:text="@string/list_of_todays_medication"
-        android:id="@+id/textView4"
         android:layout_below="@+id/space2"
-        android:layout_centerHorizontal="true" />
+        android:layout_centerHorizontal="true"
+        android:gravity="center_horizontal"
+        android:layout_alignParentStart="false">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:text="@string/list_of_todays_medication"
+            android:id="@+id/textView4"
+            android:textIsSelectable="false"
+            android:textSize="@dimen/abc_text_size_large_material"
+            android:layout_gravity="center"
+            android:layout_weight="1" />
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/schedule_new_medication"
+            android:id="@+id/schedule_med_button"
+            android:onClick="onClickNewMedication"
+            android:layout_weight="0" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/table_header"
+        android:layout_centerHorizontal="true"
+        android:layout_above="@+id/view_all_alerts" >
+
+        <ListView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/listView"
+            android:layout_gravity="center_horizontal" />
+
+    </LinearLayout>
+
+    <Button
+        android:layout_width="fill_parent"
+        android:layout_height="@dimen/caregiver_button_height"
+        android:text="@string/view_all_scheduled_medication_alerts"
+        android:layout_above="@+id/linearLayout2"
+        android:id="@+id/view_all_alerts" />
 
     <LinearLayout
         android:orientation="horizontal"
@@ -77,42 +104,22 @@
 
         <Button
             android:layout_width="wrap_content"
-            android:layout_height="@dimen/caregiver_button_height"
+            android:layout_height="100dp"
             android:text="@string/check_in_status"
             android:id="@+id/checkin_status_button"
-            android:layout_weight="1" />
+            android:layout_weight="1"
+            android:enabled="false" />
 
         <Button
             android:layout_width="wrap_content"
-            android:layout_height="@dimen/caregiver_button_height"
+            android:layout_height="100dp"
             android:text="@string/alert_status"
             android:id="@+id/alert_status_button"
-            android:enabled="true"
+            android:enabled="false"
             android:layout_weight="1" />
-    </LinearLayout>
-
-    <Button
-        android:layout_width="fill_parent"
-        android:layout_height="@dimen/caregiver_button_height"
-        android:text="@string/schedule_new_medication"
-        android:id="@+id/schedule_med_button"
-        android:layout_above="@+id/linearLayout2"
-        android:layout_centerHorizontal="true" />
-
-    <LinearLayout
-        android:orientation="vertical"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_below="@+id/textView4"
-        android:layout_centerHorizontal="true"
-        android:layout_above="@+id/schedule_med_button" >
-
-        <ListView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/listView"
-            android:layout_gravity="center_horizontal" />
 
     </LinearLayout>
+
+
 
 </RelativeLayout>

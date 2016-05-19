@@ -9,11 +9,18 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="edu.cs65.caregiver.caregiver.NewMedicationActivity">
 
+    <!-- Dummy item to prevent AutoCompleteTextView from receiving focus -->
+    <LinearLayout
+        android:focusable="true"
+        android:focusableInTouchMode="true"
+        android:layout_width="0px"
+        android:layout_height="0px"/>
+
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceLarge"
-        android:text="Schedule New Medication"
+        android:text="@string/schedule_new_medication_title_string"
         android:id="@+id/textView5"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true" />
@@ -23,27 +30,238 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@+id/space3"
-        android:layout_alignParentEnd="true">
+        android:layout_alignParentEnd="true"
+        android:id="@+id/linearLayout3">
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textAppearance="?android:attr/textAppearanceLarge"
-            android:text="Alert Name: "
+            android:text="@string/alert_name"
             android:id="@+id/textView6" />
 
         <EditText
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:id="@+id/editText"
+            android:id="@+id/alert_name"
             android:layout_weight="1"
-            android:hint="eg. &apos;Morning&apos;" />
+            android:hint="@string/example_alert_name" />
     </LinearLayout>
 
     <Space
         android:layout_width="match_parent"
-        android:layout_height="30dp"
+        android:layout_height="20dp"
         android:layout_below="@+id/textView5"
         android:layout_centerHorizontal="true"
         android:id="@+id/space3" />
+
+    <Space
+        android:layout_width="match_parent"
+        android:layout_height="20dp"
+        android:layout_below="@+id/linearLayout5"
+        android:layout_centerHorizontal="true"
+        android:id="@+id/space6" />
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:id="@+id/linearLayout6"
+        android:layout_below="@+id/linearLayout5"
+        android:layout_marginTop="20dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:text="Recurrence:"
+            android:id="@+id/textView7"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentStart="true" />
+
+        <Spinner
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/recurrence_spinner"
+            android:entries="@array/recurrence_options"
+            android:layout_weight="1" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
+        android:id="@+id/linearLayout5"
+        android:layout_marginLeft="0dp"
+        android:layout_marginRight="0dp"
+        android:layout_below="@+id/linearLayout3"
+        android:layout_alignParentStart="true"
+        android:layout_marginTop="20dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:text="Set Time: "
+            android:id="@+id/textView8"
+            android:layout_weight="0" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:text="NA"
+            android:id="@+id/alert_time"
+            android:layout_weight="1" />
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/pick_time"
+            android:id="@+id/button5"
+            android:layout_weight="0"
+            android:onClick="onClickSetTime" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/linearLayout6"
+        android:layout_centerHorizontal="true"
+        android:id="@+id/linearLayout7">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:text="Days:"
+            android:id="@+id/textView11" />
+
+        <CheckBox
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="M"
+            android:id="@+id/chkbx_monday"
+            android:enabled="false" />
+
+        <CheckBox
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:enabled="false"
+            android:text="T"
+            android:id="@+id/chkbx_tuesday" />
+
+        <CheckBox
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:enabled="false"
+            android:text="W"
+            android:id="@+id/chkbx_wednesday" />
+
+        <CheckBox
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:enabled="false"
+            android:text="Th"
+            android:id="@+id/chkbx_thursday" />
+
+        <CheckBox
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:enabled="false"
+            android:text="F"
+            android:id="@+id/chkbx_friday" />
+
+        <CheckBox
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:enabled="false"
+            android:text="Sa"
+            android:id="@+id/chkbx_saturday" />
+
+        <CheckBox
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:enabled="false"
+            android:text="Su"
+            android:id="@+id/chkbx_sunday" />
+    </LinearLayout>
+
+    <Space
+        android:layout_width="match_parent"
+        android:layout_height="20dp"
+        android:id="@+id/space5"
+        android:layout_below="@+id/linearLayout7"
+        android:layout_centerHorizontal="true" />
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/space5"
+        android:layout_centerHorizontal="true"
+        android:gravity="center_vertical"
+        android:id="@+id/linearLayout8">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:text="Medications: "
+            android:id="@+id/textView10"
+            android:layout_weight="1" />
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Add Medication"
+            android:id="@+id/button4"
+            android:layout_weight="1"
+            android:onClick="onClickAddMedication" />
+    </LinearLayout>
+
+    <ListView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/medication_list"
+        android:layout_below="@+id/linearLayout8"
+        android:layout_above="@+id/textView3"
+        android:layout_alignEnd="@+id/linearLayout4" />
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:id="@+id/linearLayout4"
+        android:layout_alignParentBottom="true">
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/caregiver_button_height"
+            android:text="@string/save"
+            android:id="@+id/button"
+            android:layout_weight="1"
+            android:onClick="onClickSave" />
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/caregiver_button_height"
+            android:text="@string/cancel_string"
+            android:id="@+id/button2"
+            android:layout_weight="1"
+            android:onClick="onClickCancel" />
+    </LinearLayout>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Tap Entry To Delete"
+        android:id="@+id/textView3"
+        android:layout_above="@+id/linearLayout4"
+        android:layout_centerHorizontal="true" />
+
 </RelativeLayout>
