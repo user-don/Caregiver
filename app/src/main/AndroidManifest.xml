@@ -26,6 +26,11 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <activity android:name=".CareRecipientActivity" ></activity>
+
+        <activity android:name=".FallActivity"></activity>
+
     </application>
 
 </manifest>

@@ -13,4 +13,12 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Hello World!" />
+
+    <Button
+        android:id="@+id/startCareRecipientBtn"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:onClick="onCareReceiverClicked"
+        android:text="@string/ui_start_care_receiver"/>
+
 </RelativeLayout>
