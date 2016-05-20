@@ -17,4 +17,41 @@
         <item>Daily</item>
         <item>Days of the Week</item>
     </string-array>
+
+    <!-- Account login Strings -->
+    <string name="account_sign_username_label">Username (email)</string>
+    <string name="account_sign_username_default">abc@xyz.com</string>
+    <string name="account_sign_password_label">Password</string>
+    <string name="account_sign_password_default">******</string>
+    <string name="account_sign_login_btn">Log in</string>
+    <string name="account_sign_signup_btn">Sign up</string>
+
+    <!-- New Account Strings -->
+    <string name="new_account_label">What role do you play?</string>
+    <string name="new_account_careGiver">Caregiver</string>
+    <string name="new_account_careRecipient">Care Recipient</string>
+    <string name="new_careGiver_label">Who are you caring for?</string>
+    <string name="new_careGiver_default">John Doe</string>
+    <string name="btn_next">Next</string>
+    <string name="new_careRecipient_label">Who is caring for you?</string>
+    <string name="new_careRecipient_default">abc@xyz.com</string>
+    <string name="btn_search">Search</string>
+    <string name="new_careRecipient_search_label">Is this your name?</string>
+    <string name="btn_yes">Yes</string>
+    <string name="btn_no">No</string>
+
+    <string name="ui_start_care_receiver">Click here to start care receiver</string>
+
+    <!-- CareRecipient Strings -->
+    <string name="ui_helpBtn_title">HELP!</string>
+    <string name="toolbar_title_care_recipient">Caregiver</string>
+    <string name="schedule_title">Upcoming Medications</string>
+    <string name="ui_title_checkin_Btn">Check-in</string>
+    <string name="ui_title_fall_Btn">Fall Alert</string>
+    <string name="ui_title_fall_activity">FALL DETECTED!</string>
+
+    <!-- Fall Actvity Strings-->
+    <string name="ui_OK_Btn">I am OK</string>
+    <string name="ui_HELP_Btn">HELP</string>
+
 </resources>
