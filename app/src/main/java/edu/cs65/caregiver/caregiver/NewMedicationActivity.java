@@ -396,7 +396,7 @@ public class NewMedicationActivity extends AppCompatActivity {
         } else {
             mDaysOfWeek[6] = 0;
         }
-        
+
         return checked_days;
     }
 
