@@ -1,3 +1,20 @@
 <resources>
     <string name="app_name">Caregiver</string>
+    <string name="alert_status">ALERT! Status</string>
+    <string name="check_in_status">Check-In Status</string>
+    <string name="schedule_new_medication">Add Alert</string>
+    <string name="na">NA</string>
+    <string name="recipient">Recipient:  </string>
+    <string name="list_of_todays_medication">Medication Alerts</string>
+    <string name="save">SAVE</string>
+    <string name="cancel_string">CANCEL</string>
+    <string name="schedule_new_medication_title_string">Medication Alert Information</string>
+    <string name="alert_name">Alert Name: </string>
+    <string name="example_alert_name">eg. \'Morning\'</string>
+    <string name="pick_time">Pick Time</string>
+    <string name="view_all_scheduled_medication_alerts">View All Scheduled Medication Alerts</string>
+    <string-array name="recurrence_options">
+        <item>Daily</item>
+        <item>Days of the Week</item>
+    </string-array>
 </resources>
