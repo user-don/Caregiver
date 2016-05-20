@@ -29,7 +29,7 @@
             android:layout_height="wrap_content"
             android:textAppearance="?android:attr/textAppearanceLarge"
             android:text="@string/na"
-            android:id="@+id/textView2" />
+            android:id="@+id/recipient_name" />
 
     </LinearLayout>
 
@@ -77,22 +77,15 @@
         android:layout_height="match_parent"
         android:layout_below="@+id/table_header"
         android:layout_centerHorizontal="true"
-        android:layout_above="@+id/view_all_alerts" >
+        android:layout_above="@+id/linearLayout2">
 
         <ListView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:id="@+id/listView"
+            android:id="@+id/medication_alert_list2"
             android:layout_gravity="center_horizontal" />
 
     </LinearLayout>
-
-    <Button
-        android:layout_width="fill_parent"
-        android:layout_height="@dimen/caregiver_button_height"
-        android:text="@string/view_all_scheduled_medication_alerts"
-        android:layout_above="@+id/linearLayout2"
-        android:id="@+id/view_all_alerts" />
 
     <LinearLayout
         android:orientation="horizontal"

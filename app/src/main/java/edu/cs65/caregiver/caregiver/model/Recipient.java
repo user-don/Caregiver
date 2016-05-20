@@ -30,4 +30,12 @@ public class Recipient {
         mAlerts.add(alert);
         Collections.sort(mAlerts);
     }
+
+    public void deleteAlert(String to_delete) {
+        for (int i = 0; i < mAlerts.size(); i++) {
+            if (mAlerts.get(i).mName.equals(to_delete)) {
+                mAlerts.remove(i);
+            }
+        }
+    }
 }
