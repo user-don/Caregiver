@@ -46,7 +46,7 @@ public class NewAccountSignUp extends Activity {
         careRecipient = careRecipientInput.getText().toString();
         //add password and username and careRecipient to the database
 
-        Intent newMedication = new Intent(getApplicationContext(), NewMedicationActivity.class);
+        Intent newMedication = new Intent(getApplicationContext(), CareGiverActivity.class);
         startActivity(newMedication);
         finish();
     }
