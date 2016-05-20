@@ -9,7 +9,6 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="edu.cs65.caregiver.caregiver.AccountSignOnActivity">
 
-
     <LinearLayout
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"

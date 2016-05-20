@@ -5,7 +5,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
-
 public class AccountSignOnActivity extends AppCompatActivity {
 
     private EditText username;
@@ -33,4 +32,5 @@ public class AccountSignOnActivity extends AppCompatActivity {
         startActivity(signUpIntent);
         finish();
     }
+
 }
