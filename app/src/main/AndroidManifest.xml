@@ -21,7 +21,6 @@
         android:theme="@style/AppTheme">
         <activity android:name=".AccountSignOnActivity" />
         <activity android:name=".CareGiverActivity">
-        <activity android:name=".AccountSignOnActivity" >
 
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
