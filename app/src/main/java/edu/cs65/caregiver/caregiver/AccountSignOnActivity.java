@@ -32,5 +32,4 @@ public class AccountSignOnActivity extends AppCompatActivity {
         startActivity(signUpIntent);
         finish();
     }
-
 }

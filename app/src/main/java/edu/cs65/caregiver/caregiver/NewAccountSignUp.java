@@ -66,6 +66,8 @@ public class NewAccountSignUp extends Activity {
     // confirm that your name is correct
     public void onNameConfirm(View v){
         // connect to patient status page
+        Intent intent = new Intent(getApplicationContext(), CareRecipientActivity.class);
+        startActivity(intent);
     }
 
     // wrong name appears

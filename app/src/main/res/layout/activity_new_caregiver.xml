@@ -28,7 +28,7 @@
             android:id="@+id/new_caregiver_recipient"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/new_careGiver_default"
+            android:hint="@string/new_careGiver_default"
             android:layout_weight="3"/>
 
         <Button
