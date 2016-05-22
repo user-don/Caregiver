@@ -10,6 +10,7 @@ import java.util.Collections;
 public class Recipient {
     public String mName;
     public ArrayList<MedicationAlert> mAlerts;
+    public long mCheckIntime;
     public boolean mCheckedIn;
     public boolean mRaisedAlert;
 
