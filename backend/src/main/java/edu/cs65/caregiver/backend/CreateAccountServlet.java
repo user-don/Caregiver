@@ -12,11 +12,11 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import edu.cs65.caregiver.backend.models.AccountsDatastore;
-import edu.cs65.caregiver.backend.models.ServerCG;
 import static edu.cs65.caregiver.backend.OfyService.ofy;
 
 /**
+ * Call when creating a new caregiver account
+ *
  * Created by don on 5/22/16.
  */
 public class CreateAccountServlet extends HttpServlet {

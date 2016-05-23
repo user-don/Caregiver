@@ -26,7 +26,6 @@ import java.util.List;
 import java.util.logging.Logger;
 import javax.inject.Named;
 
-import edu.cs65.caregiver.backend.models.ServerCG;
 
 import static edu.cs65.caregiver.backend.OfyService.ofy;
 
@@ -139,8 +138,12 @@ public class MessagingEndpoint {
                 // registration matches, send notification to all other phones associated
                 // with account
                 AccountObject temp = new AccountObject(account.getEmail(), account.getHashedPw());
-                ArrayList<RegistrationRecord> tempRegs = new ArrayList<>(account.getRegistrations());
-                tempRegs.remove(reg);
+                ArrayList<RegistrationRecord> tempRegs = new ArrayList<>();
+                for (RegistrationRecord record : account.getRegistrations()) {
+                    if ("caregiver".equals(record.getRole())) {
+                        tempRegs.add(record);
+                    }
+                }
                 temp.setRegistrations(tempRegs);
                 try {
                     sendMessage(message, temp);

@@ -13,6 +13,8 @@ import javax.servlet.http.HttpServletResponse;
 import static edu.cs65.caregiver.backend.OfyService.ofy;
 
 /**
+ * Call when attempting to log in a caregiver
+ *
  * Created by don on 5/22/16.
  */
 public class LogInServlet extends HttpServlet {
