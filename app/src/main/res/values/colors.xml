@@ -1,9 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#4d4d4d</color>
-    <color name="colorPrimaryDark">#262626</color>
+    <color name="colorPrimary">#9ad3de</color>
+    <color name="colorPrimaryDark">#89bdd3</color>
     <color name="colorAccent">#cccccc</color>
     <color name="grey">#8c8c8c</color>
+    <color name="middlegrey">#b3b3b3</color>
     <color name="lightgrey">#d9d9d9</color>
     <color name="white">#ffffff</color>
+
+    <color name="canvas">#e9ece5</color>
+    <color name="blue">#89bdd3</color>
+    <color name="lightblue">#9ad3de</color>
 </resources>

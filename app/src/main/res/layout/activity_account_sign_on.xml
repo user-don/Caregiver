@@ -30,7 +30,7 @@
                 android:fontFamily="serif"
                 android:textStyle="italic"
                 android:textColor="@color/white"
-                android:layout_marginTop="80dp"
+                android:layout_marginTop="85dp"
                 android:layout_marginBottom="100dp"/>
 
             <LinearLayout
@@ -55,7 +55,7 @@
                     android:layout_marginTop="5dp"
                     android:layout_marginLeft="5dp"
                     android:layout_marginRight="5dp"
-                    android:textColorHint="@color/lightgrey"
+                    android:textColorHint="@color/middlegrey"
                     android:backgroundTint="@color/lightgrey"
                     android:textColor="@color/lightgrey"
                     android:hint="@string/account_sign_username_default"
@@ -89,7 +89,7 @@
                     android:layout_marginRight="5dp"
                     android:backgroundTint="@color/lightgrey"
                     android:textColor="@color/lightgrey"
-                    android:textColorHint="@color/lightgrey"
+                    android:textColorHint="@color/middlegrey"
                     android:hint="@string/account_sign_password_default"
                     android:inputType="text"
                     android:fontFamily="serif"
