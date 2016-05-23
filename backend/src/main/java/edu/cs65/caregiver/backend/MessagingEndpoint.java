@@ -128,7 +128,7 @@ public class MessagingEndpoint {
      * @param email Email address associated with account
      * @param message Message to send via notification
      */
-    @ApiMethod(name = "sendNotification")
+    @ApiMethod(name = "sendNotificationToCaregiver")
     public void sendNotificationToCaregiver(@Named("registration") String registration,
                                  @Named("email") String email, @Named("message") String message) {
         AccountObject account =
