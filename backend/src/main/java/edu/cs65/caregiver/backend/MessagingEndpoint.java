@@ -11,12 +11,22 @@ import com.google.android.gcm.server.Message;
 import com.google.android.gcm.server.Result;
 import com.google.android.gcm.server.Sender;
 import com.google.api.server.spi.config.Api;
+import com.google.api.server.spi.config.ApiMethod;
 import com.google.api.server.spi.config.ApiNamespace;
+import com.google.api.server.spi.config.Nullable;
+import com.google.api.server.spi.response.CollectionResponse;
+import com.google.api.server.spi.response.NotFoundException;
+import com.google.appengine.repackaged.com.google.gson.Gson;
+import com.google.appengine.repackaged.com.google.gson.GsonBuilder;
 
 import java.io.IOException;
+import java.security.MessageDigest;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
 import javax.inject.Named;
+
+import edu.cs65.caregiver.backend.models.ServerCG;
 
 import static edu.cs65.caregiver.backend.OfyService.ofy;
 
@@ -50,7 +60,7 @@ public class MessagingEndpoint {
      *
      * @param message The message to send
      */
-    public void sendMessage(@Named("message") String message) throws IOException {
+    public void sendMessage(@Named("message") String message, @Nullable AccountObject user) throws IOException {
         if(message == null || message.trim().length() == 0) {
             log.warning("Not sending message because it is empty");
             return;
@@ -61,8 +71,8 @@ public class MessagingEndpoint {
         }
         Sender sender = new Sender(API_KEY);
         Message msg = new Message.Builder().addData("message", message).build();
-        List<RegistrationRecord> records = ofy().load().type(RegistrationRecord.class).limit(10).list();
-        for(RegistrationRecord record : records) {
+        //List<RegistrationRecord> records = ofy().load().type(RegistrationRecord.class).limit(10).list();
+        for(RegistrationRecord record : user.getRegistrations()) {
             Result result = sender.send(msg, record.getRegId(), 5);
             if (result.getMessageId() != null) {
                 log.info("Message sent to " + record.getRegId());
@@ -84,6 +94,144 @@ public class MessagingEndpoint {
                     log.warning("Error when sending message : " + error);
                 }
             }
+        }
+    }
+
+    /**
+     * This method should be called whenever a change in the caregiver object has been made on the
+     * caregiver's end.
+     * @param registration Registration ID of the phone
+     * @param email Email address of account
+     * @param json New serialized data of caregiver object
+     */
+    @ApiMethod(name = "updateEntry")
+    public void updateCaregiverObject(@Named("registration") String registration,
+                                      @Named("email") String email, @Named("json") String json) {
+        // if registration ID matches one that is found in account's list of registration records
+        // then update the caregiver object
+        AccountObject account =
+                ofy().load().type(AccountObject.class).filter("email", email).first().now();
+        for (RegistrationRecord reg : account.getRegistrations()) {
+            if (reg.getRegId().equals(registration)) {
+                // registration matches, update the record
+                CaregiverObject co = ofy().load().type(CaregiverObject.class)
+                        .filter("email", email).first().now();
+                co.setData(json);
+                ofy().save().entity(co).now();
+            }
+        }
+        // TODO: Throw error message to calling class if update does not go through
+    }
+
+    /**
+     * Send notification to all caregiver registered devices for account
+     * @param registration Registration ID of phone
+     * @param email Email address associated with account
+     * @param message Message to send via notification
+     */
+    @ApiMethod(name = "sendNotification")
+    public void sendNotificationToCaregiver(@Named("registration") String registration,
+                                 @Named("email") String email, @Named("message") String message) {
+        AccountObject account =
+                ofy().load().type(AccountObject.class).filter("email", email).first().now();
+        for (RegistrationRecord reg : account.getRegistrations()) {
+            if (reg.getRegId().equals(registration)) {
+                // registration matches, send notification to all other phones associated
+                // with account
+                AccountObject temp = new AccountObject(account.getEmail(), account.getHashedPw());
+                ArrayList<RegistrationRecord> tempRegs = new ArrayList<>(account.getRegistrations());
+                tempRegs.remove(reg);
+                temp.setRegistrations(tempRegs);
+                try {
+                    sendMessage(message, temp);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+
+    }
+
+    /**
+     * Return account info associated with an email address
+     * @param email Email address of account
+     * @return Arraylist containing the caregiver object
+     */
+    @ApiMethod(name = "getAccountInfo")
+    public ArrayList<CaregiverObject> getAccountInfo(@Named("email") String email) {
+        // get caregiver object from email address
+        CaregiverObject caregiver = ofy().load().type(CaregiverObject.class)
+                .filter("email", email).first().now();
+        ArrayList<CaregiverObject> obj = new ArrayList<>();
+        obj.add(caregiver);
+        return obj;
+    }
+
+    /**
+     * Register patient to the caregiver's account
+     * @param email Email address of caregiver's account
+     * @param regId Registration ID of the android device
+     */
+    @ApiMethod(name = "registerPatientAccount")
+    public void registerPatientAccount(@Named("email") String email,
+                                       @Named("regId") String regId) {
+        // add registration ID to the caregiver account so push notifications can be
+        // delivered
+        AccountObject account =
+                ofy().load().type(AccountObject.class).filter("email", email).first().now();
+        RegistrationRecord record =
+                ofy().load().type(RegistrationRecord.class).filter("regId", regId).first().now();
+        record.setRole("patient");
+        account.addRegistration(record);
+    }
+
+
+//    @ApiMethod(name = "logIn")
+//    public void logIn(@Named("email") String email,
+//                                                     @Named("password") String password,
+//                                                     @Named("regId") String regId,
+//                                                     @Named("json") String json) {
+//        // return the user's data model when they log in.
+//        String hashedPw = computeMD5Hash(password);
+//        AccountObject account = new AccountObject(email, hashedPw);
+//        // get registration record associated with the id
+//        RegistrationRecord record =
+//                ofy().load().type(RegistrationRecord.class).filter("regId", regId).first().now();
+//        account.addRegistration(record);
+//        if (ofy().load().type(AccountObject.class).filter("email", email).first().now() == null) {
+//            // does not yet exist, create account
+//            ofy().save().entity(account).now();
+//            // create the caregiver object to be stored in the database
+//            CaregiverObject co = new CaregiverObject(email, json);
+//            ofy().save().entity(co).now();
+//        } else {
+//        }
+//    }
+
+    /**
+     * Computes MD5 Hash for password. Taken from tutorial here: http://bit.ly/1R9lIZc
+     *
+     * @param password password to hash
+     */
+    private String computeMD5Hash(String password) {
+        try {
+            MessageDigest digest = java.security.MessageDigest.getInstance("MD5");
+            digest.update(password.getBytes());
+            byte messageDigest[] = digest.digest();
+
+            StringBuilder MD5Hash = new StringBuilder();
+            for (byte aMessageDigest : messageDigest) {
+                String h = Integer.toHexString(0xFF & aMessageDigest);
+                while (h.length() < 2) {
+                    h = "0" + h;
+                }
+                MD5Hash.append(h);
+            }
+            return MD5Hash.toString();
+
+        } catch (java.security.NoSuchAlgorithmException e) {
+            e.printStackTrace();
+            return null;
         }
     }
 }
