@@ -158,16 +158,13 @@ public class MessagingEndpoint {
     /**
      * Return account info associated with an email address
      * @param email Email address of account
-     * @return Arraylist containing the caregiver object
+     * @return Caregiver object
      */
     @ApiMethod(name = "getAccountInfo")
-    public ArrayList<CaregiverObject> getAccountInfo(@Named("email") String email) {
+    public CaregiverObject getAccountInfo(@Named("email") String email) {
         // get caregiver object from email address
-        CaregiverObject caregiver = ofy().load().type(CaregiverObject.class)
+        return ofy().load().type(CaregiverObject.class)
                 .filter("email", email).first().now();
-        ArrayList<CaregiverObject> obj = new ArrayList<>();
-        obj.add(caregiver);
-        return obj;
     }
 
     /**
