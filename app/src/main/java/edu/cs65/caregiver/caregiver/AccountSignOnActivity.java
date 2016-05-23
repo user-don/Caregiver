@@ -1,11 +1,12 @@
 package edu.cs65.caregiver.caregiver;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
-public class AccountSignOnActivity extends AppCompatActivity {
+public class AccountSignOnActivity extends Activity {
 
     private EditText username;
     private EditText password;
@@ -30,6 +31,5 @@ public class AccountSignOnActivity extends AppCompatActivity {
         signUpIntent.putExtra("username",username.getText().toString());
         signUpIntent.putExtra("password",password.getText().toString());
         startActivity(signUpIntent);
-        finish();
     }
 }

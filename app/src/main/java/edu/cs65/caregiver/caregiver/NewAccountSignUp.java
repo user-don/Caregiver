@@ -18,11 +18,14 @@ public class NewAccountSignUp extends Activity {
     private String password;
     private String careRecipient;
     private String careGiver;
+    private boolean UIswitch;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_new_account);
+
+        UIswitch = false;
 
         extras = getIntent().getExtras();
         username = extras.getString("username");
@@ -32,11 +35,13 @@ public class NewAccountSignUp extends Activity {
 
     // if the new user says that they are a care giver
     public void onCareGiverClick(View v){
+        UIswitch = true;
         setContentView(R.layout.activity_new_caregiver);
-    }
 
+    }
     // if the new user says that they are a care recipient
     public void onCareRecipientClick(View v){
+        UIswitch = true;
         setContentView(R.layout.activity_new_carerecipient);
     }
 
@@ -73,5 +78,15 @@ public class NewAccountSignUp extends Activity {
     // wrong name appears
     public void onNameReject(View v){
         setContentView(R.layout.activity_new_carerecipient);
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (UIswitch){
+            setContentView(R.layout.activity_new_account);
+            UIswitch = false;
+        } else {
+            super.onBackPressed();
+        }
     }
 }

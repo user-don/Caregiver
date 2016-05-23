@@ -1,49 +1,101 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:gravity="center"
     android:includeFontPadding="false">
 
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/new_account_label"
-        android:textSize="20dp"
-        android:textStyle="bold"
+        android:layout_marginTop="50dp"
+        android:textSize="32dp"
+        android:textStyle="italic"
+        android:fontFamily="serif"
         android:gravity="center"
-        android:layout_marginTop="40dp"
-        android:layout_marginRight="15dp"
-        android:layout_marginLeft="15dp"
-        android:layout_marginBottom="20dp"/>
+        android:text="@string/new_account_label"/>
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
-        android:layout_marginBottom="20dp"
-        android:orientation="horizontal" >
+        android:layout_height="match_parent"
+        android:layout_marginTop="90dp">
 
         <Button
             android:id="@+id/btn_caregiver_role"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="2"
-            android:layout_marginLeft="20dp"
-            android:text="@string/new_account_careGiver"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="@android:color/transparent"
             android:onClick="onCareGiverClick">
         </Button>
 
         <Button
             android:id="@+id/btn_carerecipient_role"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:layout_weight="1"
-            android:layout_marginRight="20dp"
-            android:text="@string/new_account_careRecipient"
+            android:background="@android:color/transparent"
             android:onClick="onCareRecipientClick">
         </Button>
 
     </LinearLayout>
 
-</LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:layout_weight="1">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="25dp"
+                android:layout_marginBottom="10dp"
+                android:gravity="center"
+                android:fontFamily="serif"
+                android:text="@string/new_account_careGiver"/>
+
+            <ImageView
+                android:layout_width="60dp"
+                android:layout_height="60dp"
+                android:src="@drawable/logo_burned"/>
+
+        </LinearLayout>
+
+        <View
+            android:layout_width="2dp"
+            android:layout_height="325dp"
+            android:layout_marginTop="10dp"
+            android:layout_gravity="center"
+            android:background="@color/grey" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:layout_weight="1">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="25dp"
+                android:layout_marginBottom="10dp"
+                android:gravity="center"
+                android:fontFamily="serif"
+                android:text="@string/new_account_careRecipient"/>
+
+            <ImageView
+                android:layout_width="60dp"
+                android:layout_height="60dp"
+                android:src="@drawable/logo_burned"/>
+
+        </LinearLayout>
+    </LinearLayout>
+
+</RelativeLayout>
