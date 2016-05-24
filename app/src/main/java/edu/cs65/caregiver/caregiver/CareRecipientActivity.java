@@ -1,7 +1,9 @@
 package edu.cs65.caregiver.caregiver;
 
+import android.app.AlertDialog;
 import android.app.DialogFragment;
 import android.app.ListActivity;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ArrayAdapter;
@@ -60,7 +62,6 @@ public class CareRecipientActivity extends ListActivity {
         mMedicationAlerts = mReceiver.mAlerts;
         mCheckInTime = mReceiver.mCheckIntime;
 
-
         setUpAdapter();
     }
 
@@ -73,25 +74,39 @@ public class CareRecipientActivity extends ListActivity {
     @Override
     protected void onListItemClick(ListView list, View view, int position, long id) {
         super.onListItemClick(list, view, position, id);
-
-        String selectedItem = (String) getListView().getItemAtPosition(position);
-        switch (selectedItem) {
-            case "10am":
-                displayDialog(CareGiverDialogFragment.DIALOG_10AM);
-                break;
-            case "1pm":
-                displayDialog(CareGiverDialogFragment.DIALOG_1PM);
-                break;
-            case "6pm":
-                displayDialog(CareGiverDialogFragment.DIALOG_6PM);
-                break;
-        }
+        displayDialog(sortedMeds.get(position));
     }
 
-    public void displayDialog(int id) {
-        DialogFragment fragment = CareGiverDialogFragment.newInstance(id);
-        fragment.show(getFragmentManager(),
-                getString(R.string.app_name));
+    public void displayDialog(MedEntry entry) {
+        final ArrayList selectedItems = new ArrayList();
+        String meds[] = new String[entry.meds.size()];
+        meds = entry.meds.toArray(meds);
+
+        AlertDialog.Builder alertDialog = new AlertDialog.Builder(this);
+        alertDialog.setTitle(entry.label);
+        alertDialog.setMultiChoiceItems(meds, null, new DialogInterface.OnMultiChoiceClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which, boolean isChecked) {
+
+                if (isChecked) {
+                    selectedItems.add(which);
+                } else if (selectedItems.contains(which)) {
+                    selectedItems.remove(Integer.valueOf(which));
+                }
+
+            }
+        }).setPositiveButton("OK", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int id) {
+
+            }
+        }).setNegativeButton("Back", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int id) {
+
+            }
+        }).show();
+
     }
 
     public void onHelpClicked(View v) {
@@ -100,7 +115,7 @@ public class CareRecipientActivity extends ListActivity {
     }
 
     public void onMenuClicked(View v) {
-        displayDialog(CareGiverDialogFragment.DIALOG_MENU);
+//        displayDialog(CareGiverDialogFragment.DIALOG_MENU);
     }
 
     public void setUpAdapter() {
@@ -110,6 +125,7 @@ public class CareRecipientActivity extends ListActivity {
 
         for (int i = 0; i < sortedMeds.size(); i++) {
             String title = convertTime(sortedMeds.get(i).time);
+            sortedMeds.get(i).label = title;
             listValues.add(title + " Medications");
         }
 
@@ -242,7 +258,7 @@ public class CareRecipientActivity extends ListActivity {
 
 
     public class MedEntry {
-        private final String label;
+        private String label;
         private ArrayList<String> meds;
         private final Time time;
 
