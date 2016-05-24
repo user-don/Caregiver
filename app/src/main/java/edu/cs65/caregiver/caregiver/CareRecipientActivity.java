@@ -69,7 +69,6 @@ public class CareRecipientActivity extends ListActivity {
         super.onListItemClick(list, view, position, id);
 
         String selectedItem = (String) getListView().getItemAtPosition(position);
-
         switch (selectedItem) {
             case "10am":
                 displayDialog(CareGiverDialogFragment.DIALOG_10AM);
@@ -140,6 +139,9 @@ public class CareRecipientActivity extends ListActivity {
 
                 if (i == 0) {
                     // add new MedEntry
+                    MedEntry newEntry = new MedEntry(todaysMeds.get(i).mTime.toString(),
+                            todaysMeds.get(i).mMedications, todaysMeds.get(i).mTime);
+                    sortedMeds.add(newEntry);
                 }
 
                 if (todaysMeds.get(i).compareTo(todaysMeds.get(j)) != 0) {
@@ -149,23 +151,6 @@ public class CareRecipientActivity extends ListActivity {
                     // append this medicine to MedEntry[i]
                 }
             }
-        }
-
-
-        for (int i = 0; i < todaysMeds.size(); i++) {
-            if (i == 0) {
-                MedEntry newEntry = new MedEntry(todaysMeds.get(i).mTime.toString(),
-                        todaysMeds.get(i).mMedications, todaysMeds.get(i).mTime);
-                sortedMeds.add(newEntry);
-            } else {
-
-
-
-
-            }
-
-
-
         }
 
         return sortedMeds;
