@@ -126,45 +126,45 @@ public class CareGiverActivity extends AppCompatActivity {
     public void onClickAccount(MenuItem menuItem) {
         // TODO -- should have some account management activity
 
-
-        Log.d(TAG, "executing account post");
-        new AsyncTask<Void,Void,Void>() {
-            @Override
-            protected Void doInBackground(Void... params) {
-                Gson gson = new Gson();
-
-                HashMap<String, String> account_params = new HashMap<>();
-                account_params.put("email", "dummy");
-                account_params.put("password","dummy_pass");
-                account_params.put("registrationId", mRegistrationID);
-                account_params.put("caregiver", gson.toJson(mCareGiver));
-
-                try {
-                    String response = ServerUtilities.post(SERVER_ADDR + "/create_account.do", account_params);
-                    Log.d(TAG, "post response: " + response);
-                } catch (IOException e) {
-                    Log.d(TAG, "failed to issue post");
-                    e.printStackTrace();
-                }
-                return null;
-            }
-
-        }.execute();
-
-
-//        Log.d(TAG, "executing account update");
+        // dummy information below
+//        Log.d(TAG, "executing account post");
 //        new AsyncTask<Void,Void,Void>() {
 //            @Override
 //            protected Void doInBackground(Void... params) {
-//                sendUpdatedGCInfo();
+//                Gson gson = new Gson();
 //
+//                HashMap<String, String> account_params = new HashMap<>();
+//                account_params.put("email", "dummy");
+//                account_params.put("password","dummy_pass");
+//                account_params.put("registrationId", mRegistrationID);
+//                account_params.put("caregiver", gson.toJson(mCareGiver));
+//
+//                try {
+//                    String response = ServerUtilities.post(SERVER_ADDR + "/create_account.do", account_params);
+//                    Log.d(TAG, "post response: " + response);
+//                } catch (IOException e) {
+//                    Log.d(TAG, "failed to issue post");
+//                    e.printStackTrace();
+//                }
 //                return null;
 //            }
 //
-//            protected void onPostExecute() {
-//
-//            }
 //        }.execute();
+
+
+        Log.d(TAG, "executing account update");
+        new AsyncTask<Void,Void,Void>() {
+            @Override
+            protected Void doInBackground(Void... params) {
+                sendUpdatedGCInfo();
+
+                return null;
+            }
+
+            protected void onPostExecute() {
+
+            }
+        }.execute();
     }
 
     public void sendUpdatedGCInfo() {
@@ -182,7 +182,8 @@ public class CareGiverActivity extends AppCompatActivity {
 
         try {
             Log.d(TAG, "Attempting to get account info");
-            backend.getAccountInfo("dummy email").execute();
+            edu.cs65.caregiver.backend.messaging.model.CaregiverObject cloud_data =
+                    backend.getAccountInfo("dummy").execute();
         } catch (IOException e){
             Log.d(TAG, "getAccountInfo Failed");
             e.printStackTrace();
