@@ -34,12 +34,6 @@ public class AccountSignOnActivity extends Activity {
         username = userText.getText().toString();
         password = passText.getText().toString();
 
-        Intent signUpIntent2 = new Intent(getApplicationContext(), CareRecipientActivity.class);
-        signUpIntent2.putExtra("username",username);
-        signUpIntent2.putExtra("password",password);
-
-        startActivity(signUpIntent2);
-
         if (username.equals("") || password.equals("")){
             displayToast("Please enter both an email and password");
         } else {
@@ -72,12 +66,6 @@ public class AccountSignOnActivity extends Activity {
     public void onSignUp (View v){
         username = userText.getText().toString();
         password = passText.getText().toString();
-
-        Intent signUpIntent2 = new Intent(getApplicationContext(), NewAccountSignUp.class);
-        signUpIntent2.putExtra("username",username);
-        signUpIntent2.putExtra("password",password);
-
-        startActivity(signUpIntent2);
 
         if (username.equals("") || password.equals("")){
             displayToast("Please enter both an email and password");
