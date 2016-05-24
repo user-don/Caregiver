@@ -1,10 +1,13 @@
 package edu.cs65.caregiver.caregiver;
 
 import android.app.AlertDialog;
-import android.app.DialogFragment;
 import android.app.ListActivity;
+import android.content.Context;
 import android.content.DialogInterface;
+import android.media.MediaPlayer;
+import android.media.RingtoneManager;
 import android.os.Bundle;
+import android.os.Vibrator;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
@@ -17,7 +20,6 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
-import java.util.TimeZone;
 
 import edu.cs65.caregiver.caregiver.model.CareGiver;
 import edu.cs65.caregiver.caregiver.model.MedicationAlert;
@@ -39,12 +41,14 @@ public class CareRecipientActivity extends ListActivity {
 
     private List<String> listValues;
     private ArrayList<MedicationAlert> mMedicationAlerts;
-    private ArrayList<MedEntry> sortedMeds;
+
+    public static ArrayList<MedEntry> sortedMeds;
+    public static MediaPlayer mediaPlayer;
+    public static Vibrator v;
+    public static boolean loadMedDialog = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-//        PSMScheduler.setSchedule(this);
-
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_care_recipient);
 
@@ -63,6 +67,15 @@ public class CareRecipientActivity extends ListActivity {
         mCheckInTime = mReceiver.mCheckIntime;
 
         setUpAdapter();
+
+        if (loadMedDialog) {
+            startAlarm();
+            int index = getIntent().getExtras().getInt("index");
+            MedEntry entry = sortedMeds.get(index);
+            displayMedDialog(entry);
+        }
+
+        PSMScheduler.setSchedule(this);
     }
 
     private void getDayOfWeek() {
@@ -74,10 +87,10 @@ public class CareRecipientActivity extends ListActivity {
     @Override
     protected void onListItemClick(ListView list, View view, int position, long id) {
         super.onListItemClick(list, view, position, id);
-        displayDialog(sortedMeds.get(position));
+        displayMedDialog(sortedMeds.get(position));
     }
 
-    public void displayDialog(MedEntry entry) {
+    public void displayMedDialog(MedEntry entry) {
         final ArrayList selectedItems = new ArrayList();
         String meds[] = new String[entry.meds.size()];
         meds = entry.meds.toArray(meds);
@@ -98,7 +111,11 @@ public class CareRecipientActivity extends ListActivity {
         }).setPositiveButton("OK", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int id) {
+                // stop alarm
+                // loadMedDialog = false
+                // notify CareGiver that medicine was taken
 
+                stopAlarm();
             }
         }).setNegativeButton("Back", new DialogInterface.OnClickListener() {
             @Override
@@ -115,7 +132,7 @@ public class CareRecipientActivity extends ListActivity {
     }
 
     public void onMenuClicked(View v) {
-//        displayDialog(CareGiverDialogFragment.DIALOG_MENU);
+//        displayMedDialog(CareGiverDialogFragment.DIALOG_MENU);
     }
 
     public void setUpAdapter() {
@@ -193,6 +210,21 @@ public class CareRecipientActivity extends ListActivity {
         return convertedTime;
     }
 
+    private void startAlarm() {
+        mediaPlayer = MediaPlayer.create(this,
+                RingtoneManager.getDefaultUri((RingtoneManager.TYPE_ALARM)));
+        mediaPlayer.start();
+
+        v = (Vibrator) this.getSystemService(Context.VIBRATOR_SERVICE);
+        long[] pattern = {0, 500, 1000};
+        v.vibrate(pattern, 0);
+    }
+
+    public static void stopAlarm() {
+        mediaPlayer.stop();
+        v.cancel();
+    }
+
 
     /* –––––––––––––––– Testing ONLY –––––––––––––––– */
 
@@ -258,9 +290,9 @@ public class CareRecipientActivity extends ListActivity {
 
 
     public class MedEntry {
-        private String label;
-        private ArrayList<String> meds;
-        private final Time time;
+        public String label;
+        public ArrayList<String> meds;
+        public final Time time;
 
         public MedEntry(String name, ArrayList<String> meds, Time time) {
             this.label = name;
