@@ -119,13 +119,10 @@ public class CareRecipientActivity extends ListActivity {
         ArrayList<MedicationAlert> medsForToday = new ArrayList<>();
 
         for (int i = 0; i < mMedicationAlerts.size(); i++) {
-
             int[] alertDays = mMedicationAlerts.get(i).mAlertDays;
-
             if (alertDays[7] != 0 || alertDays[dayIndex] != 0) {
                 medsForToday.add(mMedicationAlerts.get(i));
             }
-
         }
 
         return medsForToday;
@@ -136,19 +133,24 @@ public class CareRecipientActivity extends ListActivity {
 
         for (int i = 0; i < todaysMeds.size(); i++) {
             for (int j = i+1; j < todaysMeds.size(); j++) {
-
+                // automatically add first medication
                 if (i == 0) {
-                    // add new MedEntry
                     MedEntry newEntry = new MedEntry(todaysMeds.get(i).mTime.toString(),
                             todaysMeds.get(i).mMedications, todaysMeds.get(i).mTime);
                     sortedMeds.add(newEntry);
                 }
-
+                // compare medication alert times
                 if (todaysMeds.get(i).compareTo(todaysMeds.get(j)) != 0) {
-                    // add new MedEntry for j
-
-                } else {
-                    // append this medicine to MedEntry[i]
+                    MedEntry entry = new MedEntry(todaysMeds.get(j).mTime.toString(),
+                            todaysMeds.get(j).mMedications, todaysMeds.get(j).mTime);
+                    sortedMeds.add(entry);
+                }
+                // if found duplicate time, append medications to existing MedEntry object
+                // associated with that time
+                else {
+                    for (int k = 0; k < todaysMeds.get(j).mMedications.size(); k++) {
+                        sortedMeds.get(i).addMedToEntry(todaysMeds.get(j).mMedications.get(k));
+                    }
                 }
             }
         }
