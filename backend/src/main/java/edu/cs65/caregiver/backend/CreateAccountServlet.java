@@ -27,7 +27,7 @@ public class CreateAccountServlet extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        super.doPost(req, resp);
+        //super.doPost(req, resp);
 
         // Here we are passed an email and password for creating a new account.
         String email = req.getParameter("email").trim();
@@ -46,13 +46,16 @@ public class CreateAccountServlet extends HttpServlet {
             // does not yet exist, create account
             ofy().save().entity(account).now();
             // create the caregiver object to be stored in the database
-            CaregiverObject co = new CaregiverObject(email, caregiverJson);
+            CaregiverObject co = new CaregiverObject();
+            co.setData(caregiverJson);
+            co.setEmail(email);
             ofy().save().entity(co).now();
-            resp.setHeader("result", "successful_account_register");
+            resp.getWriter().write("result: successful account register");
+            //resp.setHeader("result", "successful_account_register");
         } else {
             // throw an error toast message back to the client.
             // TODO: Send message: account already exists
-            resp.setHeader("result", "failed_account_exists");
+            //resp.setHeader("result", "failed_account_exists");
         }
 
 

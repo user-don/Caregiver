@@ -43,12 +43,13 @@ import edu.cs65.caregiver.backend.registration.Registration;
 import edu.cs65.caregiver.caregiver.model.CareGiver;
 import edu.cs65.caregiver.caregiver.model.MedicationAlert;
 import edu.cs65.caregiver.caregiver.model.Recipient;
+import edu.cs65.caregiver.backend.messaging.Messaging;
 
 public class CareGiverActivity extends AppCompatActivity {
 
     private static final String TAG = "CareGiverActivity";
 
-    //public static String SERVER_ADDR = "http://10.31.43.206";  // local > change IP address
+    //public static String SERVER_ADDR = "http://10.0.2.2:8080";
     public static String SERVER_ADDR = "https://handy-empire-131521.appspot.com";
 
     // Changed sender id

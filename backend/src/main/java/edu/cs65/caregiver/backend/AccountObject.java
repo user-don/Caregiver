@@ -28,6 +28,12 @@ public class AccountObject {
         this.registrations = new ArrayList<>();
     }
 
+    public AccountObject() {
+        this.email = "";
+        this.hashedPw = "";
+        this.registrations = new ArrayList<>();
+    }
+
     public String getEmail() {
         return email;
     }

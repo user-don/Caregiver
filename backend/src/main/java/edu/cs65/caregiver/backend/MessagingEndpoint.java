@@ -104,7 +104,7 @@ public class MessagingEndpoint {
      * @param email Email address of account
      * @param json New serialized data of caregiver object
      */
-    @ApiMethod(name = "updateEntry")
+    @ApiMethod(name = "updateEntry", httpMethod = ApiMethod.HttpMethod.PUT)
     public void updateCaregiverObject(@Named("registration") String registration,
                                       @Named("email") String email, @Named("json") String json) {
         // if registration ID matches one that is found in account's list of registration records
@@ -162,11 +162,14 @@ public class MessagingEndpoint {
      * @param email Email address of account
      * @return Caregiver object
      */
-    @ApiMethod(name = "getAccountInfo")
-    public CaregiverObject getAccountInfo(@Named("email") String email) {
+    @ApiMethod(name = "getAccountInfo", httpMethod = ApiMethod.HttpMethod.GET)
+    public CaregiverEndpointsObject getAccountInfo(@Named("email") String email) {
         // get caregiver object from email address
-        return ofy().load().type(CaregiverObject.class)
+        CaregiverObject caregiverObject =  ofy().load().type(CaregiverObject.class)
                 .filter("email", email).first().now();
+        CaregiverEndpointsObject caregiverEndpointsObject = new CaregiverEndpointsObject();
+        caregiverEndpointsObject.setData(caregiverObject.getData());
+        return caregiverEndpointsObject;
     }
 
     /**
@@ -174,7 +177,7 @@ public class MessagingEndpoint {
      * @param email Email address of caregiver's account
      * @param regId Registration ID of the android device
      */
-    @ApiMethod(name = "registerPatientAccount")
+    @ApiMethod(name = "registerPatientAccount", httpMethod = ApiMethod.HttpMethod.POST)
     public void registerPatientAccount(@Named("email") String email,
                                        @Named("regId") String regId) {
         // add registration ID to the caregiver account so push notifications can be
