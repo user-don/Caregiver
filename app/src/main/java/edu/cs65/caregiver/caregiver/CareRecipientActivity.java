@@ -3,21 +3,21 @@ package edu.cs65.caregiver.caregiver;
 import android.app.DialogFragment;
 import android.app.ListActivity;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
-import android.widget.Toolbar;
 
+import java.sql.Time;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
-/**
- * Created by ellenli on 5/19/16.
- */
+import edu.cs65.caregiver.caregiver.model.CareGiver;
+import edu.cs65.caregiver.caregiver.model.MedicationAlert;
+import edu.cs65.caregiver.caregiver.model.Recipient;
+
+
 public class CareRecipientActivity extends ListActivity {
 
     // Menu Options
@@ -25,27 +25,44 @@ public class CareRecipientActivity extends ListActivity {
     private static final int FALL = 1;
     private static final int CHECK_IN = 2;
 
+    private CareGiver mCareGiver;
+    private Recipient mReceiver;
+    private long mCheckInTime;
+    private int mDay;
+    private int dayIndex;
+
     private List<String> listValues;
+    private ArrayList<MedicationAlert> mMedicationAlerts;
+    private ArrayList<MedEntry> sortedMeds;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+//        PSMScheduler.setSchedule(this);
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_care_recipient);
 
-        listValues = new ArrayList<String>();
-        listValues.add("10am");
-        listValues.add("1pm");
-        listValues.add("6pm");
+        if (mCareGiver == null) {
+            mCareGiver = new CareGiver("test");
+            mReceiver = mCareGiver.addRecipient("test recipient");
+        } else {
+            mReceiver = mCareGiver.getRecipient("test recipient");
+        }
 
+        getDayOfWeek();
 
-        // initiate list adapter
-        ArrayAdapter<String> myAdapter = new ArrayAdapter<String>(this, R.layout.row_layout,
-                R.id.listText, listValues);
+        // Get medication alerts and checkin time
+        mMedicationAlerts = mReceiver.mAlerts;
+        mCheckInTime = mReceiver.mCheckIntime;
 
-        // assign the list adapter
-        setListAdapter(myAdapter);
+        setUpAdapter();
     }
 
+    private void getDayOfWeek() {
+        Calendar calendar = Calendar.getInstance();
+        mDay = calendar.get(Calendar.DAY_OF_WEEK);
+        dayIndex = mDay - 1; // convert to match MedicationAlert int values
+    }
 
     @Override
     protected void onListItemClick(ListView list, View view, int position, long id) {
@@ -72,7 +89,6 @@ public class CareRecipientActivity extends ListActivity {
                 getString(R.string.app_name));
     }
 
-
     public void onHelpClicked(View v) {
         Toast.makeText(getApplicationContext(), "CAREGIVER HAS BEEN ALERTED",
                 Toast.LENGTH_LONG).show();
@@ -80,6 +96,98 @@ public class CareRecipientActivity extends ListActivity {
 
     public void onMenuClicked(View v) {
         displayDialog(CareGiverDialogFragment.DIALOG_MENU);
+    }
+
+    public void setUpAdapter() {
+        ArrayList<MedicationAlert> todaysMeds = getMedsForToday();
+
+        sortedMeds = getGroupedMeds(todaysMeds);
+
+        listValues = new ArrayList<String>();
+        listValues.add("10am");
+        listValues.add("1pm");
+        listValues.add("6pm");
+
+        // initiate list adapter
+        ArrayAdapter<String> myAdapter = new ArrayAdapter<String>(this, R.layout.row_layout,
+                R.id.listText, listValues);
+
+        // assign the list adapter
+        setListAdapter(myAdapter);
+    }
+
+    public ArrayList<MedicationAlert> getMedsForToday() {
+        ArrayList<MedicationAlert> medsForToday = new ArrayList<>();
+
+        for (int i = 0; i < mMedicationAlerts.size(); i++) {
+
+            int[] alertDays = mMedicationAlerts.get(i).mAlertDays;
+
+            if (alertDays[7] != 0 || alertDays[dayIndex] != 0) {
+                medsForToday.add(mMedicationAlerts.get(i));
+            }
+
+        }
+
+        return medsForToday;
+    }
+
+    public ArrayList<MedEntry> getGroupedMeds(ArrayList<MedicationAlert> todaysMeds) {
+        ArrayList<MedEntry> sortedMeds = new ArrayList<>();
+
+        for (int i = 0; i < todaysMeds.size(); i++) {
+            for (int j = i+1; j < todaysMeds.size(); j++) {
+
+                if (i == 0) {
+                    // add new MedEntry
+                }
+
+                if (todaysMeds.get(i).compareTo(todaysMeds.get(j)) != 0) {
+                    // add new MedEntry for j
+
+                } else {
+                    // append this medicine to MedEntry[i]
+                }
+            }
+        }
+
+
+        for (int i = 0; i < todaysMeds.size(); i++) {
+            if (i == 0) {
+                MedEntry newEntry = new MedEntry(todaysMeds.get(i).mTime.toString(),
+                        todaysMeds.get(i).mMedications, todaysMeds.get(i).mTime);
+                sortedMeds.add(newEntry);
+            } else {
+
+
+
+
+            }
+
+
+
+        }
+
+        return sortedMeds;
+    }
+
+
+
+    public class MedEntry {
+        private final String label;
+        private ArrayList<String> meds;
+        private final Time time;
+
+        public MedEntry(String name, ArrayList<String> meds, Time time) {
+            this.label = name;
+            this.meds = meds;
+            this.time = time;
+        }
+
+        public void addMedToEntry(String newMed) {
+            this.meds.add(newMed);
+        }
+
     }
 
 }
