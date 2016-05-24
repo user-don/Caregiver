@@ -22,13 +22,18 @@
         android:theme="@style/AppTheme">
 
         <activity android:name=".AccountSignOnActivity" >
+            <!--<intent-filter>-->
+                <!--<action android:name="android.intent.action.MAIN" />-->
+
+                <!--<category android:name="android.intent.category.LAUNCHER" />-->
+            <!--</intent-filter>-->
+        </activity>
+        <activity android:name=".CareGiverActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".CareGiverActivity" />
 
         <activity android:name=".NewMedicationActivity"
             android:windowSoftInputMode="adjustPan">

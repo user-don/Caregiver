@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.AsyncTask;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -34,6 +35,7 @@ import org.w3c.dom.Text;
 import java.io.IOException;
 import java.sql.Time;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -43,6 +45,14 @@ import edu.cs65.caregiver.caregiver.model.MedicationAlert;
 import edu.cs65.caregiver.caregiver.model.Recipient;
 
 public class CareGiverActivity extends AppCompatActivity {
+
+    private static final String TAG = "CareGiverActivity";
+
+    //public static String SERVER_ADDR = "http://10.31.43.206";  // local > change IP address
+    public static String SERVER_ADDR = "https://handy-empire-131521.appspot.com";
+
+    // Changed sender id
+    private static final String SENDER_ID = "1059275309009";
 
     public static final int NEW_MEDICATION_REQUEST = 1;
     public static final int EDIT_MEDICATION_REQUEST = 2;
@@ -55,6 +65,10 @@ public class CareGiverActivity extends AppCompatActivity {
     private static final String RECIPIENT_NAME_KEY = "recipient";
     private SharedPreferences mPrefs;
 
+    /* --- cloud stuff --- */
+    private boolean mReceiverRegistered = false;
+    private String mRegistrationID;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -63,6 +77,8 @@ public class CareGiverActivity extends AppCompatActivity {
         mPrefs = getPreferences(MODE_PRIVATE);
 
         /* TODO -> CONNECT WITH BACKEND AND REQUEST ALL MEDICATIONS FOR CAREGIVER'S RECIPIENT */
+        // register phone with GCM
+        new GcmRegistrationAsyncTask(this).execute();
 
         loadData();
         if (mCareGiver == null) {
@@ -88,6 +104,19 @@ public class CareGiverActivity extends AppCompatActivity {
         saveData();
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        //registerReceiver();
+    }
+
+    @Override
+    protected void onPause() {
+        //LocalBroadcastManager.getInstance(this).unregisterReceiver(mRegistrationBroadcastReceiver);
+        //isReceiverRegistered = false;
+        super.onPause();
+    }
+
     public void onClickNewMedication(View v) {
         Intent i = new Intent(this, NewMedicationActivity.class);
         startActivityForResult(i, NEW_MEDICATION_REQUEST);
@@ -95,6 +124,89 @@ public class CareGiverActivity extends AppCompatActivity {
 
     public void onClickAccount(MenuItem menuItem) {
         // TODO -- should have some account management activity
+
+
+        Log.d(TAG, "executing account post");
+        new AsyncTask<Void,Void,Void>() {
+            @Override
+            protected Void doInBackground(Void... params) {
+                Gson gson = new Gson();
+
+                HashMap<String, String> account_params = new HashMap<>();
+                account_params.put("email", "dummy");
+                account_params.put("password","dummy_pass");
+                account_params.put("registrationId", mRegistrationID);
+                account_params.put("caregiver", gson.toJson(mCareGiver));
+
+                try {
+                    String response = ServerUtilities.post(SERVER_ADDR + "/create_account.do", account_params);
+                    Log.d(TAG, "post response: " + response);
+                } catch (IOException e) {
+                    Log.d(TAG, "failed to issue post");
+                    e.printStackTrace();
+                }
+                return null;
+            }
+
+        }.execute();
+
+
+//        Log.d(TAG, "executing account update");
+//        new AsyncTask<Void,Void,Void>() {
+//            @Override
+//            protected Void doInBackground(Void... params) {
+//                sendUpdatedGCInfo();
+//
+//                return null;
+//            }
+//
+//            protected void onPostExecute() {
+//
+//            }
+//        }.execute();
+    }
+
+    public void sendUpdatedGCInfo() {
+        Gson gson = new Gson();
+
+        edu.cs65.caregiver.backend.messaging.Messaging backend;
+
+        edu.cs65.caregiver.backend.messaging.Messaging.Builder builder =
+                new edu.cs65.caregiver.backend.messaging.Messaging
+                        .Builder(AndroidHttp.newCompatibleTransport(), new AndroidJsonFactory(), null)
+                        .setRootUrl(SERVER_ADDR + "/_ah/api/");
+
+
+        backend = builder.build();
+
+        try {
+            Log.d(TAG, "Attempting to get account info");
+            backend.getAccountInfo("dummy email").execute();
+        } catch (IOException e){
+            Log.d(TAG, "getAccountInfo Failed");
+            e.printStackTrace();
+            //Toast.makeText(this, "getAccountInfo Failed", Toast.LENGTH_SHORT).show();
+        }
+
+
+//        if (mReceiverRegistered) {
+//            Registration.Builder builder = new Registration.Builder(,
+//                    )
+//                    .setRootUrl();
+//
+//            edu.cs65.caregiver.backend.messaging.Messaging.Builder()
+//
+//            final GoogleCloudMessaging gcm = GoogleCloudMessaging.getInstance(this);
+//            gcm.
+//            Bundle data = new Bundle();
+//            data.putString();
+//            String senderId = SENDER_ID;
+//            final String msgId = getValue(R.id.upstream_message_id);
+//            final String ttl = getValue(R.id.upstream_ttl);
+//
+//        } else {
+//            Toast.makeText(this, "Cannot Update -- Not Connected to Cloud", Toast.LENGTH_SHORT).show();
+//        }
     }
 
     public void onClickCheckInStatus(View v) {
@@ -319,7 +431,6 @@ public class CareGiverActivity extends AppCompatActivity {
             title.setText(alert.mName + ": " + alert.mTime.toString());
 
             TextView details = (TextView) rowView.findViewById(R.id.med_alert_detail);
-            Log.d("here", getDayString(alert.mAlertDays));
             details.setText(getDayString(alert.mAlertDays));
 
             ImageView image = (ImageView) rowView.findViewById(R.id.med_alert_image);
@@ -375,9 +486,6 @@ public class CareGiverActivity extends AppCompatActivity {
         private GoogleCloudMessaging gcm;
         private Context context;
 
-        // Changed sender id
-        private static final String SENDER_ID = "915997460540";
-
         public GcmRegistrationAsyncTask(Context context) {
             this.context = context;
         }
@@ -406,12 +514,12 @@ public class CareGiverActivity extends AppCompatActivity {
                 if (gcm == null) {
                     gcm = GoogleCloudMessaging.getInstance(context);
                 }
-                String regId = gcm.register(SENDER_ID);
-                msg = "Device registered, registration ID=" + regId;
+                mRegistrationID = gcm.register(SENDER_ID);
+                msg = "Device registered, registration ID = " + mRegistrationID;
 
                 // Send registration ID to server over HTTP so it can use GCM/HTTP
                 // to send messages to the app.
-                regService.register(regId).execute();
+                regService.register(mRegistrationID).execute();
 
             } catch (IOException ex) {
                 ex.printStackTrace();
@@ -422,8 +530,16 @@ public class CareGiverActivity extends AppCompatActivity {
 
         @Override
         protected void onPostExecute(String msg) {
-            Toast.makeText(context, msg, Toast.LENGTH_LONG).show();
+
             Logger.getLogger("REGISTRATION").log(Level.INFO, msg);
+            //Toast.makeText(context, msg, Toast.LENGTH_LONG).show();
+            if (!msg.contains("ERROR")) {
+                Toast.makeText(context, "Connected to Cloud!", Toast.LENGTH_SHORT).show();
+                mReceiverRegistered = true;
+            } else {
+                Toast.makeText(context, "Failed to Connect to Cloud", Toast.LENGTH_SHORT).show();
+            }
         }
     }
+
 }
