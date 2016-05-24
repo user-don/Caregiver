@@ -106,17 +106,12 @@ public class CareRecipientActivity extends ListActivity {
     public void setUpAdapter() {
         ArrayList<MedicationAlert> todaysMeds = getMedsForToday();
         sortedMeds = getGroupedMeds(todaysMeds);
+        listValues = new ArrayList<String>();
 
         for (int i = 0; i < sortedMeds.size(); i++) {
-            System.out.println("sortedMeds[" + i + "] label - " + sortedMeds.get(i).label);
-            System.out.println("sortedMeds[" + i + "] meds - " + sortedMeds.get(i).meds);
-            System.out.println("sortedMeds[" + i + "] time - " + sortedMeds.get(i).time);
+            String title = convertTime(sortedMeds.get(i).time);
+            listValues.add(title + " Medications");
         }
-
-        listValues = new ArrayList<String>();
-        listValues.add("10am");
-        listValues.add("1pm");
-        listValues.add("6pm");
 
         // initiate list adapter
         ArrayAdapter<String> myAdapter = new ArrayAdapter<String>(this, R.layout.row_layout,
@@ -141,26 +136,21 @@ public class CareRecipientActivity extends ListActivity {
 
     public ArrayList<MedEntry> getGroupedMeds(ArrayList<MedicationAlert> todaysMeds) {
         ArrayList<MedEntry> sortedMeds = new ArrayList<>();
-
         for (int i = 0; i < todaysMeds.size()-1; i++) {
             int j = i+1;
-
             // automatically add first medication
             if (i == 0) {
                 MedEntry newEntry = new MedEntry(todaysMeds.get(i).mTime.toString(),
                         todaysMeds.get(i).mMedications, todaysMeds.get(i).mTime);
                 sortedMeds.add(newEntry);
             }
-
             // compare medication alert times
             if (todaysMeds.get(i).compareTo(todaysMeds.get(j)) != 0) {
                 MedEntry entry = new MedEntry(todaysMeds.get(j).mTime.toString(),
                         todaysMeds.get(j).mMedications, todaysMeds.get(j).mTime);
                 sortedMeds.add(entry);
             }
-
             // if found duplicate time, append medications to existing MedEntry object
-            // associated with that time
             else {
                 for (int k = 0; k < todaysMeds.get(j).mMedications.size(); k++) {
                     sortedMeds.get(i).addMedToEntry(todaysMeds.get(j).mMedications.get(k));
@@ -171,14 +161,35 @@ public class CareRecipientActivity extends ListActivity {
         return sortedMeds;
     }
 
+    public String convertTime(Time time) {
+        String rawTime = time.toString();
+        String convertedTime = null;
+
+        try {
+            final SimpleDateFormat _24HourSDF = new SimpleDateFormat("HH:mm");
+            final SimpleDateFormat _12HourSDF = new SimpleDateFormat("hh:mm a");
+            final Date _24HrDt = _24HourSDF.parse(rawTime);
+            convertedTime = _12HourSDF.format(_24HrDt);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
+        return convertedTime;
+    }
+
+
+    /* –––––––––––––––– Testing ONLY –––––––––––––––– */
+
     public void createTestMeds() {
         Time time1 = new Time(10, 0, 0);
         Time time2 = new Time(15, 15, 0);
         Time time3 = new Time(10, 0, 0);
+        Time time4 = new Time(20, 0, 0);
 
         String name1 = "Test1";
         String name2 = "Test2";
         String name3 = "Test3";
+        String name4 = "Test4";
 
         int[] days1 = new int[7];
         days1[0] = 0;
@@ -221,10 +232,12 @@ public class CareRecipientActivity extends ListActivity {
         MedicationAlert medAlert1 = new MedicationAlert(name1, time1, days1, meds1);
         MedicationAlert medAlert2 = new MedicationAlert(name2, time2, days2, meds2);
         MedicationAlert medAlert3 = new MedicationAlert(name3, time3, days3, meds3);
+        MedicationAlert medAlert4 = new MedicationAlert(name4, time4, days3, meds3);
 
         mReceiver.addAlert(medAlert1);
         mReceiver.addAlert(medAlert2);
         mReceiver.addAlert(medAlert3);
+        mReceiver.addAlert(medAlert4);
     }
 
 
