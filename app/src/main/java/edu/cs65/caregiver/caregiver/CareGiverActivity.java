@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -16,6 +17,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -86,6 +88,63 @@ public class CareGiverActivity extends AppCompatActivity {
         // TODO -- should have some account management activity
     }
 
+    public void onClickCheckInStatus(View v) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+
+        if (mReceiver.mHasCheckedInToday) {
+            String time_str = new Time(mReceiver.mCheckedInTime).toString();
+            builder.setTitle(mReceiver.mName + " checked in at " + time_str);
+            builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface arg0, int arg1) {
+
+                }
+            });
+        } else {
+
+            builder.setTitle(mReceiver.mName + " has not checked in today");
+            builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface arg0, int arg1) {
+
+                }
+            });
+        }
+        builder.create().show();
+    }
+
+    public void onClickAlertStatus(View v) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+
+        if (mReceiver.mRaisedAlert) {
+            String time_str = new Time(mReceiver.mCheckedInTime).toString();
+            builder.setTitle(mReceiver.mName + " needs assistance!");
+            builder.setPositiveButton("CLEAR", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface arg0, int arg1) {
+                    mReceiver.mRaisedAlert = false;
+                    updateUI();
+                }
+            });
+            builder.setNegativeButton("CANCEL", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface arg0, int arg1) {
+
+                }
+            });
+        } else {
+            builder.setTitle(mReceiver.mName + " hasn't raised an ALERT");
+            builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface arg0, int arg1) {
+
+                }
+            });
+
+        }
+        builder.create().show();
+    }
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 
@@ -132,6 +191,20 @@ public class CareGiverActivity extends AppCompatActivity {
 
         TextView recipientText = (TextView) findViewById(R.id.recipient_name);
         recipientText.setText(mReceiver.mName);
+
+        Button mAlertButton = (Button) findViewById(R.id.alert_status_button);
+        if (mReceiver.mRaisedAlert) {
+            mAlertButton.setBackgroundColor(Color.RED);
+        } else {
+            mAlertButton.setBackgroundColor(Color.GRAY);
+        }
+
+        Button mStatusButton = (Button) findViewById(R.id.checkin_status_button);
+        if (mReceiver.mHasCheckedInToday) {
+            mStatusButton.setBackgroundColor(Color.BLUE);
+        } else {
+            mStatusButton.setBackgroundColor(Color.GRAY);
+        }
     }
 
     public void saveData() {
