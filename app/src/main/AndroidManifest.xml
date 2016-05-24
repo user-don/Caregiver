@@ -40,6 +40,8 @@
 
         <activity android:name=".Checkin"></activity>
 
+        <receiver android:name=".EMAAlarmReceiver" />
+
     </application>
 
 </manifest>
