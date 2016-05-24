@@ -5,6 +5,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
+import android.os.AsyncTask;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -21,14 +22,22 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.google.android.gms.gcm.GoogleCloudMessaging;
+import com.google.api.client.extensions.android.http.AndroidHttp;
+import com.google.api.client.extensions.android.json.AndroidJsonFactory;
 import com.google.gson.Gson;
 
 import org.w3c.dom.Text;
 
+import java.io.IOException;
 import java.sql.Time;
 import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
+import edu.cs65.caregiver.backend.registration.Registration;
 import edu.cs65.caregiver.caregiver.model.CareGiver;
 import edu.cs65.caregiver.caregiver.model.MedicationAlert;
 import edu.cs65.caregiver.caregiver.model.Recipient;
@@ -358,5 +367,63 @@ public class CareGiverActivity extends AppCompatActivity {
         else
             return sb.toString();
 
+    }
+
+    // GCM registration ... called in Main Activity
+    class GcmRegistrationAsyncTask extends AsyncTask<Void, Void, String> {
+        private Registration regService = null;
+        private GoogleCloudMessaging gcm;
+        private Context context;
+
+        // Changed sender id
+        private static final String SENDER_ID = "915997460540";
+
+        public GcmRegistrationAsyncTask(Context context) {
+            this.context = context;
+        }
+
+        @Override
+        protected String doInBackground(Void... params) {
+            if (regService == null) {
+                Registration.Builder builder = new Registration.Builder(AndroidHttp.newCompatibleTransport(),
+                        new AndroidJsonFactory(), null)
+                        .setRootUrl(SERVER_ADDR + "/_ah/api/");
+                // UNCOMMENT TO RUN LOCALLY
+//                        .setGoogleClientRequestInitializer(new GoogleClientRequestInitializer() {
+//                            @Override
+//                            public void initialize(AbstractGoogleClientRequest<?> abstractGoogleClientRequest)
+//                                    throws IOException {
+//                                abstractGoogleClientRequest.setDisableGZipContent(true);
+//                            }
+//                        });
+                // end of optional local run code
+
+                regService = builder.build();
+            }
+
+            String msg = "";
+            try {
+                if (gcm == null) {
+                    gcm = GoogleCloudMessaging.getInstance(context);
+                }
+                String regId = gcm.register(SENDER_ID);
+                msg = "Device registered, registration ID=" + regId;
+
+                // Send registration ID to server over HTTP so it can use GCM/HTTP
+                // to send messages to the app.
+                regService.register(regId).execute();
+
+            } catch (IOException ex) {
+                ex.printStackTrace();
+                msg = "Error: " + ex.getMessage();
+            }
+            return msg;
+        }
+
+        @Override
+        protected void onPostExecute(String msg) {
+            Toast.makeText(context, msg, Toast.LENGTH_LONG).show();
+            Logger.getLogger("REGISTRATION").log(Level.INFO, msg);
+        }
     }
 }
