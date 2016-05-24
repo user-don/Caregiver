@@ -12,6 +12,7 @@ public class EMAAlarmReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(final Context context, Intent intent) {
         int index = intent.getExtras().getInt("index");
+        System.out.println("starting PSM...");
         startPSM(context, index);
     }
 

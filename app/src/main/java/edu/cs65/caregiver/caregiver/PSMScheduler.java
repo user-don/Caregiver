@@ -29,7 +29,7 @@ public class PSMScheduler {
         // -1 --> loadCheckin activity
         // setSchedule(context, hr, min, sec, -1)
 
-        setSchedule(context, 14, 30, 0, -1);
+        setSchedule(context, 15, 13, 0, -1);
 
     }
 
