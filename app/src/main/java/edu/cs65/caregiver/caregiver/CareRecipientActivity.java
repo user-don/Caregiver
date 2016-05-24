@@ -39,11 +39,11 @@ public class CareRecipientActivity extends ListActivity {
 
 
         // initiate list adapter
-        ArrayAdapter<String> myAdapter = new ArrayAdapter<String>(this, R.layout.row_layout,
-                R.id.listText, listValues);
+        //ArrayAdapter<String> myAdapter = new ArrayAdapter<String>(this, R.layout.row_layout,
+        //        R.id.listText, listValues);
 
         // assign the list adapter
-        setListAdapter(myAdapter);
+        //setListAdapter(myAdapter);
     }
 
 

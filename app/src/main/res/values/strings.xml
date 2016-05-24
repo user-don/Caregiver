@@ -43,12 +43,15 @@
     <string name="ui_start_care_receiver">Click here to start care receiver</string>
 
     <!-- CareRecipient Strings -->
-    <string name="ui_helpBtn_title">HELP!</string>
+    <string name="recipient_name">John Doe</string>
+    <string name="ui_helpBtn_title">HELP</string>
+    <string name="ui_medBtn_title">MEDICATION DETAILS</string>
     <string name="toolbar_title_care_recipient">Caregiver</string>
     <string name="schedule_title">Upcoming Medications</string>
     <string name="ui_title_checkin_Btn">Check-in</string>
     <string name="ui_title_fall_Btn">Fall Alert</string>
     <string name="ui_title_fall_activity">FALL DETECTED!</string>
+    <string name="recipient_medication_label">Below are todays medications</string>
 
     <!-- Fall Actvity Strings-->
     <string name="ui_OK_Btn">I am OK</string>

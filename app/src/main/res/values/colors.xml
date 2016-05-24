@@ -8,7 +8,9 @@
     <color name="lightgrey">#d9d9d9</color>
     <color name="white">#ffffff</color>
 
-    <color name="canvas">#e9ece5</color>
+    <color name="canvas">#ede2c4</color>
+    <color name="paper">#e9ece5</color>
     <color name="blue">#89bdd3</color>
     <color name="lightblue">#9ad3de</color>
+    <color name="red">#ff9980</color>
 </resources>

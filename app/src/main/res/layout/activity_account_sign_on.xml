@@ -46,6 +46,7 @@
                     android:layout_marginLeft="5dp"
                     android:textColor="@color/lightgrey"
                     android:fontFamily="serif"
+                    android:textSize="15dp"
                     android:text="@string/account_sign_username_label" />
 
                 <EditText
@@ -56,8 +57,8 @@
                     android:layout_marginLeft="5dp"
                     android:layout_marginRight="5dp"
                     android:textColorHint="@color/middlegrey"
-                    android:backgroundTint="@color/lightgrey"
-                    android:textColor="@color/lightgrey"
+                    android:backgroundTint="@color/white"
+                    android:textColor="@color/white"
                     android:hint="@string/account_sign_username_default"
                     android:fontFamily="serif"
                     android:inputType="text" />
@@ -78,6 +79,7 @@
                     android:layout_marginLeft="5dp"
                     android:textColor="@color/lightgrey"
                     android:fontFamily="serif"
+                    android:textSize="15dp"
                     android:text="@string/account_sign_password_label" />
 
                 <EditText
@@ -87,8 +89,8 @@
                     android:layout_marginTop="5dp"
                     android:layout_marginLeft="5dp"
                     android:layout_marginRight="5dp"
-                    android:backgroundTint="@color/lightgrey"
-                    android:textColor="@color/lightgrey"
+                    android:backgroundTint="@color/white"
+                    android:textColor="@color/white"
                     android:textColorHint="@color/middlegrey"
                     android:hint="@string/account_sign_password_default"
                     android:inputType="text"
@@ -100,7 +102,7 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
+                android:layout_marginTop="15dp"
                 android:layout_marginBottom="20dp"
                 android:orientation="horizontal" >
 
