@@ -15,15 +15,22 @@ public class PSMScheduler {
     public static void setSchedule(Context context) {
 
         // get times of all medications
-        for (int i = 0; i < CareRecipientActivity.sortedMeds.size(); i++) {
-            Time alarmTime = CareRecipientActivity.sortedMeds.get(i).time;
+//        for (int i = 0; i < CareRecipientActivity.sortedMeds.size(); i++) {
+//            Time alarmTime = CareRecipientActivity.sortedMeds.get(i).time;
+//
+//            int hr = alarmTime.getHours();
+//            int min = alarmTime.getMinutes();
+//            int sec = alarmTime.getSeconds();
+//
+//            setSchedule(context, hr, min, sec, i);
+//        }
 
-            int hr = alarmTime.getHours();
-            int min = alarmTime.getMinutes();
-            int sec = alarmTime.getSeconds();
+        // get checkin time
+        // -1 --> loadCheckin activity
+        // setSchedule(context, hr, min, sec, -1)
 
-            setSchedule(context, hr, min, sec, i);
-        }
+        setSchedule(context, 14, 30, 0, -1);
+
     }
 
     private static void setSchedule(Context context, int hour, int min, int sec, int index) {

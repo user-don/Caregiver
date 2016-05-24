@@ -38,6 +38,8 @@
 
         <activity android:name=".FallActivity"></activity>
 
+        <activity android:name=".Checkin"></activity>
+
     </application>
 
 </manifest>

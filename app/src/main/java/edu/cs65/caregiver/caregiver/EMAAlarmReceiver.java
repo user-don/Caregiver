@@ -17,11 +17,23 @@ public class EMAAlarmReceiver extends BroadcastReceiver {
 
     // start CareRecipientActivity and load med dialog
     private void startPSM(Context context, int i) {
-        Intent emaIntent = new Intent(context, CareRecipientActivity.class); //The activity you  want to start.
-        emaIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        CareRecipientActivity.loadMedDialog = true;
 
-        emaIntent.putExtra("index", i);
-        context.startActivity(emaIntent);
+        // CareRecipientActivity
+        if (i != -1) {
+            Intent emaIntent = new Intent(context, CareRecipientActivity.class); //The activity you  want to start.
+            emaIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            CareRecipientActivity.loadMedDialog = true;
+            emaIntent.putExtra("index", i);
+            context.startActivity(emaIntent);
+        }
+
+        // Checkin activity
+        else {
+            System.out.println("calling Checkin.class intent");
+            Intent emaIntent = new Intent(context, Checkin.class);
+            emaIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            context.startActivity(emaIntent);
+        }
+
     }
 }

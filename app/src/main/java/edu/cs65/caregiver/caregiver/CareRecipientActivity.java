@@ -49,6 +49,8 @@ public class CareRecipientActivity extends ListActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        PSMScheduler.setSchedule(this);
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_care_recipient);
 
@@ -75,7 +77,6 @@ public class CareRecipientActivity extends ListActivity {
             displayMedDialog(entry);
         }
 
-        PSMScheduler.setSchedule(this);
     }
 
     private void getDayOfWeek() {
