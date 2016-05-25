@@ -69,7 +69,7 @@ public class CareRecipientActivity extends ListActivity {
 
         // register phone with GCM
         new GcmRegistrationAsyncTask(this).execute();
-        
+
         if (mCareGiver == null) {
             mCareGiver = new CareGiver("test");
             mReceiver = mCareGiver.addRecipient("test recipient");
