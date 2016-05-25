@@ -7,7 +7,6 @@ import android.util.Log;
 import com.google.gson.Gson;
 
 import edu.cs65.caregiver.backend.messaging.model.CaregiverEndpointsObject;
-import edu.cs65.caregiver.backend.messaging.model.CaregiverObject;
 import edu.cs65.caregiver.caregiver.model.CareGiver;
 
 /**
