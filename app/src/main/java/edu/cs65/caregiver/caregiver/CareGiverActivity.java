@@ -140,10 +140,6 @@ public class CareGiverActivity extends AppCompatActivity {
     public void onClickAccount(MenuItem menuItem) {
         // TODO -- should have some account management activity
 
-        GetCareGiverInfoAsyncTask task = new GetCareGiverInfoAsyncTask();
-        task.email = mEmail;
-        task.execute();
-
         // dummy information below
         Log.d(TAG, "executing account post");
         new AsyncTask<Void,Void,Void>() {
