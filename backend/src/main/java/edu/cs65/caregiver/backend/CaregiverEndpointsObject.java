@@ -1,5 +1,6 @@
 package edu.cs65.caregiver.backend;
 
+
 /**
  * The object model for the data we are sending through endpoints
 */

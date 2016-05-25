@@ -5,6 +5,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
+import android.graphics.PorterDuff;
 import android.os.AsyncTask;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AlertDialog;
@@ -28,6 +29,8 @@ import android.widget.Toast;
 import com.google.android.gms.gcm.GoogleCloudMessaging;
 import com.google.api.client.extensions.android.http.AndroidHttp;
 import com.google.api.client.extensions.android.json.AndroidJsonFactory;
+import com.google.api.client.googleapis.services.AbstractGoogleClientRequest;
+import com.google.api.client.googleapis.services.GoogleClientRequestInitializer;
 import com.google.gson.Gson;
 
 import org.w3c.dom.Text;
@@ -50,6 +53,8 @@ public class CareGiverActivity extends AppCompatActivity {
 
     private static final String TAG = "CareGiverActivity";
 
+    //public static String SERVER_ADDR = "http://10.31.39.206:8080";
+    //public static String SERVER_ADDR = "http://0.0.0.0:8080";
     //public static String SERVER_ADDR = "http://10.0.2.2:8080";
     public static String SERVER_ADDR = "https://handy-empire-131521.appspot.com";
 
@@ -87,8 +92,8 @@ public class CareGiverActivity extends AppCompatActivity {
         new GcmRegistrationAsyncTask(this).execute();
 
         mDataController = DataController.getInstance(getApplicationContext());
+        mDataController.initializeData(getApplicationContext());
         mDataController.loadData();
-        mDataController.initializeData(getApplicationContext(), "Base");
 
         mReceiver = mDataController.careGiver.getRecipient(mRecipientName);
         if (mReceiver == null) {
@@ -97,6 +102,8 @@ public class CareGiverActivity extends AppCompatActivity {
         }
 
         setAlertAdapter();
+
+        updateUI();
     }
 
     @Override
@@ -138,29 +145,29 @@ public class CareGiverActivity extends AppCompatActivity {
         task.execute();
 
         // dummy information below
-//        Log.d(TAG, "executing account post");
-//        new AsyncTask<Void,Void,Void>() {
-//            @Override
-//            protected Void doInBackground(Void... params) {
-//                Gson gson = new Gson();
-//
-//                HashMap<String, String> account_params = new HashMap<>();
-//                account_params.put("email", "dummy");
-//                account_params.put("password","dummy_pass");
-//                account_params.put("registrationId", mRegistrationID);
-//                account_params.put("caregiver", gson.toJson(mCareGiver));
-//
-//                try {
-//                    String response = ServerUtilities.post(SERVER_ADDR + "/create_account.do", account_params);
-//                    Log.d(TAG, "post response: " + response);
-//                } catch (IOException e) {
-//                    Log.d(TAG, "failed to issue post");
-//                    e.printStackTrace();
-//                }
-//                return null;
-//            }
-//
-//        }.execute();
+        Log.d(TAG, "executing account post");
+        new AsyncTask<Void,Void,Void>() {
+            @Override
+            protected Void doInBackground(Void... params) {
+                Gson gson = new Gson();
+
+                HashMap<String, String> account_params = new HashMap<>();
+                account_params.put("email", mEmail);
+                account_params.put("password","dummy_pass");
+                account_params.put("registrationId", mRegistrationID);
+                account_params.put("caregiver", gson.toJson(mDataController.careGiver));
+
+                try {
+                    String response = ServerUtilities.post(SERVER_ADDR + "/create_account.do", account_params);
+                    Log.d(TAG, "post response: " + response);
+                } catch (IOException e) {
+                    Log.d(TAG, "failed to issue post - Error msg: " + e.getMessage());
+                    e.printStackTrace();
+                }
+                return null;
+            }
+
+        }.execute();
 
 
     }
@@ -273,16 +280,20 @@ public class CareGiverActivity extends AppCompatActivity {
 
         Button mAlertButton = (Button) findViewById(R.id.alert_status_button);
         if (mReceiver.mRaisedAlert) {
-            mAlertButton.setBackgroundColor(Color.RED);
+            mAlertButton.getBackground().setColorFilter(Color.RED, PorterDuff.Mode.MULTIPLY);
+            //mAlertButton.setBackgroundColor(Color.RED);
         } else {
-            mAlertButton.setBackgroundColor(Color.GRAY);
+            mAlertButton.getBackground().setColorFilter(Color.LTGRAY, PorterDuff.Mode.MULTIPLY);
+            //mAlertButton.setBackgroundColor(Color.GRAY);
         }
 
         Button mStatusButton = (Button) findViewById(R.id.checkin_status_button);
         if (mReceiver.mHasCheckedInToday) {
-            mStatusButton.setBackgroundColor(Color.BLUE);
+            mStatusButton.getBackground().setColorFilter(Color.BLUE, PorterDuff.Mode.MULTIPLY);
+            //mStatusButton.setcolor(Color.BLUE);
         } else {
-            mStatusButton.setBackgroundColor(Color.GRAY);
+            mStatusButton.getBackground().setColorFilter(Color.LTGRAY, PorterDuff.Mode.MULTIPLY);
+            //mStatusButton.setBackgroundColor(Color.GRAY);
         }
     }
 
@@ -465,7 +476,8 @@ public class CareGiverActivity extends AppCompatActivity {
 
             } catch (IOException ex) {
                 ex.printStackTrace();
-                msg = "Error: " + ex.getMessage();
+                Log.d(TAG, "Error: " + ex.getMessage());
+                msg = null;
             }
             return msg;
         }
@@ -473,9 +485,9 @@ public class CareGiverActivity extends AppCompatActivity {
         @Override
         protected void onPostExecute(String msg) {
 
-            Logger.getLogger("REGISTRATION").log(Level.INFO, msg);
             //Toast.makeText(context, msg, Toast.LENGTH_LONG).show();
-            if (!msg.contains("ERROR")) {
+            if (msg != null) {
+                Logger.getLogger("REGISTRATION").log(Level.INFO, msg);
                 Toast.makeText(context, "Connected to Cloud!", Toast.LENGTH_SHORT).show();
                 mReceiverRegistered = true;
 

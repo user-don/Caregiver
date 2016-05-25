@@ -13,6 +13,9 @@ public class OfyService {
 
     static {
         ObjectifyService.register(RegistrationRecord.class);
+        ObjectifyService.register(CaregiverObject.class);
+        ObjectifyService.register(AccountObject.class);
+        ObjectifyService.register(CaregiverEndpointsObject.class);
     }
 
     public static Objectify ofy() {
