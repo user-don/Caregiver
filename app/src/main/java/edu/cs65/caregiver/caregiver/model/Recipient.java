@@ -10,6 +10,7 @@ import java.util.Collections;
 public class Recipient {
     public String mName;
     public ArrayList<MedicationAlert> mAlerts;
+    public long mCheckIntime;
     public boolean mCheckedIn;
     public boolean mRaisedAlert;
 
@@ -29,5 +30,13 @@ public class Recipient {
     public void addAlert(MedicationAlert alert) {
         mAlerts.add(alert);
         Collections.sort(mAlerts);
+    }
+
+    public void deleteAlert(String to_delete) {
+        for (int i = 0; i < mAlerts.size(); i++) {
+            if (mAlerts.get(i).mName.equals(to_delete)) {
+                mAlerts.remove(i);
+            }
+        }
     }
 }

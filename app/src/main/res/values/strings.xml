@@ -9,7 +9,7 @@
     <string name="save">SAVE</string>
     <string name="cancel_string">CANCEL</string>
     <string name="schedule_new_medication_title_string">Medication Alert Information</string>
-    <string name="alert_name">Alert Name:</string>
+    <string name="alert_name">Alert Name: </string>
     <string name="example_alert_name">eg. \'Morning\'</string>
     <string name="pick_time">Pick Time</string>
     <string name="view_all_scheduled_medication_alerts">View All Scheduled Medication Alerts</string>

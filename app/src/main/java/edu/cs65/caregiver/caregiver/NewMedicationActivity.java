@@ -15,6 +15,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -54,7 +55,22 @@ public class NewMedicationActivity extends AppCompatActivity {
         Intent i = getIntent();
 
         // if saved instance state is not null, load that information
-        if (savedInstanceState != null) {
+        if (i.getStringExtra(ALERT_NAME) != null && savedInstanceState == null) {
+            Log.d(TAG, "loading edit entry");
+
+            mAlertName = i.getStringExtra(ALERT_NAME);
+            long time = i.getLongExtra(ALERT_TIME, 0);
+            mAlertTime = new Time(time);
+            mRecurrenceType = i.getIntExtra(ALERT_RECURRENCE_TYPE, 0);
+            Spinner spinner = (Spinner) findViewById(R.id.recurrence_spinner);
+            spinner.setSelection(mRecurrenceType);
+
+            mDaysOfWeek = i.getIntArrayExtra(ALERT_DAYS_OF_WEEK);
+            mMedications = i.getStringArrayListExtra(ALERT_MEDICATION);
+
+            // else initialize data
+        } else if (savedInstanceState != null) {
+            Log.d(TAG, "loading saved instance");
 
             mAlertName = savedInstanceState.getString(ALERT_NAME, null);
 
@@ -68,16 +84,8 @@ public class NewMedicationActivity extends AppCompatActivity {
             mMedications = savedInstanceState.getStringArrayList(ALERT_MEDICATION);
 
         // else if the intent has existing information, pull that up
-        } else if (i.getStringExtra(ALERT_NAME) != null) {
-
-            mAlertName = i.getStringExtra(ALERT_NAME);
-            mAlertTime = i.getParcelableExtra(ALERT_TIME);
-            mRecurrenceType = i.getIntExtra(ALERT_RECURRENCE_TYPE, 0);
-            mDaysOfWeek = i.getIntArrayExtra(ALERT_DAYS_OF_WEEK);
-            mMedications = i.getStringArrayListExtra(ALERT_MEDICATION);
-
-        // else initialize data
         } else {
+            Log.d(TAG, "loading new instance");
             mMedications = new ArrayList<>();
         }
 
@@ -103,6 +111,43 @@ public class NewMedicationActivity extends AppCompatActivity {
     }
 
     /* ----------------------------- UI callbacks ----------------------------- */
+
+    public void onClickSetName(View v) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+
+        builder.setTitle("Set Alert Name");
+
+        final EditText input = new EditText(this);
+        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.MATCH_PARENT);
+        input.setLayoutParams(lp);
+        builder.setView(input); // uncomment this line
+
+        builder.setPositiveButton("Set Name", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface arg0, int arg1) {
+
+                if (!input.getText().toString().equals("")) {
+                    mAlertName = input.getText().toString();
+                } else {
+                    Toast.makeText(NewMedicationActivity.this, "Entry Failed -- Please enter a name",
+                            Toast.LENGTH_SHORT).show();
+                }
+                updateUI();
+            }
+        });
+
+        builder.setNegativeButton("CANCEL", new DialogInterface.OnClickListener() {
+
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.cancel();
+            }
+        });
+
+        builder.create().show();
+    }
 
     public void onClickSetTime(View v) {
         TimePickerDialog.OnTimeSetListener time_listener =
@@ -160,15 +205,10 @@ public class NewMedicationActivity extends AppCompatActivity {
 
     public void onClickSave(View v) {
 
-        EditText name_text = (EditText)findViewById(R.id.alert_name);
-        mAlertName = name_text.getText().toString();
-
         // save all information to and update account
         if (checkFields() == false) {
             return;
         }
-
-        Toast.makeText(this, "Added Medication Alert", Toast.LENGTH_SHORT).show();
 
         Intent resultIntent = new Intent();
         setResult(Activity.RESULT_OK, resultIntent);
@@ -183,6 +223,7 @@ public class NewMedicationActivity extends AppCompatActivity {
         resultIntent.putExtra(ALERT_DAYS_OF_WEEK, mDaysOfWeek);
         resultIntent.putStringArrayListExtra(ALERT_MEDICATION, mMedications);
 
+        Toast.makeText(this, "Saved Medication Alert", Toast.LENGTH_SHORT).show();
         finish();
     }
 
@@ -211,9 +252,10 @@ public class NewMedicationActivity extends AppCompatActivity {
 
     public void updateUI() {
 
-        EditText alert_name = (EditText) findViewById(R.id.alert_name);
-        if (mAlertName != null) {
-            mAlertName = alert_name.getText().toString();
+        TextView alert_name = (TextView) findViewById(R.id.alert_name);
+        alert_name.setText(mAlertName);
+
+        if (mAlertName == null) {
             alert_name.setText(mAlertName);
         }
 
@@ -225,11 +267,11 @@ public class NewMedicationActivity extends AppCompatActivity {
         Spinner recurrence = (Spinner) findViewById(R.id.recurrence_spinner);
         recurrence.setSelection(mRecurrenceType);
 
-        if (mRecurrenceType == 1) {
-            enableAllDays();
-        } else {
-            disableAllDays();
-        }
+//        if (mRecurrenceType == 1) {
+//            enableAllDays();
+//        } else {
+//            disableAllDays();
+//        }
 
     }
 
@@ -336,20 +378,24 @@ public class NewMedicationActivity extends AppCompatActivity {
         if (isChecked(R.id.chkbx_friday)){
             mDaysOfWeek[4] = 1;
             checked_days++;
+        } else {
+            mDaysOfWeek[4] = 0;
         }
-        mDaysOfWeek[4] = 0;
 
         if (isChecked(R.id.chkbx_saturday)){
             mDaysOfWeek[5] = 1;
             checked_days++;
+        } else {
+            mDaysOfWeek[5] = 0;
         }
-        mDaysOfWeek[5] = 0;
+
 
         if (isChecked(R.id.chkbx_sunday)){
             mDaysOfWeek[6] = 1;
             checked_days++;
+        } else {
+            mDaysOfWeek[6] = 0;
         }
-        mDaysOfWeek[6] = 0;
 
         return checked_days;
     }

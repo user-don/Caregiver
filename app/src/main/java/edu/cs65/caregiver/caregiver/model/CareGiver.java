@@ -25,6 +25,14 @@ public class CareGiver {
         return newRecipient;
     }
 
+    public Recipient getRecipient(String _name) {
+        for (Recipient recipient : mRecipients) {
+            if (recipient.mName.equals(_name))
+                return recipient;
+        }
+
+        return null;
+    }
 
     public void deleteRecipient(String name) {
         for (Recipient recipient : mRecipients) {
