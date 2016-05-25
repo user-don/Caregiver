@@ -64,8 +64,9 @@ public class DataController {
         SharedPreferences.Editor prefsEditor = preferences.edit();
 
         String saved_data = gson.toJson(careGiver);
+        Log.d(TAG, "saving caregiver data " + saved_data);
         prefsEditor.putString(SAVED_DATA_KEY, saved_data);
-        prefsEditor.commit();
+        prefsEditor.apply();
     }
 
     public void loadData() {
@@ -73,12 +74,15 @@ public class DataController {
 
         SharedPreferences preferences = context.getSharedPreferences(PREFERENCES_FILE, Context.MODE_PRIVATE);
         String data = preferences.getString(SAVED_DATA_KEY, "");
-        if (data.equals("")) {
+        if (!data.equals("")) {
+            Log.d(TAG, "loaded caregiver data: " + data);
             careGiver = gson.fromJson(data, CareGiver.class);
         } else {
             Log.d(TAG, "Error loading data occurred");
             careGiver = new CareGiver("NA");
+            saveData();
         }
+
 
     }
 }
