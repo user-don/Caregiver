@@ -114,9 +114,9 @@ public class CareRecipientActivity extends ListActivity {
         }).setPositiveButton("OK", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int id) {
-                // notify CareGiver that medicine was taken
                 stopAlarm();
                 loadMedDialog = false;
+                // notify CareGiver that medicine was taken
 
             }
         }).setNegativeButton("Back", new DialogInterface.OnClickListener() {
@@ -124,9 +124,17 @@ public class CareRecipientActivity extends ListActivity {
             public void onClick(DialogInterface dialog, int id) {
                 stopAlarm();
                 loadMedDialog = false;
+                // notify CareGiver medicine not taken
 
             }
+        }).setOnDismissListener(new DialogInterface.OnDismissListener() {
+            @Override
+            public void onDismiss(DialogInterface dialog) {
+                stopAlarm();
+                loadMedDialog = false;
+            }
         }).show();
+
 
     }
 
@@ -235,7 +243,7 @@ public class CareRecipientActivity extends ListActivity {
     public void createTestMeds() {
         Time time1 = new Time(10, 0, 0);
         Time time2 = new Time(15, 15, 0);
-        Time time3 = new Time(7, 53, 0); //10
+        Time time3 = new Time(8, 11, 0); //10
         Time time4 = new Time(7, 15, 0); //20 / 8pm
 
         String name1 = "Test1";
