@@ -6,20 +6,13 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.media.MediaPlayer;
 import android.media.RingtoneManager;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Vibrator;
-import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
 
-import com.google.android.gms.gcm.GoogleCloudMessaging;
-import com.google.api.client.extensions.android.http.AndroidHttp;
-import com.google.api.client.extensions.android.json.AndroidJsonFactory;
-
-import java.io.IOException;
 import java.sql.Time;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -27,10 +20,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
-import edu.cs65.caregiver.backend.registration.Registration;
 import edu.cs65.caregiver.caregiver.model.CareGiver;
 import edu.cs65.caregiver.caregiver.model.MedicationAlert;
 import edu.cs65.caregiver.caregiver.model.Recipient;
@@ -38,6 +28,7 @@ import edu.cs65.caregiver.caregiver.model.Recipient;
 
 public class CareRecipientActivity extends ListActivity {
 
+    // Menu Options
     private static final int ACCT = 0;
     private static final int FALL = 1;
     private static final int CHECK_IN = 2;
@@ -56,19 +47,11 @@ public class CareRecipientActivity extends ListActivity {
     public static Vibrator v;
     public static boolean loadMedDialog = false;
 
-    public static String SERVER_ADDR = "https://handy-empire-131521.appspot.com";
-    private String mRegistrationID;
-    private static final String SENDER_ID = "1059275309009";
-    private boolean mReceiverRegistered = false;
-
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_care_recipient);
-
-        new GcmRegistrationAsyncTask(this).execute();
 
         if (mCareGiver == null) {
             mCareGiver = new CareGiver("test");
@@ -94,6 +77,7 @@ public class CareRecipientActivity extends ListActivity {
         }
 
         PSMScheduler.setSchedule(this);
+
     }
 
 
@@ -333,62 +317,5 @@ public class CareRecipientActivity extends ListActivity {
         }
 
     }
-
-
-
-    class GcmRegistrationAsyncTask extends AsyncTask<Void, Void, String> {
-        private Registration regService = null;
-        private GoogleCloudMessaging gcm;
-        private Context context;
-        private String TAG = "Registration Task";
-
-        public GcmRegistrationAsyncTask(Context context) {
-            this.context = context;
-        }
-
-        @Override
-        protected String doInBackground(Void... params) {
-            if (regService == null) {
-                Registration.Builder builder = new Registration.Builder(AndroidHttp.newCompatibleTransport(),
-                        new AndroidJsonFactory(), null)
-                        .setRootUrl(SERVER_ADDR + "/_ah/api/");
-                regService = builder.build();
-            }
-
-            String msg = "";
-            try {
-                if (gcm == null) {
-                    gcm = GoogleCloudMessaging.getInstance(context);
-                }
-                mRegistrationID = gcm.register(SENDER_ID);
-                msg = "Device registered, registration ID = " + mRegistrationID;
-
-                // Send registration ID to server over HTTP so it can use GCM/HTTP
-                // to send messages to the app.
-                regService.register(mRegistrationID).execute();
-
-            } catch (IOException ex) {
-                ex.printStackTrace();
-                Log.d(TAG, "Error: " + ex.getMessage());
-                msg = null;
-            }
-            return msg;
-        }
-
-        @Override
-        protected void onPostExecute(String msg) {
-
-            //Toast.makeText(context, msg, Toast.LENGTH_LONG).show();
-            if (msg != null) {
-                Logger.getLogger("REGISTRATION").log(Level.INFO, msg);
-                Toast.makeText(context, "Connected to Cloud!", Toast.LENGTH_SHORT).show();
-                mReceiverRegistered = true;
-            } else {
-                Toast.makeText(context, "Failed to Connect to Cloud", Toast.LENGTH_SHORT).show();
-            }
-        }
-    }
-
-
 
 }
