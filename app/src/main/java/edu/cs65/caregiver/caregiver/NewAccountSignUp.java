@@ -7,77 +7,92 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 /**
  * Created by seanoh95 on 5/20/16.
  */
 public class NewAccountSignUp extends Activity {
 
-    private Bundle extras;
     private String username;
     private String password;
+    private EditText userText;
+    private EditText passText;
     private String careRecipient;
-    private String careGiver;
     private boolean UIswitch;
+    private boolean valid;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_new_account);
+        setContentView(R.layout.activity_account_sign_on);
 
-        UIswitch = false;
+        userText = (EditText)findViewById(R.id.username);
+        passText = (EditText)findViewById(R.id.password);
 
-        extras = getIntent().getExtras();
-        username = extras.getString("username");
-        password = extras.getString("password");
+        valid = false;
 
-    }
-
-    // if the new user says that they are a care giver
-    public void onCareGiverClick(View v){
-        UIswitch = true;
-        setContentView(R.layout.activity_new_caregiver);
-
-    }
-    // if the new user says that they are a care recipient
-    public void onCareRecipientClick(View v){
-        UIswitch = true;
-        setContentView(R.layout.activity_new_carerecipient);
     }
 
     // once a new caregiver is created, take them to the medication page
     public void onCareGiverNext(View v){
         EditText careRecipientInput = (EditText)findViewById(R.id.new_caregiver_recipient);
         careRecipient = careRecipientInput.getText().toString();
+
         //add password and username and careRecipient to the database
 
-        Intent newMedication = new Intent(getApplicationContext(), NewMedicationActivity.class);
+        Intent newMedication = new Intent(getApplicationContext(), CareGiverActivity.class);
         startActivity(newMedication);
         finish();
     }
 
-    // as a new care recipient, search for your care giver
-    public void onSearch(View v){
-        EditText careGiverInput = (EditText)findViewById(R.id.find_caregiver);
-        careGiver = careGiverInput.getText().toString();
+    // If the user would like to sign into an existing account
+    public void onLogIn (View v) {
+        username = userText.getText().toString();
+        password = passText.getText().toString();
 
-        // search the database for the name that matches inputed caregiver
-        String careRecipient = "Sean Oh";
-        setContentView(R.layout.activity_new_carerecipient_search);
-        TextView nameSearch = (TextView)findViewById(R.id.carerecipient_name_search);
-        nameSearch.setText(careRecipient);
+        if (username.equals("") || password.equals("")){
+            displayToast("Please enter both an email and password");
+        } else {
+            //check to see if that account is valid
+            valid = true;
+
+            //if not, available, display toast saying to put in a valid account
+            if (valid) {
+                Intent signUpIntent = new Intent(getApplicationContext(), CareGiverActivity.class);
+                signUpIntent.putExtra("username",username);
+                signUpIntent.putExtra("password",password);
+
+                startActivity(signUpIntent);
+            } else {
+                displayToast("That account doesn't exist. Please try again");
+            }
+        }
     }
 
-    // confirm that your name is correct
-    public void onNameConfirm(View v){
-        // connect to patient status page
-        Intent intent = new Intent(getApplicationContext(), CareRecipientActivity.class);
-        startActivity(intent);
+    // If the user would like to create a new account
+    public void onSignUp (View v){
+        username = userText.getText().toString();
+        password = passText.getText().toString();
+
+        if (username.equals("") || password.equals("")){
+            displayToast("Please enter both an email and password");
+        } else {
+            //check to see if that account is available
+            valid = true;
+
+            //if available, start signup activity else display toast saying to choose a new username
+            if (valid) {
+                setContentView(R.layout.activity_new_caregiver);
+            } else {
+                displayToast("Account taken. Please use a new email.");
+            }
+        }
     }
 
-    // wrong name appears
-    public void onNameReject(View v){
-        setContentView(R.layout.activity_new_carerecipient);
+    public void displayToast(String message){
+        Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT).show();
     }
 
     @Override

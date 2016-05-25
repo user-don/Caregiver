@@ -7,7 +7,7 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
-    android:background="@drawable/splashscreen"
+    android:background="@color/paper"
     android:focusable="true"
     android:focusableInTouchMode="true"
     tools:context="edu.cs65.caregiver.caregiver.AccountSignOnActivity">
@@ -29,9 +29,9 @@
                 android:textSize="60dp"
                 android:fontFamily="serif"
                 android:textStyle="italic"
-                android:textColor="@color/white"
+                android:textColor="@color/grey"
                 android:layout_marginTop="85dp"
-                android:layout_marginBottom="100dp"/>
+                android:layout_marginBottom="50dp"/>
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -44,7 +44,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="5dp"
-                    android:textColor="@color/lightgrey"
+                    android:textColor="@color/grey"
                     android:fontFamily="serif"
                     android:textSize="15dp"
                     android:text="@string/account_sign_username_label" />
@@ -57,8 +57,8 @@
                     android:layout_marginLeft="5dp"
                     android:layout_marginRight="5dp"
                     android:textColorHint="@color/middlegrey"
-                    android:backgroundTint="@color/white"
-                    android:textColor="@color/white"
+                    android:backgroundTint="@color/grey"
+                    android:textColor="@color/grey"
                     android:hint="@string/account_sign_username_default"
                     android:fontFamily="serif"
                     android:inputType="text" />
@@ -77,7 +77,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="5dp"
-                    android:textColor="@color/lightgrey"
+                    android:textColor="@color/grey"
                     android:fontFamily="serif"
                     android:textSize="15dp"
                     android:text="@string/account_sign_password_label" />
@@ -89,8 +89,8 @@
                     android:layout_marginTop="5dp"
                     android:layout_marginLeft="5dp"
                     android:layout_marginRight="5dp"
-                    android:backgroundTint="@color/white"
-                    android:textColor="@color/white"
+                    android:backgroundTint="@color/grey"
+                    android:textColor="@color/grey"
                     android:textColorHint="@color/middlegrey"
                     android:hint="@string/account_sign_password_default"
                     android:inputType="text"
