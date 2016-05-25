@@ -168,7 +168,13 @@ public class MessagingEndpoint {
         CaregiverObject caregiverObject =  ofy().load().type(CaregiverObject.class)
                 .filter("email", email).first().now();
         CaregiverEndpointsObject caregiverEndpointsObject = new CaregiverEndpointsObject();
-        caregiverEndpointsObject.setData(caregiverObject.getData());
+        try {
+            caregiverEndpointsObject.setData(caregiverObject.getData());
+        } catch (NullPointerException e) {
+            // no account with this email address exists.
+            // TODO: Throw error
+            e.printStackTrace();
+        }
         return caregiverEndpointsObject;
     }
 
