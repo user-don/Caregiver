@@ -8,6 +8,7 @@ import com.google.gson.Gson;
 
 import edu.cs65.caregiver.backend.messaging.model.CaregiverEndpointsObject;
 import edu.cs65.caregiver.caregiver.model.CareGiver;
+import edu.cs65.caregiver.caregiver.model.Recipient;
 
 /**
  * Created by don on 5/23/16.
@@ -55,6 +56,16 @@ public class DataController {
 
     public void setData(CareGiver newCareGiver) {
         careGiver = newCareGiver;
+    }
+
+    public Recipient setRecipientData(Recipient recipient) {
+        for (int i = 0; i < careGiver.mRecipients.size(); i++) {
+            if (careGiver.mRecipients.get(i).mName.equals(recipient.mName)) {
+                careGiver.mRecipients.set(i, recipient);
+                return careGiver.mRecipients.get(i);
+            }
+        }
+        return null;
     }
 
     public void saveData() {

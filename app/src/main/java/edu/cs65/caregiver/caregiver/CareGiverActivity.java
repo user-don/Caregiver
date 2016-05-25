@@ -72,8 +72,10 @@ public class CareGiverActivity extends AppCompatActivity {
     private String mRecipientName = "test";     // TODO -- expand to get from preferences / intent
     private Recipient mReceiver;
 
-    private static final String CAREGIVER_KEY = "current caregiver";
-    private static final String RECIPIENT_NAME_KEY = "recipient";
+    private static final String EMAIL_KEY = "email key";
+    private static final String PASSWORD_KEY = "password key";
+    private static final String CAREGIVER_KEY = "caregiver name";
+    private static final String RECIPIENT_NAME_KEY = "recipient name";
     private SharedPreferences mPrefs;
 
     /* --- cloud stuff --- */
@@ -242,9 +244,11 @@ public class CareGiverActivity extends AppCompatActivity {
                                     data.getStringArrayListExtra(NewMedicationActivity.ALERT_MEDICATION));
 
                     Log.d(TAG, "adding alert name " + newAlert.mName);
-                    mDataController.careGiver.setAlert(mRecipientName,newAlert);
+                    mReceiver.addAlert(newAlert);
+                    mDataController.setRecipientData(mReceiver);
+                    //mDataController.careGiver.setAlert(mRecipientName,newAlert);
                     //mDataController.careGiver.getRecipient(mRecipientName).addAlert(newAlert);
-                    //mReceiver.addAlert(newAlert);
+
                 }
                 break;
 
@@ -263,6 +267,7 @@ public class CareGiverActivity extends AppCompatActivity {
 
                     Log.d(TAG, "editing alert name " + newAlert.mName);
                     mReceiver.addAlert(newAlert);
+                    mDataController.setRecipientData(mReceiver);
                 }
                 break;
         }
@@ -346,7 +351,9 @@ public class CareGiverActivity extends AppCompatActivity {
             @Override
             public void onClick(DialogInterface arg0, int arg1) {
                 mReceiver.mAlerts.remove(position);
+                mDataController.setRecipientData(mReceiver);
                 mDataController.saveData();
+                new UpdateCareGiverAsyncTask().execute();
                 updateUI();
             }
         });
