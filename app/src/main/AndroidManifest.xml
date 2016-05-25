@@ -5,6 +5,7 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.GET_ACCOUNTS" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="com.google.android.c2dm.permission.RECEIVE" />
     <uses-permission android:name="android.permission.VIBRATE"/>
     <uses-permission android:name="android.permission.WAKE_LOCK" />
@@ -24,13 +25,18 @@
         android:theme="@style/AppTheme">
 
         <activity android:name=".AccountSignOnActivity" >
+            <!--<intent-filter>-->
+                <!--<action android:name="android.intent.action.MAIN" />-->
+
+                <!--<category android:name="android.intent.category.LAUNCHER" />-->
+            <!--</intent-filter>-->
+        </activity>
+        <activity android:name=".CareGiverActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".CareGiverActivity" />
 
         <activity android:name=".NewMedicationActivity"
             android:windowSoftInputMode="adjustPan">
@@ -46,5 +52,15 @@
         <receiver android:name=".EMAAlarmReceiver" />
 
     </application>
+
+    <receiver
+        android:name=".GcmBroadcastReceiver"
+        android:permission="com.google.android.c2dm.permission.SEND" >
+        <intent-filter>
+            <action android:name="com.google.android.c2dm.intent.RECEIVE" />
+            <category android:name="edu.cs65.caregiver.caregiver" />
+        </intent-filter>
+    </receiver>
+    <service android:name=".GcmIntentService" />
 
 </manifest>

@@ -17,9 +17,7 @@ public class CaregiverObject {
     private String email;
     private String data;
 
-    public CaregiverObject(String email, String data) {
-        this.email = email;
-        this.data = data;
+    public CaregiverObject() {
     }
 
     public String getEmail() {

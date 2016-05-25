@@ -27,7 +27,9 @@ public class CreateAccountServlet extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        super.doPost(req, resp);
+        //super.doPost(req, resp);
+
+//        resp.setHeader("result", "successful_account_register");
 
         // Here we are passed an email and password for creating a new account.
         String email = req.getParameter("email").trim();
@@ -37,6 +39,7 @@ public class CreateAccountServlet extends HttpServlet {
         String hashedPw = computeMD5Hash(password);
         //AccountsDatastore.add(email, hashedPw);
         AccountObject account = new AccountObject(email, hashedPw);
+
         // get registration record associated with the id
         RegistrationRecord record =
                 ofy().load().type(RegistrationRecord.class).filter("regId", regId).first().now();
@@ -46,8 +49,11 @@ public class CreateAccountServlet extends HttpServlet {
             // does not yet exist, create account
             ofy().save().entity(account).now();
             // create the caregiver object to be stored in the database
-            CaregiverObject co = new CaregiverObject(email, caregiverJson);
+            CaregiverObject co = new CaregiverObject();
+            co.setData(caregiverJson);
+            co.setEmail(email);
             ofy().save().entity(co).now();
+            resp.getWriter().write("result: successful account register");
             resp.setHeader("result", "successful_account_register");
         } else {
             // throw an error toast message back to the client.
