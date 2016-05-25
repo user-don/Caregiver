@@ -83,7 +83,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:id="@+id/medication_alert_list2"
-            android:layout_gravity="center_horizontal" />
+            android:layout_gravity="center_horizontal"
+            android:nestedScrollingEnabled="true" />
 
     </LinearLayout>
 
@@ -109,15 +110,15 @@
             android:text="@string/check_in_status"
             android:id="@+id/checkin_status_button"
             android:layout_weight="1"
-            android:enabled="false" />
+            android:onClick="onClickCheckInStatus" />
 
         <Button
             android:layout_width="wrap_content"
             android:layout_height="100dp"
             android:text="@string/alert_status"
             android:id="@+id/alert_status_button"
-            android:enabled="false"
-            android:layout_weight="1" />
+            android:layout_weight="1"
+            android:onClick="onClickAlertStatus" />
 
     </LinearLayout>
 

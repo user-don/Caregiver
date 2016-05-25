@@ -14,6 +14,11 @@ public class Recipient {
     public boolean mCheckedIn;
     public boolean mRaisedAlert;
 
+    /* daily status information */
+    public ArrayList<Boolean> mHasTakenMed;
+    public boolean mHasCheckedInToday;
+    public long mCheckedInTime;
+
     public Recipient(String _name, ArrayList<MedicationAlert> _alerts) {
         mName = _name;
 
@@ -25,6 +30,10 @@ public class Recipient {
 
         mCheckedIn = true;
         mRaisedAlert = false;
+
+        mHasTakenMed = new ArrayList<>();
+        mHasCheckedInToday = false;
+        mCheckedInTime = -1;
     }
 
     public void addAlert(MedicationAlert alert) {
