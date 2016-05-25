@@ -85,6 +85,9 @@ public class CareGiverActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_care_giver);
 
+        //mPrefs = getPreferences(MODE_PRIVATE);
+
+        /* TODO -> CONNECT WITH BACKEND AND REQUEST ALL MEDICATIONS FOR CAREGIVER'S RECIPIENT */
         // register phone with GCM
         new GcmRegistrationAsyncTask(this).execute();
 
@@ -92,19 +95,14 @@ public class CareGiverActivity extends AppCompatActivity {
         mDataController.initializeData(getApplicationContext());
         mDataController.loadData();
 
-//        if (mDataController.careGiver.getRecipient(mRecipientName) == null) {
-//            mDataController.careGiver.addRecipient(mRecipientName);
-//            mDataController.saveData();
-//        }
-
         mReceiver = mDataController.careGiver.getRecipient(mRecipientName);
         if (mReceiver == null) {
-            Log.d(TAG, "Initializing recipient " + mRecipientName);
             mReceiver = mDataController.careGiver.addRecipient(mRecipientName);
             mDataController.saveData();
         }
 
         setAlertAdapter();
+
         updateUI();
     }
 
@@ -166,14 +164,17 @@ public class CareGiverActivity extends AppCompatActivity {
             }
 
         }.execute();
+
+
     }
+
 
     public void onClickCheckInStatus(View v) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
 
         if (mReceiver.mHasCheckedInToday) {
             String time_str = new Time(mReceiver.mCheckedInTime).toString();
-            builder.setTitle(mRecipientName + " checked in at " + time_str);
+            builder.setTitle(mReceiver.mName + " checked in at " + time_str);
             builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface arg0, int arg1) {
@@ -182,7 +183,7 @@ public class CareGiverActivity extends AppCompatActivity {
             });
         } else {
 
-            builder.setTitle(mRecipientName + " has not checked in today");
+            builder.setTitle(mReceiver.mName + " has not checked in today");
             builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface arg0, int arg1) {
@@ -197,7 +198,8 @@ public class CareGiverActivity extends AppCompatActivity {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
 
         if (mReceiver.mRaisedAlert) {
-            builder.setTitle(mRecipientName + " needs assistance!");
+            String time_str = new Time(mReceiver.mCheckedInTime).toString();
+            builder.setTitle(mReceiver.mName + " needs assistance!");
             builder.setPositiveButton("CLEAR", new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface arg0, int arg1) {
@@ -212,7 +214,7 @@ public class CareGiverActivity extends AppCompatActivity {
                 }
             });
         } else {
-            builder.setTitle(mRecipientName + " hasn't raised an ALERT");
+            builder.setTitle(mReceiver.mName + " hasn't raised an ALERT");
             builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface arg0, int arg1) {
@@ -226,7 +228,6 @@ public class CareGiverActivity extends AppCompatActivity {
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        Log.d(TAG, "On Activity Result - request code =  " + requestCode + " result code = " + resultCode);
 
         switch (requestCode) {
             case NEW_MEDICATION_REQUEST:
@@ -241,10 +242,7 @@ public class CareGiverActivity extends AppCompatActivity {
                                     data.getIntArrayExtra(NewMedicationActivity.ALERT_DAYS_OF_WEEK),
                                     data.getStringArrayListExtra(NewMedicationActivity.ALERT_MEDICATION));
 
-                    Log.d(TAG, "adding alert name " + newAlert.mName);
-                    mDataController.careGiver.setAlert(mRecipientName,newAlert);
-                    //mDataController.careGiver.getRecipient(mRecipientName).addAlert(newAlert);
-                    //mReceiver.addAlert(newAlert);
+                    mReceiver.addAlert(newAlert);
                 }
                 break;
 
@@ -261,20 +259,15 @@ public class CareGiverActivity extends AppCompatActivity {
                                     data.getIntArrayExtra(NewMedicationActivity.ALERT_DAYS_OF_WEEK),
                                     data.getStringArrayListExtra(NewMedicationActivity.ALERT_MEDICATION));
 
-                    Log.d(TAG, "editing alert name " + newAlert.mName);
                     mReceiver.addAlert(newAlert);
                 }
                 break;
         }
 
-        mDataController.saveData();
         updateUI();
-        new UpdateCareGiverAsyncTask().execute();
     }
 
     public void updateUI() {
-        mDataController.loadData();
-
         ListView alertList = (ListView) findViewById(R.id.medication_alert_list2);
         ((ArrayAdapter) alertList.getAdapter()).notifyDataSetChanged();
 
@@ -284,15 +277,19 @@ public class CareGiverActivity extends AppCompatActivity {
         Button mAlertButton = (Button) findViewById(R.id.alert_status_button);
         if (mReceiver.mRaisedAlert) {
             mAlertButton.getBackground().setColorFilter(Color.RED, PorterDuff.Mode.MULTIPLY);
+            //mAlertButton.setBackgroundColor(Color.RED);
         } else {
             mAlertButton.getBackground().setColorFilter(Color.LTGRAY, PorterDuff.Mode.MULTIPLY);
+            //mAlertButton.setBackgroundColor(Color.GRAY);
         }
 
         Button mStatusButton = (Button) findViewById(R.id.checkin_status_button);
         if (mReceiver.mHasCheckedInToday) {
             mStatusButton.getBackground().setColorFilter(Color.BLUE, PorterDuff.Mode.MULTIPLY);
+            //mStatusButton.setcolor(Color.BLUE);
         } else {
             mStatusButton.getBackground().setColorFilter(Color.LTGRAY, PorterDuff.Mode.MULTIPLY);
+            //mStatusButton.setBackgroundColor(Color.GRAY);
         }
     }
 
@@ -346,7 +343,6 @@ public class CareGiverActivity extends AppCompatActivity {
             @Override
             public void onClick(DialogInterface arg0, int arg1) {
                 mReceiver.mAlerts.remove(position);
-                mDataController.saveData();
                 updateUI();
             }
         });
@@ -527,7 +523,7 @@ public class CareGiverActivity extends AppCompatActivity {
                     e.printStackTrace();
                 }
             } else {
-                Log.d(TAG, "Cannot get account because device is unregistered");
+                Log.d(TAG, "Cannot update account because device is unregistered");
             }
 
             return (response != null) ? response.getData() : null;
@@ -536,49 +532,11 @@ public class CareGiverActivity extends AppCompatActivity {
         protected void onPostExecute(String data) {
             gson = new Gson();
             if (data != null) {
-                Log.d(TAG,"Refreshing Received CareGiver Information");
+                Log.d(TAG,"Updating CareGiver Information");
                 CareGiver cloudData = gson.fromJson(data, CareGiver.class);
                 mDataController.setData(cloudData);
                 updateUI();
             }
-        }
-    }
-
-    class UpdateCareGiverAsyncTask extends AsyncTask<Void,Void,Void> {
-        private static final String TAG = "Update Account Info AT";
-
-        @Override
-        protected Void doInBackground(Void... params) {
-
-            edu.cs65.caregiver.backend.messaging.Messaging.Builder builder =
-                    new edu.cs65.caregiver.backend.messaging.Messaging
-                            .Builder(AndroidHttp.newCompatibleTransport(), new AndroidJsonFactory(), null)
-                            .setRootUrl(SERVER_ADDR + "/_ah/api/");
-
-            edu.cs65.caregiver.backend.messaging.Messaging backend = builder.build();
-
-            if (mReceiverRegistered) {
-                Log.d(TAG, "Executing update account with email " + mEmail);
-                try {
-                    Gson gson = new Gson();
-                    String data = gson.toJson(mDataController.careGiver);
-
-                    Log.d(TAG,"Updating with information... " + data);
-                    backend.updateEntry(mRegistrationID, mEmail, data).execute();
-                } catch (IOException e) {
-                    Log.d(TAG, "updatedAccountInfo failed");
-                    e.printStackTrace();
-                }
-            } else {
-                Log.d(TAG, "Cannot update account because device is unregistered");
-            }
-
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(Void arg) {
-            Log.d(TAG,"Finished CareGiver Updating Information");
         }
     }
 

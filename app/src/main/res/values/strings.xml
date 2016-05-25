@@ -54,4 +54,8 @@
     <string name="ui_OK_Btn">I am OK</string>
     <string name="ui_HELP_Btn">HELP</string>
 
+    <!-- Checkin Activity Strings -->
+    <string name="ui_checkin_welcome_text">Click the button below to check-in!</string>
+    <string name="ui_Checkin_Btn">Check-in!</string>
+
 </resources>
