@@ -49,7 +49,6 @@ public class CareRecipientActivity extends ListActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        PSMScheduler.setSchedule(this);
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_care_recipient);
@@ -77,9 +76,12 @@ public class CareRecipientActivity extends ListActivity {
             displayMedDialog(entry);
         }
 
+        PSMScheduler.setSchedule(this);
+
     }
 
-    private void getDayOfWeek() {
+
+    public void getDayOfWeek() {
         Calendar calendar = Calendar.getInstance();
         mDay = calendar.get(Calendar.DAY_OF_WEEK);
         dayIndex = mDay - 1; // convert to match MedicationAlert int values
@@ -96,9 +98,9 @@ public class CareRecipientActivity extends ListActivity {
         String meds[] = new String[entry.meds.size()];
         meds = entry.meds.toArray(meds);
 
-        AlertDialog.Builder alertDialog = new AlertDialog.Builder(this);
-        alertDialog.setTitle(entry.label);
-        alertDialog.setMultiChoiceItems(meds, null, new DialogInterface.OnMultiChoiceClickListener() {
+        AlertDialog.Builder alertBuilder = new AlertDialog.Builder(this);
+        alertBuilder.setTitle(entry.label);
+        alertBuilder.setMultiChoiceItems(meds, null, new DialogInterface.OnMultiChoiceClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which, boolean isChecked) {
 
@@ -112,15 +114,16 @@ public class CareRecipientActivity extends ListActivity {
         }).setPositiveButton("OK", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int id) {
-                // stop alarm
-                // loadMedDialog = false
                 // notify CareGiver that medicine was taken
-
                 stopAlarm();
+                loadMedDialog = false;
+
             }
         }).setNegativeButton("Back", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int id) {
+                stopAlarm();
+                loadMedDialog = false;
 
             }
         }).show();
@@ -232,8 +235,8 @@ public class CareRecipientActivity extends ListActivity {
     public void createTestMeds() {
         Time time1 = new Time(10, 0, 0);
         Time time2 = new Time(15, 15, 0);
-        Time time3 = new Time(10, 0, 0);
-        Time time4 = new Time(20, 0, 0);
+        Time time3 = new Time(7, 53, 0); //10
+        Time time4 = new Time(7, 15, 0); //20 / 8pm
 
         String name1 = "Test1";
         String name2 = "Test2";

@@ -14,28 +14,24 @@ public class PSMScheduler {
 
     public static void setSchedule(Context context) {
 
-        // get times of all medications
-//        for (int i = 0; i < CareRecipientActivity.sortedMeds.size(); i++) {
-//            Time alarmTime = CareRecipientActivity.sortedMeds.get(i).time;
-//
-//            int hr = alarmTime.getHours();
-//            int min = alarmTime.getMinutes();
-//            int sec = alarmTime.getSeconds();
-//
-//            setSchedule(context, hr, min, sec, i);
-//        }
+        // get times of all medications and set alarm
+        for (int i = 0; i < CareRecipientActivity.sortedMeds.size(); i++) {
+            Time alarmTime = CareRecipientActivity.sortedMeds.get(i).time;
 
-        // get checkin time
-        // -1 --> loadCheckin activity
-        // setSchedule(context, hr, min, sec, -1)
+            int hr = alarmTime.getHours();
+            int min = alarmTime.getMinutes();
+            int sec = alarmTime.getSeconds();
 
-        setSchedule(context, 15, 13, 0, -1);
+            setSchedule(context, hr, min, sec, i);
+        }
+
+        // get checkin time and set alarm
+        setSchedule(context, 7, 3, 0, -1);
 
     }
 
     private static void setSchedule(Context context, int hour, int min, int sec, int index) {
 
-        // the request code distinguish different stress meter schedule instances
         int requestCode = hour * 10000 + min * 100 + sec;
         Intent intent = new Intent(context, EMAAlarmReceiver.class);
         intent.putExtra("index", index);
@@ -53,11 +49,15 @@ public class PSMScheduler {
             calendar.add(Calendar.DATE, 1);
         }
 
-        //set repeating alarm, and pass the pending intent,
-        //so that the broadcast is sent everytime the alarm
-        // is triggered
-        AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
-        alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(),
-                AlarmManager.INTERVAL_DAY, pi);
+        //set repeating alarm for checkin, otherwise set one-time alarm for meds
+        if (index != -1) {
+            AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+            alarmManager.set(AlarmManager.RTC_WAKEUP,calendar.getTimeInMillis(), pi);
+        }
+        else {
+            AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+            alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(),
+                    AlarmManager.INTERVAL_DAY, pi);
+        }
     }
 }

@@ -30,7 +30,6 @@ public class EMAAlarmReceiver extends BroadcastReceiver {
 
         // Checkin activity
         else {
-            System.out.println("calling Checkin.class intent");
             Intent emaIntent = new Intent(context, Checkin.class);
             emaIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             context.startActivity(emaIntent);
