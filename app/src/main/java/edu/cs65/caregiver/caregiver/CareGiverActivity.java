@@ -40,6 +40,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import edu.cs65.caregiver.backend.registration.Registration;
+import edu.cs65.caregiver.caregiver.controllers.DataController;
 import edu.cs65.caregiver.caregiver.model.CareGiver;
 import edu.cs65.caregiver.caregiver.model.MedicationAlert;
 import edu.cs65.caregiver.caregiver.model.Recipient;
@@ -59,7 +60,11 @@ public class CareGiverActivity extends AppCompatActivity {
     public static final int EDIT_MEDICATION_REQUEST = 2;
     public static final String ADDED_MEDICATION_ALERT = "new alert";
 
-    private CareGiver mCareGiver;
+    DataController mDataController;
+
+    //private CareGiver mCareGiver;
+    private String mEmail = "dummy";
+    private String mRecipientName = "test";     // TODO -- expand to get from preferences / intent
     private Recipient mReceiver;
 
     private static final String CAREGIVER_KEY = "current caregiver";
@@ -75,18 +80,20 @@ public class CareGiverActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_care_giver);
 
-        mPrefs = getPreferences(MODE_PRIVATE);
+        //mPrefs = getPreferences(MODE_PRIVATE);
 
         /* TODO -> CONNECT WITH BACKEND AND REQUEST ALL MEDICATIONS FOR CAREGIVER'S RECIPIENT */
         // register phone with GCM
         new GcmRegistrationAsyncTask(this).execute();
 
-        loadData();
-        if (mCareGiver == null) {
-            mCareGiver = new CareGiver("test");
-            mReceiver = mCareGiver.addRecipient("test recipient");
-        } else {
-            mReceiver = mCareGiver.getRecipient("test recipient");
+        mDataController = DataController.getInstance(getApplicationContext());
+        mDataController.loadData();
+        mDataController.initializeData(getApplicationContext(), "Base");
+
+        mReceiver = mDataController.careGiver.getRecipient(mRecipientName);
+        if (mReceiver == null) {
+            mReceiver = mDataController.careGiver.addRecipient(mRecipientName);
+            mDataController.saveData();
         }
 
         setAlertAdapter();
@@ -102,7 +109,7 @@ public class CareGiverActivity extends AppCompatActivity {
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        saveData();
+        mDataController.saveData();
     }
 
     @Override
@@ -125,6 +132,10 @@ public class CareGiverActivity extends AppCompatActivity {
 
     public void onClickAccount(MenuItem menuItem) {
         // TODO -- should have some account management activity
+
+        GetCareGiverInfoAsyncTask task = new GetCareGiverInfoAsyncTask();
+        task.email = mEmail;
+        task.execute();
 
         // dummy information below
 //        Log.d(TAG, "executing account post");
@@ -152,64 +163,8 @@ public class CareGiverActivity extends AppCompatActivity {
 //        }.execute();
 
 
-        Log.d(TAG, "executing account update");
-        new AsyncTask<Void,Void,Void>() {
-            @Override
-            protected Void doInBackground(Void... params) {
-                sendUpdatedGCInfo();
-
-                return null;
-            }
-
-            protected void onPostExecute() {
-
-            }
-        }.execute();
     }
 
-    public void sendUpdatedGCInfo() {
-        Gson gson = new Gson();
-
-        edu.cs65.caregiver.backend.messaging.Messaging backend;
-
-        edu.cs65.caregiver.backend.messaging.Messaging.Builder builder =
-                new edu.cs65.caregiver.backend.messaging.Messaging
-                        .Builder(AndroidHttp.newCompatibleTransport(), new AndroidJsonFactory(), null)
-                        .setRootUrl(SERVER_ADDR + "/_ah/api/");
-
-
-        backend = builder.build();
-
-        try {
-            Log.d(TAG, "Attempting to get account info");
-            edu.cs65.caregiver.backend.messaging.model.CaregiverObject cloud_data =
-                    backend.getAccountInfo("dummy").execute();
-        } catch (IOException e){
-            Log.d(TAG, "getAccountInfo Failed");
-            e.printStackTrace();
-            //Toast.makeText(this, "getAccountInfo Failed", Toast.LENGTH_SHORT).show();
-        }
-
-
-//        if (mReceiverRegistered) {
-//            Registration.Builder builder = new Registration.Builder(,
-//                    )
-//                    .setRootUrl();
-//
-//            edu.cs65.caregiver.backend.messaging.Messaging.Builder()
-//
-//            final GoogleCloudMessaging gcm = GoogleCloudMessaging.getInstance(this);
-//            gcm.
-//            Bundle data = new Bundle();
-//            data.putString();
-//            String senderId = SENDER_ID;
-//            final String msgId = getValue(R.id.upstream_message_id);
-//            final String ttl = getValue(R.id.upstream_ttl);
-//
-//        } else {
-//            Toast.makeText(this, "Cannot Update -- Not Connected to Cloud", Toast.LENGTH_SHORT).show();
-//        }
-    }
 
     public void onClickCheckInStatus(View v) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
@@ -287,6 +242,7 @@ public class CareGiverActivity extends AppCompatActivity {
                     mReceiver.addAlert(newAlert);
                 }
                 break;
+
             case EDIT_MEDICATION_REQUEST:
                 if (resultCode == RESULT_OK) {
 
@@ -327,22 +283,6 @@ public class CareGiverActivity extends AppCompatActivity {
             mStatusButton.setBackgroundColor(Color.BLUE);
         } else {
             mStatusButton.setBackgroundColor(Color.GRAY);
-        }
-    }
-
-    public void saveData() {
-        SharedPreferences.Editor prefsEditor = mPrefs.edit();
-        Gson gson = new Gson();
-        String saved_data = gson.toJson(mCareGiver);
-        prefsEditor.putString(CAREGIVER_KEY, saved_data);
-        prefsEditor.commit();
-    }
-
-    public void loadData() {
-        Gson gson = new Gson();
-        String loaded_data = mPrefs.getString(CAREGIVER_KEY, "");
-        if (!loaded_data.equals("")) {
-            mCareGiver = gson.fromJson(loaded_data, CareGiver.class);
         }
     }
 
@@ -538,10 +478,59 @@ public class CareGiverActivity extends AppCompatActivity {
             if (!msg.contains("ERROR")) {
                 Toast.makeText(context, "Connected to Cloud!", Toast.LENGTH_SHORT).show();
                 mReceiverRegistered = true;
+
+                // update info
+                GetCareGiverInfoAsyncTask task = new GetCareGiverInfoAsyncTask();
+                task.email = mEmail;
+                task.execute();
+
             } else {
                 Toast.makeText(context, "Failed to Connect to Cloud", Toast.LENGTH_SHORT).show();
             }
         }
     }
+
+    class GetCareGiverInfoAsyncTask extends AsyncTask<Void,String,String> {
+        private static final String TAG = "Get Account Info AT";
+        public String email = "";
+        Gson gson;
+
+        @Override
+        protected String doInBackground(Void... params) {
+
+            edu.cs65.caregiver.backend.messaging.Messaging.Builder builder =
+                    new edu.cs65.caregiver.backend.messaging.Messaging
+                            .Builder(AndroidHttp.newCompatibleTransport(), new AndroidJsonFactory(), null)
+                            .setRootUrl(SERVER_ADDR + "/_ah/api/");
+
+            edu.cs65.caregiver.backend.messaging.Messaging backend = builder.build();
+            edu.cs65.caregiver.backend.messaging.model.CaregiverEndpointsObject response = null;
+
+            if (mReceiverRegistered) {
+                Log.d(TAG, "Executing getAccountInfo with email " + email);
+                try {
+                    response = backend.getAccountInfo(email).execute();
+                } catch (IOException e) {
+                    Log.d(TAG, "getAccountInfo failed");
+                    e.printStackTrace();
+                }
+            } else {
+                Log.d(TAG, "Cannot update account because device is unregistered");
+            }
+
+            return (response != null) ? response.getData() : null;
+        }
+
+        protected void onPostExecute(String data) {
+            gson = new Gson();
+            if (data != null) {
+                Log.d(TAG,"Updating CareGiver Information");
+                CareGiver cloudData = gson.fromJson(data, CareGiver.class);
+                mDataController.setData(cloudData);
+                updateUI();
+            }
+        }
+    }
+
 
 }
