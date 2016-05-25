@@ -24,6 +24,7 @@
             android:gravity="center">
 
             <ImageView
+                android:id="@+id/landing_image"
                 android:layout_width="125dp"
                 android:layout_height="125dp"
                 android:src="@drawable/logo_white"/>

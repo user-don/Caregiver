@@ -11,18 +11,14 @@ import android.widget.Toast;
 
 public class AccountSignOnActivity extends Activity {
 
-    private String username;
-    private String password;
-    private boolean valid;
-    private int accntType;
-    private String careRecipient;
     private String careGiver;
-    private Thread thread;
+    private int history;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_new_account);
+        history = 0;
     }
 
     // if the new user says that they are a care giver
@@ -33,6 +29,7 @@ public class AccountSignOnActivity extends Activity {
     // if the new user says that they are a care recipient
     public void onCareRecipientClick(View v){
         setContentView(R.layout.activity_new_carerecipient);
+        history = 1;
     }
 
     // as a new care recipient, search for your care giver
@@ -45,6 +42,8 @@ public class AccountSignOnActivity extends Activity {
         setContentView(R.layout.activity_new_carerecipient_search);
         TextView nameSearch = (TextView)findViewById(R.id.carerecipient_name_search);
         nameSearch.setText(careRecipient);
+
+        history = 2;
     }
 
     // confirm that your name is correct
@@ -57,6 +56,25 @@ public class AccountSignOnActivity extends Activity {
     // wrong name appears
     public void onNameReject(View v){
         setContentView(R.layout.activity_new_carerecipient);
+    }
+
+    @Override
+    public void onBackPressed() {
+        switch(history){
+            case 0:
+                super.onBackPressed();
+                break;
+            case 1:
+                setContentView(R.layout.activity_new_account);
+                history = 0;
+                break;
+            case 2:
+                setContentView(R.layout.activity_new_carerecipient);
+                history = 1;
+                break;
+            default:
+                super.onBackPressed();
+        }
     }
 
 }
