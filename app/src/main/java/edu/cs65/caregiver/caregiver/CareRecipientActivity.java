@@ -38,9 +38,7 @@ import edu.cs65.caregiver.caregiver.model.Recipient;
 
 public class CareRecipientActivity extends ListActivity {
 
-    private static final int ACCT = 0;
-    private static final int FALL = 1;
-    private static final int CHECK_IN = 2;
+    private static final String TAG = "CareRecipientActivity";
 
     private CareGiver mCareGiver;
     private Recipient mReceiver;
@@ -57,10 +55,11 @@ public class CareRecipientActivity extends ListActivity {
     public static boolean loadMedDialog = false;
 
     public static String SERVER_ADDR = "https://handy-empire-131521.appspot.com";
-    private String mRegistrationID;
     private static final String SENDER_ID = "1059275309009";
-    private boolean mReceiverRegistered = false;
 
+    /* --- cloud stuff --- */
+    private boolean mReceiverRegistered = false;
+    private String mRegistrationID;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,7 +67,7 @@ public class CareRecipientActivity extends ListActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_care_recipient);
 
-//        new GcmRegistrationAsyncTask(this).execute();
+        new GcmRegistrationAsyncTask(this).execute();
 
         if (mCareGiver == null) {
             mCareGiver = new CareGiver("test");
@@ -94,6 +93,7 @@ public class CareRecipientActivity extends ListActivity {
         }
 
         PSMScheduler.setSchedule(this);
+
     }
 
 
@@ -335,59 +335,74 @@ public class CareRecipientActivity extends ListActivity {
     }
 
 
+    // GCM registration ... called in Main Activity
+    class GcmRegistrationAsyncTask extends AsyncTask<Void, Void, String> {
+        private Registration regService = null;
+        private GoogleCloudMessaging gcm;
+        private Context context;
 
-//    class GcmRegistrationAsyncTask extends AsyncTask<Void, Void, String> {
-//        private Registration regService = null;
-//        private GoogleCloudMessaging gcm;
-//        private Context context;
-//        private String TAG = "Registration Task";
-//
-//        public GcmRegistrationAsyncTask(Context context) {
-//            this.context = context;
-//        }
-//
-//        @Override
-//        protected String doInBackground(Void... params) {
-//            if (regService == null) {
-//                Registration.Builder builder = new Registration.Builder(AndroidHttp.newCompatibleTransport(),
-//                        new AndroidJsonFactory(), null)
-//                        .setRootUrl(SERVER_ADDR + "/_ah/api/");
-//                regService = builder.build();
-//            }
-//
-//            String msg = "";
-//            try {
-//                if (gcm == null) {
-//                    gcm = GoogleCloudMessaging.getInstance(context);
-//                }
-//                mRegistrationID = gcm.register(SENDER_ID);
-//                msg = "Device registered, registration ID = " + mRegistrationID;
-//
-//                // Send registration ID to server over HTTP so it can use GCM/HTTP
-//                // to send messages to the app.
-//                regService.register(mRegistrationID).execute();
-//
-//            } catch (IOException ex) {
-//                ex.printStackTrace();
-//                Log.d(TAG, "Error: " + ex.getMessage());
-//                msg = null;
-//            }
-//            return msg;
-//        }
-//
-//        @Override
-//        protected void onPostExecute(String msg) {
-//
-//            //Toast.makeText(context, msg, Toast.LENGTH_LONG).show();
-//            if (msg != null) {
-//                Logger.getLogger("REGISTRATION").log(Level.INFO, msg);
-//                Toast.makeText(context, "Connected to Cloud!", Toast.LENGTH_SHORT).show();
-//                mReceiverRegistered = true;
-//            } else {
-//                Toast.makeText(context, "Failed to Connect to Cloud", Toast.LENGTH_SHORT).show();
-//            }
-//        }
-//    }
+        public GcmRegistrationAsyncTask(Context context) {
+            this.context = context;
+        }
+
+        @Override
+        protected String doInBackground(Void... params) {
+            if (regService == null) {
+                Registration.Builder builder = new Registration.Builder(AndroidHttp.newCompatibleTransport(),
+                        new AndroidJsonFactory(), null)
+                        .setRootUrl(SERVER_ADDR + "/_ah/api/");
+                // UNCOMMENT TO RUN LOCALLY
+//                        .setGoogleClientRequestInitializer(new GoogleClientRequestInitializer() {
+//                            @Override
+//                            public void initialize(AbstractGoogleClientRequest<?> abstractGoogleClientRequest)
+//                                    throws IOException {
+//                                abstractGoogleClientRequest.setDisableGZipContent(true);
+//                            }
+//                        });
+                // end of optional local run code
+
+                regService = builder.build();
+            }
+
+            String msg = "";
+            try {
+                if (gcm == null) {
+                    gcm = GoogleCloudMessaging.getInstance(context);
+                }
+                mRegistrationID = gcm.register(SENDER_ID);
+                msg = "Device registered, registration ID = " + mRegistrationID;
+
+                // Send registration ID to server over HTTP so it can use GCM/HTTP
+                // to send messages to the app.
+                regService.register(mRegistrationID).execute();
+
+            } catch (IOException ex) {
+                ex.printStackTrace();
+                Log.d(TAG, "Error: " + ex.getMessage());
+                msg = null;
+            }
+            return msg;
+        }
+
+        @Override
+        protected void onPostExecute(String msg) {
+
+            //Toast.makeText(context, msg, Toast.LENGTH_LONG).show();
+            if (msg != null) {
+                Logger.getLogger("REGISTRATION").log(Level.INFO, msg);
+                Toast.makeText(context, "Connected to Cloud!", Toast.LENGTH_SHORT).show();
+                mReceiverRegistered = true;
+
+                // update info
+//                GetCareGiverInfoAsyncTask task = new GetCareGiverInfoAsyncTask();
+//                task.email = mEmail;
+//                task.execute();
+
+            } else {
+                Toast.makeText(context, "Failed to Connect to Cloud", Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
 
 
 

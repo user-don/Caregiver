@@ -32,10 +32,10 @@
             <!--</intent-filter>-->
         </activity>
         <activity android:name=".CareGiverActivity">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
+            <!--<intent-filter>-->
+                <!--<action android:name="android.intent.action.MAIN" />-->
+                <!--<category android:name="android.intent.category.LAUNCHER" />-->
+            <!--</intent-filter>-->
         </activity>
 
         <activity android:name=".NewMedicationActivity"
@@ -43,7 +43,13 @@
         </activity>
         <activity android:name=".NewAccountSignUp"/>
 
-        <activity android:name=".CareRecipientActivity" ></activity>
+        <activity android:name=".CareRecipientActivity" >
+            <intent-filter>
+            <action android:name="android.intent.action.MAIN" />
+
+            <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
 
         <activity android:name=".FallActivity"></activity>
 
