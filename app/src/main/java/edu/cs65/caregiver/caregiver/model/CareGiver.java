@@ -26,19 +26,12 @@ public class CareGiver {
     }
 
     public Recipient getRecipient(String _name) {
-        for (int i = 0; i < mRecipients.size(); i++) {
-            if (mRecipients.get(i).mName.equals(_name))
-                return mRecipients.get(i);
+        for (Recipient recipient : mRecipients) {
+            if (recipient.mName.equals(_name))
+                return recipient;
         }
 
         return null;
-    }
-
-    public void setAlert(String recipient_name, MedicationAlert alert) {
-        for (int i = 0; i < mRecipients.size(); i++) {
-            if (mRecipients.get(i).mName.equals(recipient_name))
-                mRecipients.get(i).addAlert(alert);
-        }
     }
 
     public void deleteRecipient(String name) {

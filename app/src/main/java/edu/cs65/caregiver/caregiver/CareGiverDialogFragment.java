@@ -136,7 +136,7 @@ public class CareGiverDialogFragment extends android.app.DialogFragment implemen
                         checkinDialog.setTitle("Check-in Today!");
                         checkinDialog.setPositiveButton("Check-In", new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int id) {
-
+                                // alert all caregivers that recipient checked in.
                             }
                         });
                         checkinDialog.create();

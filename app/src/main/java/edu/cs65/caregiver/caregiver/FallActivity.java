@@ -27,6 +27,8 @@ public class FallActivity extends AppCompatActivity {
         helpButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                // send message to caregiver
+
                 Toast.makeText(getApplicationContext(), "HELP REQUESTED",
                         Toast.LENGTH_LONG).show();
                 finish();
