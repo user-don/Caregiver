@@ -121,8 +121,8 @@ public class CareRecipientActivity extends ListActivity implements ServiceConnec
             displayMedDialog(entry);
         }
 
+        // schedule alarms
         PSMScheduler.setSchedule(this);
-
     }
 
 
@@ -328,11 +328,18 @@ public class CareRecipientActivity extends ListActivity implements ServiceConnec
 
     public void loadData() {
         /* takes CareGiver object loaded from backend and parses data into locals */
-
+        mReceiver = cloudData.getRecipient("test recipient");
+        if (mReceiver != null) {
+            mMedicationAlerts = mReceiver.mAlerts;
+            mCheckInTime = mReceiver.mCheckIntime;
+        }
     }
 
     public void updateUI() {
         /* takes locals and updates the appropriate UI components */
+        loadData();
+        setUpAdapter();
+        PSMScheduler.setSchedule(this); // update alarms
     }
 
     /* –––––––––––––––– Testing ONLY –––––––––––––––– */
@@ -452,16 +459,8 @@ public class CareRecipientActivity extends ListActivity implements ServiceConnec
         public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();
 
-            System.out.println("CareRecipient: ReceiveMessages");
-
             if (action.equals(SensorService.BROADCAST_LABEL_CHANGE)) {
                 // notify CareGiver that help is needed
-            }
-
-            if (action.equals(SensorService.BROADCAST_ACTION)) {
-                System.out.println("CareRecipient: Received FALL broadcast.");
-
-
             }
 
         }
@@ -634,6 +633,8 @@ public class CareRecipientActivity extends ListActivity implements ServiceConnec
                 Log.d(TAG,"Updating CareGiver Information");
                 Log.d(TAG, "got data: " + data);
                 cloudData = gson.fromJson(data, CareGiver.class);
+//                updateUI();
+
                 //mDataController.setData(cloudData);
                 // TODO -- updateUI();
             }
