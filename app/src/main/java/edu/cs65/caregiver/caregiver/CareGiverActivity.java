@@ -280,6 +280,11 @@ public class CareGiverActivity extends AppCompatActivity {
 
         mDataController.saveData();
         new UpdateCareGiverAsyncTask().execute();
+
+        SendMessageToPatientAsyncTask task = new SendMessageToPatientAsyncTask();
+        task.msg = "UPDATE";
+        task.execute();
+
         updateUI();
     }
 
@@ -603,5 +608,35 @@ public class CareGiverActivity extends AppCompatActivity {
         }
     }
 
+    class SendMessageToPatientAsyncTask extends AsyncTask<Void,Void,Void> {
+        private static final String TAG = "Message Patient";
+        public String msg;
+
+        @Override
+        protected Void doInBackground(Void... params) {
+
+            edu.cs65.caregiver.backend.messaging.Messaging.Builder builder =
+                    new edu.cs65.caregiver.backend.messaging.Messaging
+                            .Builder(AndroidHttp.newCompatibleTransport(), new AndroidJsonFactory(), null)
+                            .setRootUrl(SERVER_ADDR + "/_ah/api/");
+
+            edu.cs65.caregiver.backend.messaging.Messaging backend = builder.build();
+
+            if (mReceiverRegistered) {
+                Log.d(TAG, "Sending message to recipient registered with email " + mEmail);
+                try {
+                    backend.sendNotificationToPatient(mRegistrationID, mEmail, msg).execute();
+                } catch (IOException e) {
+                    Log.d(TAG, "sendNotificationToPatient failed");
+                    e.printStackTrace();
+                }
+            } else {
+                Log.d(TAG, "Cannot sendNotificationToPatient because device is unregistered");
+            }
+
+            return null;
+        }
+
+    }
 
 }

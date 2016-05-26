@@ -44,7 +44,8 @@
         </activity>
         <activity android:name=".NewAccountSignUp"/>
 
-        <activity android:name=".CareRecipientActivity" >
+        <activity android:name=".CareRecipientActivity">
+            <receiver android:name=".EMAAlarmReceiver" />
             <!--<intent-filter>-->
             <!--<action android:name="android.intent.action.MAIN" />-->
 
@@ -56,7 +57,7 @@
 
         <activity android:name=".Checkin"></activity>
 
-        <receiver android:name=".EMAAlarmReceiver" />
+
 
     </application>
 
