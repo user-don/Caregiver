@@ -2,6 +2,7 @@ package edu.cs65.caregiver.caregiver;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -12,7 +13,11 @@ import android.widget.Toast;
 public class AccountSignOnActivity extends Activity {
 
     private String careGiver;
+    private String careRecipient;
     private int history;
+
+    private static final String ACCNT_KEY = "account key";
+    private static final String RECIPIENT_NAME = "recipient name";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,7 +43,7 @@ public class AccountSignOnActivity extends Activity {
         careGiver = careGiverInput.getText().toString();
 
         // search the database for the name that matches inputed caregiver
-        String careRecipient = "Sean Oh";
+        careRecipient = "Sean Oh";
         setContentView(R.layout.activity_new_carerecipient_search);
         TextView nameSearch = (TextView)findViewById(R.id.carerecipient_name_search);
         nameSearch.setText(careRecipient);
@@ -48,6 +53,12 @@ public class AccountSignOnActivity extends Activity {
 
     // confirm that your name is correct
     public void onNameConfirm(View v){
+        SharedPreferences.Editor editor = getSharedPreferences(getString(R.string.profile_preference), MODE_PRIVATE).edit();
+        editor.clear();
+        editor.putString(ACCNT_KEY, "care recipient");
+        editor.putString(RECIPIENT_NAME, careRecipient);
+        editor.apply();
+
         // connect to patient status page
         Intent intent = new Intent(getApplicationContext(), CareRecipientActivity.class);
         startActivity(intent);
