@@ -33,7 +33,7 @@ public class PSMScheduler {
     private static void setSchedule(Context context, int hour, int min, int sec, int index) {
 
         int requestCode = hour * 10000 + min * 100 + sec;
-        Intent intent = new Intent(context, EMAAlarmReceiver.class);
+        Intent intent = new Intent(context, CareRecipientActivity.EMAAlarmReceiver.class);
         intent.putExtra("index", index);
 
         PendingIntent pi = PendingIntent.getBroadcast(context, requestCode, intent,

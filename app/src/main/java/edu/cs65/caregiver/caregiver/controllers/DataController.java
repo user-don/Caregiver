@@ -8,6 +8,7 @@ import com.google.gson.Gson;
 
 import edu.cs65.caregiver.backend.messaging.model.CaregiverEndpointsObject;
 import edu.cs65.caregiver.caregiver.model.CareGiver;
+import edu.cs65.caregiver.caregiver.model.Recipient;
 
 /**
  * Created by don on 5/23/16.
@@ -57,6 +58,16 @@ public class DataController {
         careGiver = newCareGiver;
     }
 
+    public Recipient setRecipientData(Recipient recipient) {
+        for (int i = 0; i < careGiver.mRecipients.size(); i++) {
+            if (careGiver.mRecipients.get(i).mName.equals(recipient.mName)) {
+                careGiver.mRecipients.set(i, recipient);
+                return careGiver.mRecipients.get(i);
+            }
+        }
+        return null;
+    }
+
     public void saveData() {
         Gson gson = new Gson();
 
@@ -73,8 +84,9 @@ public class DataController {
 
         SharedPreferences preferences = context.getSharedPreferences(PREFERENCES_FILE, Context.MODE_PRIVATE);
         String data = preferences.getString(SAVED_DATA_KEY, "");
-        if (data.equals("")) {
+        if (!data.equals("")) {
             careGiver = gson.fromJson(data, CareGiver.class);
+            Log.d(TAG, "loaded data: " + data);
         } else {
             Log.d(TAG, "Error loading data occurred");
             careGiver = new CareGiver("NA");

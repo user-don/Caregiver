@@ -32,23 +32,25 @@
             <!--</intent-filter>-->
         </activity>
         <activity android:name=".CareGiverActivity">
-            <!--<intent-filter>-->
-                <!--<action android:name="android.intent.action.MAIN" />-->
-                <!--<category android:name="android.intent.category.LAUNCHER" />-->
-            <!--</intent-filter>-->
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
         </activity>
 
         <activity android:name=".NewMedicationActivity"
-            android:windowSoftInputMode="adjustPan">
+            android:windowSoftInputMode="adjustPan"
+            android:screenOrientation="portrait">
         </activity>
         <activity android:name=".NewAccountSignUp"/>
 
-        <activity android:name=".CareRecipientActivity" >
-            <intent-filter>
-            <action android:name="android.intent.action.MAIN" />
+        <activity android:name=".CareRecipientActivity">
+            <receiver android:name=".EMAAlarmReceiver" />
+            <!--<intent-filter>-->
+            <!--<action android:name="android.intent.action.MAIN" />-->
 
-            <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
+            <!--<category android:name="android.intent.category.LAUNCHER" />-->
+            <!--</intent-filter>-->
         </activity>
 
         <activity android:name=".FallActivity"></activity>
@@ -57,8 +59,6 @@
 
         <service android:name=".SensorService" />
 
-
-        <receiver android:name=".EMAAlarmReceiver" />
 
     </application>
 
