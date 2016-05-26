@@ -2,12 +2,17 @@ package edu.cs65.caregiver.caregiver;
 
 import android.app.AlertDialog;
 import android.app.ListActivity;
+import android.content.BroadcastReceiver;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.ServiceConnection;
 import android.media.MediaPlayer;
 import android.media.RingtoneManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.os.Vibrator;
 import android.util.Log;
 import android.view.View;
@@ -36,7 +41,7 @@ import edu.cs65.caregiver.caregiver.model.MedicationAlert;
 import edu.cs65.caregiver.caregiver.model.Recipient;
 
 
-public class CareRecipientActivity extends ListActivity {
+public class CareRecipientActivity extends ListActivity implements ServiceConnection {
 
     private static final String TAG = "CareRecipientActivity";
 
@@ -61,6 +66,14 @@ public class CareRecipientActivity extends ListActivity {
     private boolean mReceiverRegistered = false;
     private String mRegistrationID;
 
+    /* --- service stuff --- */
+    SensorService mySensorService;
+    ReceiveMessages myReceiver = null;
+    boolean myReceiverIsRegistered = false;
+    boolean mIsBound;
+    private ServiceConnection mConnection = this;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
@@ -68,6 +81,11 @@ public class CareRecipientActivity extends ListActivity {
         setContentView(R.layout.activity_care_recipient);
 
         new GcmRegistrationAsyncTask(this).execute();
+
+        // connect service
+        myReceiver = new ReceiveMessages();
+        mIsBound = false;
+        automaticBind();
 
         if (mCareGiver == null) {
             mCareGiver = new CareGiver("test");
@@ -317,6 +335,69 @@ public class CareRecipientActivity extends ListActivity {
     }
 
 
+    // ****************** life cycle methods ***************************//
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        Log.d(TAG, "C:onDestroy()");
+        try {
+            doUnbindService();
+        } catch (Throwable t) {
+            Log.e(TAG, "Failed to unbind from the service", t);
+        }
+    }
+
+
+    // ****************** service methods ***************************//
+
+    private void automaticBind(){
+        doBindService();
+    }
+
+    private void doBindService() {
+        bindService(new Intent(this, SensorService.class), mConnection,
+                Context.BIND_AUTO_CREATE);
+        mIsBound = true;
+    }
+
+    private void doUnbindService() {
+        Log.d(TAG, "C:doUnBindService()");
+        if (mIsBound) {
+            unbindService(mConnection);
+            mIsBound = false;
+        }
+    }
+
+    @Override
+    public void onServiceConnected(ComponentName name, IBinder service) {
+        SensorService.MyLocalBinder binder = (SensorService.MyLocalBinder) service;
+        mySensorService = binder.getService();
+        mIsBound = true;
+    }
+
+    @Override
+    public void onServiceDisconnected(ComponentName name) {
+        mIsBound = false;
+    }
+
+    // ****************** receiver methods ***************************//
+
+    public class ReceiveMessages extends BroadcastReceiver {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            String action = intent.getAction();
+
+            if (action.equals(SensorService.BROADCAST_LABEL_CHANGE)) {
+                // notify CareGiver that help is needed
+            }
+
+        }
+    }
+
+
+    // ****************** inner classes ***************************//
+
     public class MedEntry {
         public String label;
         public ArrayList<String> meds;
@@ -333,7 +414,6 @@ public class CareRecipientActivity extends ListActivity {
         }
 
     }
-
 
     // GCM registration ... called in Main Activity
     class GcmRegistrationAsyncTask extends AsyncTask<Void, Void, String> {
