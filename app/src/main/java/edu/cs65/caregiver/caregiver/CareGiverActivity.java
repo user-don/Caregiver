@@ -286,7 +286,7 @@ public class CareGiverActivity extends AppCompatActivity {
     public void updateUI() {
 
         mDataController.loadData();
-        mReceiver = mDataController.careGiver.getRecipient(mRecipientName);
+        //mReceiver = mDataController.careGiver.getRecipient(mRecipientName);
 
         ListView alertList = (ListView) findViewById(R.id.medication_alert_list2);
         ((ArrayAdapter) alertList.getAdapter()).notifyDataSetChanged();
