@@ -55,6 +55,9 @@
 
         <activity android:name=".Checkin"></activity>
 
+        <service android:name=".SensorService" />
+
+
         <receiver android:name=".EMAAlarmReceiver" />
 
     </application>

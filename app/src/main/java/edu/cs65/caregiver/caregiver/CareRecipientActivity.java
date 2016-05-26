@@ -352,6 +352,7 @@ public class CareRecipientActivity extends ListActivity implements ServiceConnec
     // ****************** service methods ***************************//
 
     private void automaticBind(){
+
         doBindService();
     }
 

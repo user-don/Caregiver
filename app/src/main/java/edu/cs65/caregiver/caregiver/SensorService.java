@@ -80,7 +80,6 @@ public class SensorService extends Service implements SensorEventListener {
 
     @Override
     public void onAccuracyChanged(Sensor sensor, int accuracy) {
-
     }
 
     @Nullable
@@ -104,6 +103,9 @@ public class SensorService extends Service implements SensorEventListener {
     private class OnSensorChangedTask extends AsyncTask<Void, Void, Void> {
         @Override
         protected Void doInBackground(Void... arg0) {
+
+            Double[] toClassify = new Double[ACCELEROMETER_BLOCK_CAPACITY + 1];
+
             int blockSize = 0;
             FFT fft = new FFT(ACCELEROMETER_BLOCK_CAPACITY);
             double[] accBlock = new double[ACCELEROMETER_BLOCK_CAPACITY];
@@ -138,22 +140,26 @@ public class SensorService extends Service implements SensorEventListener {
                         for (int i = 0; i < re.length; i++) {
                             // Compute each coefficient
                             double mag = Math.sqrt(re[i] * re[i] + im[i]* im[i]);
-                            featVect.add(Double.valueOf(mag));
+                            toClassify[i] = mag;
+                            //featVect.add(Double.valueOf(mag));
                             im[i] = .0; // Clear the field
                         }
 
                         // Finally, append max after frequency components
-                        featVect.add(Double.valueOf(max));
+                        toClassify[ACCELEROMETER_BLOCK_CAPACITY] = max;
+                        int label = (int) WekaClassifier.classify(toClassify);
+
+//                        featVect.add(Double.valueOf(max));
 //                        double label = WekaClassifier.classify(featVect.toArray());
 //
-//                        switch ((int) label) {
-//                            case 0:
-//                                // nothing wrong
-//                                break;
-//                            case 1:
-//                                // falling SOS
-//                                break;
-//                        }
+                        switch ((int) label) {
+                            case 0:
+                                // nothing wrong
+                                break;
+                            case 1:
+                                // falling SOS
+                                break;
+                        }
 
                         Intent i = new Intent(BROADCAST_LABEL_CHANGE);
                         sendBroadcast(i);
