@@ -176,14 +176,14 @@ public class NewAccountSignUp extends Activity {
                         if (newAccount){
                             runOnUiThread(new Runnable() {
                                   public void run() {
-                                      setContentView(R.layout.activity_new_caregiver);
+                                  setContentView(R.layout.activity_new_caregiver);
                                   }
                               }
                             );
                         } else {
                             runOnUiThread(new Runnable() {
                                   public void run() {
-                                      Toast.makeText(mContext, "That account doesn't exist. Please try again", Toast.LENGTH_SHORT).show();
+                                  Toast.makeText(mContext, "That account doesn't exist. Please try again", Toast.LENGTH_SHORT).show();
                                   }
                               }
                             );
@@ -192,7 +192,7 @@ public class NewAccountSignUp extends Activity {
                         if (newAccount){
                             runOnUiThread(new Runnable() {
                                   public void run() {
-                                      Toast.makeText(mContext, "Account taken. Please use a new email.", Toast.LENGTH_SHORT).show();
+                                  Toast.makeText(mContext, "Account taken. Please use a new email.", Toast.LENGTH_SHORT).show();
                                   }
                               }
                             );
