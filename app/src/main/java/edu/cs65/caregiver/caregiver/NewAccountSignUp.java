@@ -1,6 +1,7 @@
 package edu.cs65.caregiver.caregiver;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
@@ -35,6 +36,7 @@ public class NewAccountSignUp extends Activity {
     private String careRecipient;
     private boolean UIswitch;
     private boolean valid;
+    private Context mContext;
 
     private static final String TAG = "CareGiverActivity";
     private static final String SERVER_ADDR = "https://handy-empire-131521.appspot.com";
@@ -49,6 +51,7 @@ public class NewAccountSignUp extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_account_sign_on);
+        mContext = getApplicationContext();
 
         userText = (EditText)findViewById(R.id.username);
         passText = (EditText)findViewById(R.id.password);
@@ -64,6 +67,10 @@ public class NewAccountSignUp extends Activity {
     public void onCareGiverNext(View v){
         EditText careRecipientInput = (EditText)findViewById(R.id.new_caregiver_recipient);
         careRecipient = careRecipientInput.getText().toString();
+
+        mDataController.careGiver = new CareGiver(username);
+        mDataController.careGiver.addRecipient(careRecipient);
+        createAccount();
 
         //add password and username and careRecipient to the database
         SharedPreferences.Editor editor = getSharedPreferences(getString(R.string.profile_preference), MODE_PRIVATE).edit();
@@ -88,25 +95,7 @@ public class NewAccountSignUp extends Activity {
             displayToast("Please enter both an email and password");
         } else {
             //check to see if that account is valid
-            valid = true;
-
-            //if not, available, display toast saying to put in a valid account
-            if (valid) {
-                //Get information about the person from login
-
-                Intent signUpIntent = new Intent(getApplicationContext(), CareGiverActivity.class);
-
-                SharedPreferences.Editor editor = getSharedPreferences(getString(R.string.profile_preference), MODE_PRIVATE).edit();
-                editor.clear();
-                editor.putString(ACCNT_KEY, "caregiver");
-                editor.putString(EMAIL_KEY, username);
-                editor.putString(PASSWORD_KEY, password);
-                editor.apply();
-
-                startActivity(signUpIntent);
-            } else {
-                displayToast("That account doesn't exist. Please try again");
-            }
+            checkAccount(false);
         }
     }
 
@@ -118,18 +107,7 @@ public class NewAccountSignUp extends Activity {
         if (username.equals("") || password.equals("")){
             displayToast("Please enter both an email and password");
         } else {
-            //check to see if that account is available
-            mDataController.careGiver = new CareGiver(username);
-            createAccount();
-            valid = true;
-
-            //if available, start signup activity else display toast saying to choose a new username
-            if (valid) {
-                setContentView(R.layout.activity_new_caregiver);
-            } else {
-                System.out.println("take");
-                displayToast("Account taken. Please use a new email.");
-            }
+            checkAccount(true);
         }
     }
 
@@ -174,5 +152,72 @@ public class NewAccountSignUp extends Activity {
             }
 
         }.execute();
+    }
+
+    public void checkAccount(final boolean newAccount) {
+        // TODO -- should have some account management activity
+
+        // dummy information below
+        Log.d(TAG, "executing account post");
+        new AsyncTask<Void,Void,Void>() {
+            @Override
+            protected Void doInBackground(Void... params) {
+                Gson gson = new Gson();
+
+                HashMap<String, String> account_params = new HashMap<>();
+                account_params.put("email", username);
+                account_params.put("password",password);
+                account_params.put("registrationId", registrationID);
+
+                try {
+                    String response = ServerUtilities.post(SERVER_ADDR + "/login_caregiver.do", account_params);
+                    Log.d(TAG, "post response: " + response);
+                    if (response.equals("")){
+                        if (newAccount){
+                            runOnUiThread(new Runnable() {
+                                  public void run() {
+                                      setContentView(R.layout.activity_new_caregiver);
+                                  }
+                              }
+                            );
+                        } else {
+                            runOnUiThread(new Runnable() {
+                                  public void run() {
+                                      Toast.makeText(mContext, "That account doesn't exist. Please try again", Toast.LENGTH_SHORT).show();
+                                  }
+                              }
+                            );
+                        }
+                    } else{
+                        if (newAccount){
+                            runOnUiThread(new Runnable() {
+                                  public void run() {
+                                      Toast.makeText(mContext, "Account taken. Please use a new email.", Toast.LENGTH_SHORT).show();
+                                  }
+                              }
+                            );
+                        } else {
+                            Intent signUpIntent = new Intent(getApplicationContext(), CareGiverActivity.class);
+
+                            SharedPreferences.Editor editor = getSharedPreferences(getString(R.string.profile_preference), MODE_PRIVATE).edit();
+                            editor.clear();
+                            editor.putString(ACCNT_KEY, "caregiver");
+                            editor.putString(EMAIL_KEY, username);
+                            editor.putString(PASSWORD_KEY, password);
+                            editor.apply();
+
+                            startActivity(signUpIntent);
+                        }
+                    }
+                } catch (IOException e) {
+                    Log.d(TAG, "failed to issue post - Error msg: " + e.getMessage());
+                    e.printStackTrace();
+
+                }
+                return null;
+            }
+
+        }.execute();
+
     }
 }

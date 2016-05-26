@@ -1,6 +1,8 @@
 package edu.cs65.caregiver.caregiver;
 
+import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.DialogFragment;
 import android.app.ListActivity;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
@@ -46,7 +48,7 @@ import edu.cs65.caregiver.caregiver.model.Recipient;
 import edu.cs65.caregiver.caregiver.model.RecipientToCareGiverMessage;
 
 
-public class CareRecipientActivity extends ListActivity implements ServiceConnection {
+public class CareRecipientActivity extends Activity implements ServiceConnection {
 
     private static final String TAG = "CareRecipientActivity";
 
@@ -133,11 +135,11 @@ public class CareRecipientActivity extends ListActivity implements ServiceConnec
         dayIndex = mDay - 1; // convert to match MedicationAlert int values
     }
 
-    @Override
-    protected void onListItemClick(ListView list, View view, int position, long id) {
-        super.onListItemClick(list, view, position, id);
-        displayMedDialog(sortedMeds.get(position));
-    }
+//    @Override
+//    protected void onListItemClick(ListView list, View view, int position, long id) {
+//        super.onListItemClick(list, view, position, id);
+//        displayMedDialog(sortedMeds.get(position));
+//    }
 
     public void displayMedDialog(MedEntry entry) {
         final ArrayList selectedItems = new ArrayList();
@@ -231,6 +233,12 @@ public class CareRecipientActivity extends ListActivity implements ServiceConnec
         }.execute();
 
 
+    }
+
+    public void onMedClicked(View v){
+        DialogFragment fragment = CareGiverDialogFragment.newInstance(CareGiverDialogFragment.DISPLAY_MED_LIST);
+        fragment.show(getFragmentManager(),
+                getString(R.string.app_name));
     }
 
     public void onMenuClicked(View v) {
