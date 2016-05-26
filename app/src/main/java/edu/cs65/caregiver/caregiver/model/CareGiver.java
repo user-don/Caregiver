@@ -26,9 +26,9 @@ public class CareGiver {
     }
 
     public Recipient getRecipient(String _name) {
-        for (Recipient recipient : mRecipients) {
-            if (recipient.mName.equals(_name))
-                return recipient;
+        for (int i = 0; i < mRecipients.size(); i++){
+            if (mRecipients.get(i).mName.equals(_name))
+                return mRecipients.get(i);
         }
 
         return null;

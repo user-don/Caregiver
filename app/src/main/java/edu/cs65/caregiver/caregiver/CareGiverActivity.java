@@ -97,8 +97,15 @@ public class CareGiverActivity extends AppCompatActivity {
         mDataController.initializeData(getApplicationContext());
         mDataController.loadData();
 
+//        mReceiver = mDataController.careGiver.getRecipient(mRecipientName);
+//        if (mDataController.careGiver.getRecipient(mRecipientName) == null) {
+//            mDataController.careGiver.addRecipient(mRecipientName);
+//            mDataController.saveData();
+//        }
+
         mReceiver = mDataController.careGiver.getRecipient(mRecipientName);
         if (mReceiver == null) {
+            Log.d(TAG, "Initializing recipient " + mRecipientName);
             mReceiver = mDataController.careGiver.addRecipient(mRecipientName);
             mDataController.saveData();
         }
@@ -246,7 +253,7 @@ public class CareGiverActivity extends AppCompatActivity {
 
                     Log.d(TAG, "adding alert name " + newAlert.mName);
                     mReceiver.addAlert(newAlert);
-                    mDataController.setRecipientData(mReceiver);
+                    mReceiver = mDataController.setRecipientData(mReceiver);
                     //mDataController.careGiver.setAlert(mRecipientName,newAlert);
                     //mDataController.careGiver.getRecipient(mRecipientName).addAlert(newAlert);
                 }
@@ -271,10 +278,16 @@ public class CareGiverActivity extends AppCompatActivity {
                 break;
         }
 
+        mDataController.saveData();
+        new UpdateCareGiverAsyncTask().execute();
         updateUI();
     }
 
     public void updateUI() {
+
+        mDataController.loadData();
+        mReceiver = mDataController.careGiver.getRecipient(mRecipientName);
+
         ListView alertList = (ListView) findViewById(R.id.medication_alert_list2);
         ((ArrayAdapter) alertList.getAdapter()).notifyDataSetChanged();
 
@@ -543,9 +556,10 @@ public class CareGiverActivity extends AppCompatActivity {
         protected void onPostExecute(String data) {
             gson = new Gson();
             if (data != null) {
-                Log.d(TAG,"Updating CareGiver Information");
+                Log.d(TAG,"Refreshing local CareGiver Information: " + data);
                 CareGiver cloudData = gson.fromJson(data, CareGiver.class);
                 mDataController.setData(cloudData);
+                mDataController.saveData();
                 updateUI();
             }
         }

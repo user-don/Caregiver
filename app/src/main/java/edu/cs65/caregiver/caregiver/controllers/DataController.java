@@ -84,8 +84,9 @@ public class DataController {
 
         SharedPreferences preferences = context.getSharedPreferences(PREFERENCES_FILE, Context.MODE_PRIVATE);
         String data = preferences.getString(SAVED_DATA_KEY, "");
-        if (data.equals("")) {
+        if (!data.equals("")) {
             careGiver = gson.fromJson(data, CareGiver.class);
+            Log.d(TAG, "loaded data: " + data);
         } else {
             Log.d(TAG, "Error loading data occurred");
             careGiver = new CareGiver("NA");
