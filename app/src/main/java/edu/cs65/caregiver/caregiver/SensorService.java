@@ -1,6 +1,7 @@
 package edu.cs65.caregiver.caregiver;
 
 import android.app.Service;
+import android.content.Context;
 import android.content.Intent;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
@@ -28,6 +29,7 @@ public class SensorService extends Service implements SensorEventListener {
     private ArrayList<Double> featVect = new ArrayList<>();
     private static ArrayBlockingQueue<Double> mAccBuffer;
     private OnSensorChangedTask mAsyncTask;
+    private Context mContext = this;
 
     public static final int ACCELEROMETER_BUFFER_CAPACITY = 2048;
     public static final int ACCELEROMETER_BLOCK_CAPACITY = 64;
@@ -141,7 +143,6 @@ public class SensorService extends Service implements SensorEventListener {
                             // Compute each coefficient
                             double mag = Math.sqrt(re[i] * re[i] + im[i]* im[i]);
                             toClassify[i] = mag;
-                            //featVect.add(Double.valueOf(mag));
                             im[i] = .0; // Clear the field
                         }
 
@@ -149,15 +150,14 @@ public class SensorService extends Service implements SensorEventListener {
                         toClassify[ACCELEROMETER_BLOCK_CAPACITY] = max;
                         int label = (int) WekaClassifier.classify(toClassify);
 
-//                        featVect.add(Double.valueOf(max));
-//                        double label = WekaClassifier.classify(featVect.toArray());
-//
                         switch ((int) label) {
                             case 0:
                                 // nothing wrong
                                 break;
                             case 1:
-                                // falling SOS
+                                Intent fallIntent = new Intent(mContext, FallActivity.class);
+                                fallIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                                mContext.startActivity(fallIntent);
                                 break;
                         }
 

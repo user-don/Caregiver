@@ -72,6 +72,7 @@ public class CareRecipientActivity extends ListActivity implements ServiceConnec
     boolean myReceiverIsRegistered = false;
     boolean mIsBound;
     private ServiceConnection mConnection = this;
+    private Context mContext = this;
 
 
     @Override
@@ -389,8 +390,16 @@ public class CareRecipientActivity extends ListActivity implements ServiceConnec
         public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();
 
+            System.out.println("CareRecipient: ReceiveMessages");
+
             if (action.equals(SensorService.BROADCAST_LABEL_CHANGE)) {
                 // notify CareGiver that help is needed
+            }
+
+            if (action.equals(SensorService.BROADCAST_ACTION)) {
+                System.out.println("CareRecipient: Received FALL broadcast.");
+
+
             }
 
         }
