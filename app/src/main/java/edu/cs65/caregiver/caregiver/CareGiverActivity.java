@@ -74,8 +74,8 @@ public class CareGiverActivity extends AppCompatActivity {
 
     private static final String EMAIL_KEY = "email key";
     private static final String PASSWORD_KEY = "password key";
-    private static final String CAREGIVER_KEY = "current caregiver";
-    private static final String RECIPIENT_NAME_KEY = "recipient";
+    private static final String CAREGIVER_KEY = "caregiver name";
+    private static final String RECIPIENT_NAME_KEY = "recipient name";
     private SharedPreferences mPrefs;
 
     /* --- cloud stuff --- */
@@ -97,8 +97,15 @@ public class CareGiverActivity extends AppCompatActivity {
         mDataController.initializeData(getApplicationContext());
         mDataController.loadData();
 
+//        mReceiver = mDataController.careGiver.getRecipient(mRecipientName);
+//        if (mDataController.careGiver.getRecipient(mRecipientName) == null) {
+//            mDataController.careGiver.addRecipient(mRecipientName);
+//            mDataController.saveData();
+//        }
+
         mReceiver = mDataController.careGiver.getRecipient(mRecipientName);
         if (mReceiver == null) {
+            Log.d(TAG, "Initializing recipient " + mRecipientName);
             mReceiver = mDataController.careGiver.addRecipient(mRecipientName);
             mDataController.saveData();
         }
@@ -244,7 +251,11 @@ public class CareGiverActivity extends AppCompatActivity {
                                     data.getIntArrayExtra(NewMedicationActivity.ALERT_DAYS_OF_WEEK),
                                     data.getStringArrayListExtra(NewMedicationActivity.ALERT_MEDICATION));
 
+                    Log.d(TAG, "adding alert name " + newAlert.mName);
                     mReceiver.addAlert(newAlert);
+                    mReceiver = mDataController.setRecipientData(mReceiver);
+                    //mDataController.careGiver.setAlert(mRecipientName,newAlert);
+                    //mDataController.careGiver.getRecipient(mRecipientName).addAlert(newAlert);
                 }
                 break;
 
@@ -262,14 +273,26 @@ public class CareGiverActivity extends AppCompatActivity {
                                     data.getStringArrayListExtra(NewMedicationActivity.ALERT_MEDICATION));
 
                     mReceiver.addAlert(newAlert);
+                    mDataController.setRecipientData(mReceiver);
                 }
                 break;
         }
+
+        mDataController.saveData();
+        new UpdateCareGiverAsyncTask().execute();
+
+        SendMessageToPatientAsyncTask task = new SendMessageToPatientAsyncTask();
+        task.msg = "UPDATE";
+        task.execute();
 
         updateUI();
     }
 
     public void updateUI() {
+
+        mDataController.loadData();
+        //mReceiver = mDataController.careGiver.getRecipient(mRecipientName);
+
         ListView alertList = (ListView) findViewById(R.id.medication_alert_list2);
         ((ArrayAdapter) alertList.getAdapter()).notifyDataSetChanged();
 
@@ -345,6 +368,10 @@ public class CareGiverActivity extends AppCompatActivity {
             @Override
             public void onClick(DialogInterface arg0, int arg1) {
                 mReceiver.mAlerts.remove(position);
+
+                mDataController.setRecipientData(mReceiver);
+                mDataController.saveData();
+                new UpdateCareGiverAsyncTask().execute();
                 updateUI();
             }
         });
@@ -534,13 +561,82 @@ public class CareGiverActivity extends AppCompatActivity {
         protected void onPostExecute(String data) {
             gson = new Gson();
             if (data != null) {
-                Log.d(TAG,"Updating CareGiver Information");
+                Log.d(TAG,"Refreshing local CareGiver Information: " + data);
                 CareGiver cloudData = gson.fromJson(data, CareGiver.class);
                 mDataController.setData(cloudData);
+                mDataController.saveData();
                 updateUI();
             }
         }
     }
 
+    class UpdateCareGiverAsyncTask extends AsyncTask<Void,Void,Void> {
+        private static final String TAG = "Update Account Info AT";
+
+        @Override
+        protected Void doInBackground(Void... params) {
+
+            edu.cs65.caregiver.backend.messaging.Messaging.Builder builder =
+                    new edu.cs65.caregiver.backend.messaging.Messaging
+                            .Builder(AndroidHttp.newCompatibleTransport(), new AndroidJsonFactory(), null)
+                            .setRootUrl(SERVER_ADDR + "/_ah/api/");
+
+            edu.cs65.caregiver.backend.messaging.Messaging backend = builder.build();
+
+            if (mReceiverRegistered) {
+                Log.d(TAG, "Executing update account with email " + mEmail);
+                try {
+                    Gson gson = new Gson();
+                    String data = gson.toJson(mDataController.careGiver);
+
+                    Log.d(TAG,"Updating with information... " + data);
+                    backend.updateEntry(mRegistrationID, mEmail, data).execute();
+                } catch (IOException e) {
+                    Log.d(TAG, "updatedAccountInfo failed");
+                    e.printStackTrace();
+                }
+            } else {
+                Log.d(TAG, "Cannot update account because device is unregistered");
+            }
+
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void arg) {
+            Log.d(TAG,"Finished CareGiver Updating Information");
+        }
+    }
+
+    class SendMessageToPatientAsyncTask extends AsyncTask<Void,Void,Void> {
+        private static final String TAG = "Message Patient";
+        public String msg;
+
+        @Override
+        protected Void doInBackground(Void... params) {
+
+            edu.cs65.caregiver.backend.messaging.Messaging.Builder builder =
+                    new edu.cs65.caregiver.backend.messaging.Messaging
+                            .Builder(AndroidHttp.newCompatibleTransport(), new AndroidJsonFactory(), null)
+                            .setRootUrl(SERVER_ADDR + "/_ah/api/");
+
+            edu.cs65.caregiver.backend.messaging.Messaging backend = builder.build();
+
+            if (mReceiverRegistered) {
+                Log.d(TAG, "Sending message to recipient registered with email " + mEmail);
+//                try {
+//                    backend.sendNotificationToPatient(mRegistrationID, mEmail, msg).execute();
+//                } catch (IOException e) {
+//                    Log.d(TAG, "sendNotificationToPatient failed");
+//                    e.printStackTrace();
+//                }
+            } else {
+                Log.d(TAG, "Cannot sendNotificationToPatient because device is unregistered");
+            }
+
+            return null;
+        }
+
+    }
 
 }
