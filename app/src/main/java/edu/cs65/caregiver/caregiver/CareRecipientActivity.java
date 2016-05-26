@@ -96,7 +96,7 @@ public class CareRecipientActivity extends ListActivity implements ServiceConnec
         // connect service
         myReceiver = new ReceiveMessages();
         mIsBound = false;
-        automaticBind();
+//        automaticBind();
 
         if (mCareGiver == null) {
             mCareGiver = new CareGiver("test");
@@ -585,10 +585,8 @@ public class CareRecipientActivity extends ListActivity implements ServiceConnec
 //                GetCareGiverInfoAsyncTask task = new GetCareGiverInfoAsyncTask();
 //                task.email = mEmail;
 //                task.execute();
-
-                if (mReceiverRegistered) {
-                    new GetCareGiverInfoAsyncTask().execute();
-                }
+                GetCareGiverInfoAsyncTask task = new GetCareGiverInfoAsyncTask();
+                task.execute();
 
             } else {
                 Toast.makeText(context, "Failed to Connect to Cloud", Toast.LENGTH_SHORT).show();
@@ -597,13 +595,12 @@ public class CareRecipientActivity extends ListActivity implements ServiceConnec
     }
 
 
-    class GetCareGiverInfoAsyncTask extends AsyncTask<Void,String,String> {
+    class GetCareGiverInfoAsyncTask extends AsyncTask<Void,Void,String> {
         private static final String TAG = "Get Account Info AT";
         Gson gson;
 
         @Override
         protected String doInBackground(Void... params) {
-
             edu.cs65.caregiver.backend.messaging.Messaging.Builder builder =
                     new edu.cs65.caregiver.backend.messaging.Messaging
                             .Builder(AndroidHttp.newCompatibleTransport(), new AndroidJsonFactory(), null)
@@ -627,6 +624,7 @@ public class CareRecipientActivity extends ListActivity implements ServiceConnec
             return (response != null) ? response.getData() : null;
         }
 
+        @Override
         protected void onPostExecute(String data) {
             gson = new Gson();
             if (data != null) {
