@@ -8,10 +8,10 @@ import java.util.ArrayList;
  * Created by ellenli on 5/25/16.
  */
 public class RecipientToCareGiverMessage {
-    int CHECKIN = 0;
-    int MED_TAKEN = 1;
-    int MED_NOT_TAKEN = 2;
-    int HELP = 3;
+    public static final int CHECKIN = 0;
+    public static final int MED_TAKEN = 1;
+    public static final int MED_NOT_TAKEN = 2;
+    public static final int HELP = 3;
 
     public int messageType;
     public long time;

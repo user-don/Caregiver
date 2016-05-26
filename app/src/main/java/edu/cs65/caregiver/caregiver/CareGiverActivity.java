@@ -551,5 +551,43 @@ public class CareGiverActivity extends AppCompatActivity {
         }
     }
 
+    class UpdateCareGiverAsyncTask extends AsyncTask<Void,Void,Void> {
+        private static final String TAG = "Update Account Info AT";
+
+        @Override
+        protected Void doInBackground(Void... params) {
+
+            edu.cs65.caregiver.backend.messaging.Messaging.Builder builder =
+                    new edu.cs65.caregiver.backend.messaging.Messaging
+                            .Builder(AndroidHttp.newCompatibleTransport(), new AndroidJsonFactory(), null)
+                            .setRootUrl(SERVER_ADDR + "/_ah/api/");
+
+            edu.cs65.caregiver.backend.messaging.Messaging backend = builder.build();
+
+            if (mReceiverRegistered) {
+                Log.d(TAG, "Executing update account with email " + mEmail);
+                try {
+                    Gson gson = new Gson();
+                    String data = gson.toJson(mDataController.careGiver);
+
+                    Log.d(TAG,"Updating with information... " + data);
+                    backend.updateEntry(mRegistrationID, mEmail, data).execute();
+                } catch (IOException e) {
+                    Log.d(TAG, "updatedAccountInfo failed");
+                    e.printStackTrace();
+                }
+            } else {
+                Log.d(TAG, "Cannot update account because device is unregistered");
+            }
+
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void arg) {
+            Log.d(TAG,"Finished CareGiver Updating Information");
+        }
+    }
+
 
 }
