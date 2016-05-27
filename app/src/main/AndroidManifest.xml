@@ -37,7 +37,8 @@
             android:windowSoftInputMode="adjustPan">
         </activity>
 
-        <activity android:name=".CareGiverActivity">
+        <activity android:name=".CareGiverActivity"
+            android:uiOptions="splitActionBarWhenNarrow">
             <receiver android:name=".CareGiverBroadcastReceiver" >
                 <intent-filter>
                     <action android:name=".CAREGIVER_BROADCAST" />
@@ -59,12 +60,6 @@
                     <action android:name=".CARERECIPIENT_BROADCAST" />
                 </intent-filter>
             </receiver>
-
-            <!--<intent-filter>-->
-            <!--<action android:name="android.intent.action.MAIN" />-->
-
-            <!--<category android:name="android.intent.category.LAUNCHER" />-->
-            <!--</intent-filter>-->
         </activity>
 
         <activity android:name=".FallActivity"></activity>
