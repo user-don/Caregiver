@@ -1,10 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/caregiverMenu">
     <item
-        android:title="ACCOUNT"
-        android:id="@+id/delete_button"
-        android:onClick="onClickAccount"
+        android:title="addMed"
+        android:icon="@drawable/add"
+        android:id="@+id/addMedButton"
+        android:onClick="onClickNewMedication"
         app:showAsAction="ifRoom"
         />
 </menu>

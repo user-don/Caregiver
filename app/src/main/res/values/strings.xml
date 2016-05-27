@@ -5,7 +5,7 @@
     <string name="schedule_new_medication">Add Alert</string>
     <string name="na">NA</string>
     <string name="recipient">Recipient:  </string>
-    <string name="list_of_todays_medication">Medication Alerts</string>
+    <string name="list_of_todays_medication">Medication Alerts for:&#x20;&#x20;  </string>
     <string name="save">SAVE</string>
     <string name="cancel_string">CANCEL</string>
     <string name="schedule_new_medication_title_string">Medication Alert Information</string>

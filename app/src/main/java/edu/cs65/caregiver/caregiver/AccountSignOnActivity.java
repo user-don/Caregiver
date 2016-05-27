@@ -33,7 +33,7 @@ public class AccountSignOnActivity extends Activity {
     private static final String TAG = "CareGiverActivity";
     private static final String ACCNT_KEY = "account key";
     private static final String EMAIL_KEY = "email key";
-    private static final String REGISTRATION_KEY = "caregiver name";
+    private static final String REGISTRATION_KEY = "registration key";
     private static final String RECIPIENT_NAME_KEY = "recipient name";
     private static final String SERVER_ADDR = "https://handy-empire-131521.appspot.com";
 
@@ -110,10 +110,6 @@ public class AccountSignOnActivity extends Activity {
         new AsyncTask<Void,Void,Void>() {
             @Override
             protected Void doInBackground(Void... params) {
-                HashMap<String, String> account_params = new HashMap<>();
-                account_params.put("email", careGiver);
-                account_params.put("registrationId", registrationID);
-
                 edu.cs65.caregiver.backend.messaging.Messaging.Builder builder =
                         new edu.cs65.caregiver.backend.messaging.Messaging
                                 .Builder(AndroidHttp.newCompatibleTransport(), new AndroidJsonFactory(), null)
@@ -148,11 +144,6 @@ public class AccountSignOnActivity extends Activity {
             @Override
             protected Void doInBackground(Void... params) {
                 Gson gson = new Gson();
-
-                HashMap<String, String> account_params = new HashMap<>();
-                account_params.put("email", careGiver);
-                account_params.put("password","default");
-                account_params.put("registrationId", registrationID);
 
                 edu.cs65.caregiver.backend.messaging.Messaging.Builder builder =
                         new edu.cs65.caregiver.backend.messaging.Messaging

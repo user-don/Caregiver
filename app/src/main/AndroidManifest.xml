@@ -36,7 +36,10 @@
             android:windowSoftInputMode="adjustPan">
         </activity>
 
-        <activity android:name=".CareGiverActivity"/>
+        <activity android:name=".CareGiverActivity"
+            android:uiOptions="splitActionBarWhenNarrow">
+
+        </activity>
 
         <activity android:name=".NewMedicationActivity"
             android:windowSoftInputMode="adjustPan"

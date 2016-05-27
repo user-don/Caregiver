@@ -25,6 +25,7 @@ import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
+import android.support.v7.widget.Toolbar;
 
 import com.google.android.gms.gcm.GoogleCloudMessaging;
 import com.google.api.client.extensions.android.http.AndroidHttp;
@@ -87,6 +88,7 @@ public class CareRecipientActivity extends Activity implements ServiceConnection
     private String mEmail = "dummy";
     private String mRecipientName = "test";
     private static final String EMAIL_KEY = "email key";
+    private static final String REGISTRATION_KEY = "registration key";
     private static final String RECIPIENT_NAME_KEY = "recipient name";
 
 
@@ -98,8 +100,9 @@ public class CareRecipientActivity extends Activity implements ServiceConnection
         mContext = getApplicationContext();
 
         SharedPreferences preferences = getSharedPreferences(getString(R.string.profile_preference), 0);
-        mEmail = preferences.getString(EMAIL_KEY,"");
+        mEmail = preferences.getString(EMAIL_KEY, "");
         mRecipientName = preferences.getString(RECIPIENT_NAME_KEY, "");
+        mRegistrationID = preferences.getString(REGISTRATION_KEY,"");
 
         // connect service
         myReceiver = new ReceiveMessages();
@@ -130,7 +133,8 @@ public class CareRecipientActivity extends Activity implements ServiceConnection
         }
 
         PSMScheduler.setSchedule(this);
-
+        Toolbar header = (Toolbar)findViewById(R.id.toolbar);
+        header.setTitle(mRecipientName);
     }
 
 
@@ -206,24 +210,22 @@ public class CareRecipientActivity extends Activity implements ServiceConnection
 
                 edu.cs65.caregiver.backend.messaging.Messaging backend = builder.build();
 
-                if (mReceiverRegistered) {
-                    Log.d(TAG, "Notifying caregiver of help: " + mEmail);
-                    try {
 
-                        // make help message
-                        RecipientToCareGiverMessage msg =
-                                new RecipientToCareGiverMessage(RecipientToCareGiverMessage.HELP,
-                                        null,
-                                        Calendar.getInstance().getTime().getTime());
+                Log.d(TAG, "Notifying caregiver of help: " + mEmail);
+                try {
 
-                        backend.sendNotificationToCaregiver(mRegistrationID, mEmail, msg.selfToString()).execute();
-                    } catch (IOException e) {
-                        Log.d(TAG, "send help failed");
-                        e.printStackTrace();
-                    }
-                } else {
-                    Log.d(TAG, "Cannot send help message because device is unregistered");
+                    // make help message
+                    RecipientToCareGiverMessage msg =
+                            new RecipientToCareGiverMessage(RecipientToCareGiverMessage.HELP,
+                                    null,
+                                    Calendar.getInstance().getTime().getTime());
+
+                    backend.sendNotificationToCaregiver(mRegistrationID, mEmail, msg.selfToString()).execute();
+                } catch (IOException e) {
+                    Log.d(TAG, "send help failed");
+                    e.printStackTrace();
                 }
+
 
                 return null;
             }
@@ -341,11 +343,19 @@ public class CareRecipientActivity extends Activity implements ServiceConnection
 
     public void loadData() {
         /* takes CareGiver object loaded from backend and parses data into locals */
+        mReceiver = cloudData.getRecipient("test");
+        if (mReceiver != null) {
+            mMedicationAlerts = mReceiver.mAlerts;
+            mCheckInTime = mReceiver.mCheckIntime;
+        }
 
     }
 
     public void updateUI() {
         /* takes locals and updates the appropriate UI components */
+        loadData();
+        setUpAdapter();
+        PSMScheduler.setSchedule(this);
     }
 
     /* –––––––––––––––– Testing ONLY –––––––––––––––– */
@@ -570,6 +580,7 @@ public class CareRecipientActivity extends Activity implements ServiceConnection
                 Log.d(TAG,"Updating CareGiver Information");
                 Log.d(TAG, "got data: " + data);
                 cloudData = gson.fromJson(data, CareGiver.class);
+                updateUI();
                 //mDataController.setData(cloudData);
                 // TODO -- updateUI();
             }
