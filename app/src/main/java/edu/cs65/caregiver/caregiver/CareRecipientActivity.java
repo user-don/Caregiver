@@ -569,76 +569,76 @@ public class CareRecipientActivity extends Activity implements ServiceConnection
         }
     }
 
-    // GCM registration ... called in Main Activity
-    class GcmRegistrationAsyncTask extends AsyncTask<Void, Void, String> {
-        private Registration regService = null;
-        private GoogleCloudMessaging gcm;
-        private Context context;
-
-        public GcmRegistrationAsyncTask(Context context) {
-            this.context = context;
-        }
-
-        @Override
-        protected String doInBackground(Void... params) {
-            if (regService == null) {
-                Registration.Builder builder = new Registration.Builder(AndroidHttp.newCompatibleTransport(),
-                        new AndroidJsonFactory(), null)
-                        .setRootUrl(SERVER_ADDR + "/_ah/api/");
-                // UNCOMMENT TO RUN LOCALLY
-//                        .setGoogleClientRequestInitializer(new GoogleClientRequestInitializer() {
-//                            @Override
-//                            public void initialize(AbstractGoogleClientRequest<?> abstractGoogleClientRequest)
-//                                    throws IOException {
-//                                abstractGoogleClientRequest.setDisableGZipContent(true);
-//                            }
-//                        });
-                // end of optional local run code
-
-                regService = builder.build();
-            }
-
-            String msg = "";
-            try {
-                if (gcm == null) {
-                    gcm = GoogleCloudMessaging.getInstance(context);
-                }
-                mRegistrationID = gcm.register(SENDER_ID);
-                msg = "Device registered, registration ID = " + mRegistrationID;
-
-                // Send registration ID to server over HTTP so it can use GCM/HTTP
-                // to send messages to the app.
-                regService.register(mRegistrationID).execute();
-
-            } catch (IOException ex) {
-                ex.printStackTrace();
-                Log.d(TAG, "Error: " + ex.getMessage());
-                msg = null;
-            }
-            return msg;
-        }
-
-        @Override
-        protected void onPostExecute(String msg) {
-
-            //Toast.makeText(context, msg, Toast.LENGTH_LONG).show();
-            if (msg != null) {
-                Logger.getLogger("REGISTRATION").log(Level.INFO, msg);
-                Toast.makeText(context, "Connected to Cloud!", Toast.LENGTH_SHORT).show();
-                mReceiverRegistered = true;
-
-                // update info
+//    // GCM registration ... called in Main Activity
+//    class GcmRegistrationAsyncTask extends AsyncTask<Void, Void, String> {
+//        private Registration regService = null;
+//        private GoogleCloudMessaging gcm;
+//        private Context context;
+//
+//        public GcmRegistrationAsyncTask(Context context) {
+//            this.context = context;
+//        }
+//
+//        @Override
+//        protected String doInBackground(Void... params) {
+//            if (regService == null) {
+//                Registration.Builder builder = new Registration.Builder(AndroidHttp.newCompatibleTransport(),
+//                        new AndroidJsonFactory(), null)
+//                        .setRootUrl(SERVER_ADDR + "/_ah/api/");
+//                // UNCOMMENT TO RUN LOCALLY
+////                        .setGoogleClientRequestInitializer(new GoogleClientRequestInitializer() {
+////                            @Override
+////                            public void initialize(AbstractGoogleClientRequest<?> abstractGoogleClientRequest)
+////                                    throws IOException {
+////                                abstractGoogleClientRequest.setDisableGZipContent(true);
+////                            }
+////                        });
+//                // end of optional local run code
+//
+//                regService = builder.build();
+//            }
+//
+//            String msg = "";
+//            try {
+//                if (gcm == null) {
+//                    gcm = GoogleCloudMessaging.getInstance(context);
+//                }
+//                mRegistrationID = gcm.register(SENDER_ID);
+//                msg = "Device registered, registration ID = " + mRegistrationID;
+//
+//                // Send registration ID to server over HTTP so it can use GCM/HTTP
+//                // to send messages to the app.
+//                regService.register(mRegistrationID).execute();
+//
+//            } catch (IOException ex) {
+//                ex.printStackTrace();
+//                Log.d(TAG, "Error: " + ex.getMessage());
+//                msg = null;
+//            }
+//            return msg;
+//        }
+//
+//        @Override
+//        protected void onPostExecute(String msg) {
+//
+//            //Toast.makeText(context, msg, Toast.LENGTH_LONG).show();
+//            if (msg != null) {
+//                Logger.getLogger("REGISTRATION").log(Level.INFO, msg);
+//                Toast.makeText(context, "Connected to Cloud!", Toast.LENGTH_SHORT).show();
+//                mReceiverRegistered = true;
+//
+//                // update info
+////                GetCareGiverInfoAsyncTask task = new GetCareGiverInfoAsyncTask();
+////                task.email = mEmail;
+////                task.execute();
 //                GetCareGiverInfoAsyncTask task = new GetCareGiverInfoAsyncTask();
-//                task.email = mEmail;
 //                task.execute();
-                GetCareGiverInfoAsyncTask task = new GetCareGiverInfoAsyncTask();
-                task.execute();
-
-            } else {
-                Toast.makeText(context, "Failed to Connect to Cloud", Toast.LENGTH_SHORT).show();
-            }
-        }
-    }
+//
+//            } else {
+//                Toast.makeText(context, "Failed to Connect to Cloud", Toast.LENGTH_SHORT).show();
+//            }
+//        }
+//    }
 
     class GetCareGiverInfoAsyncTask extends AsyncTask<Void,String,String> {
 
@@ -655,17 +655,16 @@ public class CareRecipientActivity extends Activity implements ServiceConnection
             edu.cs65.caregiver.backend.messaging.Messaging backend = builder.build();
             edu.cs65.caregiver.backend.messaging.model.CaregiverEndpointsObject response = null;
 
-            if (mReceiverRegistered) {
-                Log.d(TAG, "Executing getAccountInfo with email " + mEmail);
-                try {
-                    response = backend.getAccountInfo(mEmail).execute();
-                } catch (IOException e) {
-                    Log.d(TAG, "getAccountInfo failed");
-                    e.printStackTrace();
-                }
-            } else {
-                Log.d(TAG, "Cannot update account because device is unregistered");
+            Log.d(TAG, "Executing getAccountInfo with email " + mEmail);
+            try {
+                response = backend.getAccountInfo(mEmail).execute();
+            } catch (IOException e) {
+                Log.d(TAG, "getAccountInfo failed");
+                e.printStackTrace();
             }
+
+            Log.d(TAG, "Cannot update account because device is unregistered");
+
 
             return (response != null) ? response.getData() : null;
         }
