@@ -12,10 +12,10 @@
 
 
     <permission
-        android:name="com.example.gcm.permission.C2D_MESSAGE"
+        android:name="edu.cs65.caregiver.caregiver.permission.C2D_MESSAGE"
         android:protectionLevel="signature" />
 
-    <uses-permission android:name="com.example.gcm.permission.C2D_MESSAGE" />
+    <uses-permission android:name="edu.cs65.caregiver.caregiver.permission.C2D_MESSAGE" />
 
     <application
         android:allowBackup="true"
@@ -62,6 +62,14 @@
 
 
     </application>
+
+    <service
+        android:name="edu.cs65.caregiver.caregiver.MyGcmListenerService"
+        android:exported="false" >
+        <intent-filter>
+            <action android:name="com.google.android.c2dm.intent.RECEIVE" />
+        </intent-filter>
+    </service>
 
     <receiver
         android:name=".GcmBroadcastReceiver"
