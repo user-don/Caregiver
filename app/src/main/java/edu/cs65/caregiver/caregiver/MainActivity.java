@@ -38,6 +38,7 @@ public class MainActivity extends Activity {
 
     private static final String ACCNT_KEY = "account key";
     private static final String EMAIL_KEY = "email key";
+    private static final String REGISTRATION_KEY = "registration key";
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -50,7 +51,7 @@ public class MainActivity extends Activity {
 
         SharedPreferences preferences = getSharedPreferences(getString(R.string.profile_preference), 0);
 
-        if (!preferences.getString(EMAIL_KEY,"").equals("")){
+        if (!preferences.getString(EMAIL_KEY,"").equals("") && mRegistrationID == preferences.getString(REGISTRATION_KEY,"")){
             if (preferences.getString(ACCNT_KEY,"").equals("care recipient")){
                 Intent newMedication = new Intent(getApplicationContext(), CareRecipientActivity.class);
                 startActivity(newMedication);

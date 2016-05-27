@@ -172,7 +172,11 @@ public class AccountSignOnActivity extends Activity {
                 } catch (IOException e) {
                     Log.d(TAG, "failed to issue post - Error msg: " + e.getMessage());
                     e.printStackTrace();
-
+                    runOnUiThread(new Runnable() {
+                        public void run() {
+                            Toast.makeText(getApplicationContext(), "Incorrect caregiver name", Toast.LENGTH_LONG).show();
+                        }
+                    });
                 }
                 return null;
             }

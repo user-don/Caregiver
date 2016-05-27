@@ -89,7 +89,7 @@ public class CareRecipientActivity extends Activity implements ServiceConnection
     private IntentFilter mIntentFilter;
 
     private String mEmail = "dummy";
-    private String mRecipientName = "test";
+    public static String mRecipientName = "test";
     private static final String EMAIL_KEY = "email key";
     private static final String REGISTRATION_KEY = "registration key";
     private static final String RECIPIENT_NAME_KEY = "recipient name";
@@ -116,22 +116,23 @@ public class CareRecipientActivity extends Activity implements ServiceConnection
         myReceiver = new ReceiveMessages();
         mIsBound = false;
         //automaticBind();
-
-        if (mCareGiver == null) {
-            mCareGiver = new CareGiver("test");
-            mReceiver = mCareGiver.addRecipient("test recipient");
-        } else {
-            mReceiver = mCareGiver.getRecipient("test recipient");
-        }
+//
+//
+//        if (mCareGiver == null) {
+//            mCareGiver = new CareGiver("test");
+//            mReceiver = mCareGiver.addRecipient("test recipient");
+//        } else {
+//            mReceiver = mCareGiver.getRecipient("test recipient");
+//        }
 
         getDayOfWeek();
-        createTestMeds();
+//        createTestMeds();
 
         // Get medication alerts and checkin time
-        mMedicationAlerts = mReceiver.mAlerts;
-        mCheckInTime = mReceiver.mCheckIntime;
+//        mMedicationAlerts = mReceiver.mAlerts;
+//        mCheckInTime = mReceiver.mCheckIntime;
 
-        setUpAdapter();
+//        setUpAdapter();
 
         if (loadMedDialog) {
             startAlarm();
@@ -140,9 +141,15 @@ public class CareRecipientActivity extends Activity implements ServiceConnection
             displayMedDialog(entry);
         }
 
-        PSMScheduler.setSchedule(this);
+        // schedule alarms
+//        PSMScheduler.setSchedule(this);
+
         Toolbar header = (Toolbar)findViewById(R.id.toolbar);
         header.setTitle(mRecipientName);
+
+        GetCareGiverInfoAsyncTask task = new GetCareGiverInfoAsyncTask();
+        task.email = mEmail;
+        task.execute();
     }
 
 
@@ -179,27 +186,33 @@ public class CareRecipientActivity extends Activity implements ServiceConnection
         }).setPositiveButton("OK", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int id) {
-                stopAlarm();
-                loadMedDialog = false;
-                // notify CareGiver that medicine was taken
+                if (loadMedDialog) {
+                    stopAlarm();
+                    loadMedDialog = false;
+                    // notify CareGiver that medicine was taken
+                }
 
             }
         }).setNegativeButton("Back", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int id) {
-                stopAlarm();
-                loadMedDialog = false;
-                // notify CareGiver medicine not taken
+                if (loadMedDialog) {
+                    stopAlarm();
+                    loadMedDialog = false;
+                    // notify CareGiver medicine not taken
+                }
 
             }
         }).setOnDismissListener(new DialogInterface.OnDismissListener() {
             @Override
             public void onDismiss(DialogInterface dialog) {
-                stopAlarm();
-                loadMedDialog = false;
+                if (loadMedDialog) {
+                    stopAlarm();
+                    loadMedDialog = false;
+                    // notify CareGiver medicine not taken
+                }
             }
         }).show();
-
 
     }
 
@@ -246,13 +259,19 @@ public class CareRecipientActivity extends Activity implements ServiceConnection
             }
         }.execute();
 
-
     }
 
     public void onMedClicked(View v){
-        DialogFragment fragment = CareGiverDialogFragment.newInstance(CareGiverDialogFragment.DISPLAY_MED_LIST);
-        fragment.show(getFragmentManager(),
-                getString(R.string.app_name));
+        // update sortedMeds
+
+
+        if (sortedMeds != null) {
+            DialogFragment fragment = CareGiverDialogFragment.newInstance(CareGiverDialogFragment.DISPLAY_MED_LIST);
+            fragment.show(getFragmentManager(),
+                    getString(R.string.app_name));
+        } else {
+            Toast.makeText(getApplicationContext(), "No medications scheduled for today", Toast.LENGTH_LONG).show();
+        }
     }
 
     public void onMenuClicked(View v) {
@@ -293,6 +312,14 @@ public class CareRecipientActivity extends Activity implements ServiceConnection
 
     public ArrayList<MedEntry> getGroupedMeds(ArrayList<MedicationAlert> todaysMeds) {
         ArrayList<MedEntry> sortedMeds = new ArrayList<>();
+
+        if (todaysMeds.size() == 1) {
+            MedEntry newEntry = new MedEntry(todaysMeds.get(0).mTime.toString(),
+                    todaysMeds.get(0).mMedications, todaysMeds.get(0).mTime);
+            sortedMeds.add(newEntry);
+            return sortedMeds;
+        }
+
         for (int i = 0; i < todaysMeds.size()-1; i++) {
             int j = i+1;
             // automatically add first medication
@@ -318,7 +345,7 @@ public class CareRecipientActivity extends Activity implements ServiceConnection
         return sortedMeds;
     }
 
-    public String convertTime(Time time) {
+    public static String convertTime(Time time) {
         String rawTime = time.toString();
         String convertedTime = null;
 
@@ -356,14 +383,14 @@ public class CareRecipientActivity extends Activity implements ServiceConnection
             mMedicationAlerts = mReceiver.mAlerts;
             mCheckInTime = mReceiver.mCheckIntime;
         }
-
     }
 
     public void updateUI() {
         /* takes locals and updates the appropriate UI components */
         loadData();
         setUpAdapter();
-        PSMScheduler.setSchedule(this);
+
+        PSMScheduler.setSchedule(this); // update alarms
     }
 
     public class CareRecipientBroadcastReceiver extends BroadcastReceiver {
@@ -378,65 +405,65 @@ public class CareRecipientActivity extends Activity implements ServiceConnection
 
     /* –––––––––––––––– Testing ONLY –––––––––––––––– */
 
-    public void createTestMeds() {
-        Time time1 = new Time(10, 0, 0);
-        Time time2 = new Time(15, 15, 0);
-        Time time3 = new Time(8, 11, 0); //10
-        Time time4 = new Time(7, 15, 0); //20 / 8pm
-
-        String name1 = "Test1";
-        String name2 = "Test2";
-        String name3 = "Test3";
-        String name4 = "Test4";
-
-        int[] days1 = new int[7];
-        days1[0] = 0;
-        days1[1] = 0;
-        days1[2] = 1;
-        days1[3] = 0;
-        days1[4] = 0;
-        days1[5] = 0;
-        days1[6] = 1;
-
-        int[] days2 = new int[7];
-        days2[0] = 0;
-        days2[1] = 0;
-        days2[2] = 1;
-        days2[3] = 0;
-        days2[4] = 0;
-        days2[5] = 0;
-        days2[6] = 1;
-
-        int[] days3 = new int[7];
-        days3[0] = 1;
-        days3[1] = 1;
-        days3[2] = 1;
-        days3[3] = 1;
-        days3[4] = 1;
-        days3[5] = 1;
-        days3[6] = 1;
-
-        ArrayList<String> meds1 = new ArrayList<>();
-        meds1.add("Tylenol");
-        meds1.add("Motrin");
-
-        ArrayList<String> meds2 = new ArrayList<>();
-        meds2.add("Benedryl");
-        meds2.add("Mucinex");
-
-        ArrayList<String> meds3 = new ArrayList<>();
-        meds3.add("Valium");
-
-        MedicationAlert medAlert1 = new MedicationAlert(name1, time1, days1, meds1);
-        MedicationAlert medAlert2 = new MedicationAlert(name2, time2, days2, meds2);
-        MedicationAlert medAlert3 = new MedicationAlert(name3, time3, days3, meds3);
-        MedicationAlert medAlert4 = new MedicationAlert(name4, time4, days3, meds3);
-
-        mReceiver.addAlert(medAlert1);
-        mReceiver.addAlert(medAlert2);
-        mReceiver.addAlert(medAlert3);
-        mReceiver.addAlert(medAlert4);
-    }
+//    public void createTestMeds() {
+//        Time time1 = new Time(10, 0, 0);
+//        Time time2 = new Time(15, 15, 0);
+//        Time time3 = new Time(8, 11, 0); //10
+//        Time time4 = new Time(7, 15, 0); //20 / 8pm
+//
+//        String name1 = "Test1";
+//        String name2 = "Test2";
+//        String name3 = "Test3";
+//        String name4 = "Test4";
+//
+//        int[] days1 = new int[7];
+//        days1[0] = 0;
+//        days1[1] = 0;
+//        days1[2] = 1;
+//        days1[3] = 0;
+//        days1[4] = 0;
+//        days1[5] = 0;
+//        days1[6] = 1;
+//
+//        int[] days2 = new int[7];
+//        days2[0] = 0;
+//        days2[1] = 0;
+//        days2[2] = 1;
+//        days2[3] = 0;
+//        days2[4] = 0;
+//        days2[5] = 0;
+//        days2[6] = 1;
+//
+//        int[] days3 = new int[7];
+//        days3[0] = 1;
+//        days3[1] = 1;
+//        days3[2] = 1;
+//        days3[3] = 1;
+//        days3[4] = 1;
+//        days3[5] = 1;
+//        days3[6] = 1;
+//
+//        ArrayList<String> meds1 = new ArrayList<>();
+//        meds1.add("Tylenol");
+//        meds1.add("Motrin");
+//
+//        ArrayList<String> meds2 = new ArrayList<>();
+//        meds2.add("Benedryl");
+//        meds2.add("Mucinex");
+//
+//        ArrayList<String> meds3 = new ArrayList<>();
+//        meds3.add("Valium");
+//
+//        MedicationAlert medAlert1 = new MedicationAlert(name1, time1, days1, meds1);
+//        MedicationAlert medAlert2 = new MedicationAlert(name2, time2, days2, meds2);
+//        MedicationAlert medAlert3 = new MedicationAlert(name3, time3, days3, meds3);
+//        MedicationAlert medAlert4 = new MedicationAlert(name4, time4, days3, meds3);
+//
+//        mReceiver.addAlert(medAlert1);
+//        mReceiver.addAlert(medAlert2);
+//        mReceiver.addAlert(medAlert3);
+//        mReceiver.addAlert(medAlert4);
+//    }
 
 
     // ****************** life cycle methods ***************************//
@@ -456,7 +483,6 @@ public class CareRecipientActivity extends Activity implements ServiceConnection
     // ****************** service methods ***************************//
 
     private void automaticBind(){
-
         doBindService();
     }
 
@@ -491,16 +517,8 @@ public class CareRecipientActivity extends Activity implements ServiceConnection
         public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();
 
-            System.out.println("CareRecipient: ReceiveMessages");
-
             if (action.equals(SensorService.BROADCAST_LABEL_CHANGE)) {
                 // notify CareGiver that help is needed
-            }
-
-            if (action.equals(SensorService.BROADCAST_ACTION)) {
-                System.out.println("CareRecipient: Received FALL broadcast.");
-
-
             }
 
         }
@@ -562,13 +580,85 @@ public class CareRecipientActivity extends Activity implements ServiceConnection
         }
     }
 
+//    // GCM registration ... called in Main Activity
+//    class GcmRegistrationAsyncTask extends AsyncTask<Void, Void, String> {
+//        private Registration regService = null;
+//        private GoogleCloudMessaging gcm;
+//        private Context context;
+//
+//        public GcmRegistrationAsyncTask(Context context) {
+//            this.context = context;
+//        }
+//
+//        @Override
+//        protected String doInBackground(Void... params) {
+//            if (regService == null) {
+//                Registration.Builder builder = new Registration.Builder(AndroidHttp.newCompatibleTransport(),
+//                        new AndroidJsonFactory(), null)
+//                        .setRootUrl(SERVER_ADDR + "/_ah/api/");
+//                // UNCOMMENT TO RUN LOCALLY
+////                        .setGoogleClientRequestInitializer(new GoogleClientRequestInitializer() {
+////                            @Override
+////                            public void initialize(AbstractGoogleClientRequest<?> abstractGoogleClientRequest)
+////                                    throws IOException {
+////                                abstractGoogleClientRequest.setDisableGZipContent(true);
+////                            }
+////                        });
+//                // end of optional local run code
+//
+//                regService = builder.build();
+//            }
+//
+//            String msg = "";
+//            try {
+//                if (gcm == null) {
+//                    gcm = GoogleCloudMessaging.getInstance(context);
+//                }
+//                mRegistrationID = gcm.register(SENDER_ID);
+//                msg = "Device registered, registration ID = " + mRegistrationID;
+//
+//                // Send registration ID to server over HTTP so it can use GCM/HTTP
+//                // to send messages to the app.
+//                regService.register(mRegistrationID).execute();
+//
+//            } catch (IOException ex) {
+//                ex.printStackTrace();
+//                Log.d(TAG, "Error: " + ex.getMessage());
+//                msg = null;
+//            }
+//            return msg;
+//        }
+//
+//        @Override
+//        protected void onPostExecute(String msg) {
+//
+//            //Toast.makeText(context, msg, Toast.LENGTH_LONG).show();
+//            if (msg != null) {
+//                Logger.getLogger("REGISTRATION").log(Level.INFO, msg);
+//                Toast.makeText(context, "Connected to Cloud!", Toast.LENGTH_SHORT).show();
+//                mReceiverRegistered = true;
+//
+//                // update info
+////                GetCareGiverInfoAsyncTask task = new GetCareGiverInfoAsyncTask();
+////                task.email = mEmail;
+////                task.execute();
+//                GetCareGiverInfoAsyncTask task = new GetCareGiverInfoAsyncTask();
+//                task.execute();
+//
+//            } else {
+//                Toast.makeText(context, "Failed to Connect to Cloud", Toast.LENGTH_SHORT).show();
+//            }
+//        }
+//    }
+
     class GetCareGiverInfoAsyncTask extends AsyncTask<Void,String,String> {
+
         private static final String TAG = "Get Account Info AT";
+        public String email = "";
         Gson gson;
 
         @Override
         protected String doInBackground(Void... params) {
-
             edu.cs65.caregiver.backend.messaging.Messaging.Builder builder =
                     new edu.cs65.caregiver.backend.messaging.Messaging
                             .Builder(AndroidHttp.newCompatibleTransport(), new AndroidJsonFactory(), null)
@@ -577,21 +667,21 @@ public class CareRecipientActivity extends Activity implements ServiceConnection
             edu.cs65.caregiver.backend.messaging.Messaging backend = builder.build();
             edu.cs65.caregiver.backend.messaging.model.CaregiverEndpointsObject response = null;
 
-            if (mReceiverRegistered) {
-                Log.d(TAG, "Executing getAccountInfo with email " + mEmail);
-                try {
-                    response = backend.getAccountInfo(mEmail).execute();
-                } catch (IOException e) {
-                    Log.d(TAG, "getAccountInfo failed");
-                    e.printStackTrace();
-                }
-            } else {
-                Log.d(TAG, "Cannot update account because device is unregistered");
+            Log.d(TAG, "Executing getAccountInfo with email " + mEmail);
+            try {
+                response = backend.getAccountInfo(mEmail).execute();
+            } catch (IOException e) {
+                Log.d(TAG, "getAccountInfo failed");
+                e.printStackTrace();
             }
+
+            Log.d(TAG, "Cannot update account because device is unregistered");
+
 
             return (response != null) ? response.getData() : null;
         }
 
+        @Override
         protected void onPostExecute(String data) {
             gson = new Gson();
             if (data != null) {
@@ -599,6 +689,7 @@ public class CareRecipientActivity extends Activity implements ServiceConnection
                 Log.d(TAG, "got data: " + data);
                 cloudData = gson.fromJson(data, CareGiver.class);
                 updateUI();
+
                 //mDataController.setData(cloudData);
                 // TODO -- updateUI();
             }
