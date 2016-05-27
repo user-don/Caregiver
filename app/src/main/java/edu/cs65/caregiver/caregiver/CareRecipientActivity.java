@@ -13,6 +13,7 @@ import android.content.ServiceConnection;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.media.MediaPlayer;
 import android.media.RingtoneManager;
 import android.os.AsyncTask;
@@ -85,6 +86,8 @@ public class CareRecipientActivity extends Activity implements ServiceConnection
 
     private String mEmail = "dummy";
     private String mRecipientName = "test";
+    private static final String EMAIL_KEY = "email key";
+    private static final String RECIPIENT_NAME_KEY = "recipient name";
 
 
     @Override
@@ -94,7 +97,9 @@ public class CareRecipientActivity extends Activity implements ServiceConnection
         setContentView(R.layout.activity_care_recipient);
         mContext = getApplicationContext();
 
-        new GcmRegistrationAsyncTask(this).execute();
+        SharedPreferences preferences = getSharedPreferences(getString(R.string.profile_preference), 0);
+        mEmail = preferences.getString(EMAIL_KEY,"");
+        mRecipientName = preferences.getString(RECIPIENT_NAME_KEY, "");
 
         // connect service
         myReceiver = new ReceiveMessages();
@@ -528,81 +533,6 @@ public class CareRecipientActivity extends Activity implements ServiceConnection
 
         }
     }
-
-
-    // GCM registration ... called in Main Activity
-    class GcmRegistrationAsyncTask extends AsyncTask<Void, Void, String> {
-        private Registration regService = null;
-        private GoogleCloudMessaging gcm;
-        private Context context;
-
-        public GcmRegistrationAsyncTask(Context context) {
-            this.context = context;
-        }
-
-        @Override
-        protected String doInBackground(Void... params) {
-            if (regService == null) {
-                Registration.Builder builder = new Registration.Builder(AndroidHttp.newCompatibleTransport(),
-                        new AndroidJsonFactory(), null)
-                        .setRootUrl(SERVER_ADDR + "/_ah/api/");
-                // UNCOMMENT TO RUN LOCALLY
-//                        .setGoogleClientRequestInitializer(new GoogleClientRequestInitializer() {
-//                            @Override
-//                            public void initialize(AbstractGoogleClientRequest<?> abstractGoogleClientRequest)
-//                                    throws IOException {
-//                                abstractGoogleClientRequest.setDisableGZipContent(true);
-//                            }
-//                        });
-                // end of optional local run code
-
-                regService = builder.build();
-            }
-
-            String msg = "";
-            try {
-                if (gcm == null) {
-                    gcm = GoogleCloudMessaging.getInstance(context);
-                }
-                mRegistrationID = gcm.register(SENDER_ID);
-                msg = "Device registered, registration ID = " + mRegistrationID;
-
-                // Send registration ID to server over HTTP so it can use GCM/HTTP
-                // to send messages to the app.
-                regService.register(mRegistrationID).execute();
-
-            } catch (IOException ex) {
-                ex.printStackTrace();
-                Log.d(TAG, "Error: " + ex.getMessage());
-                msg = null;
-            }
-            return msg;
-        }
-
-        @Override
-        protected void onPostExecute(String msg) {
-
-            //Toast.makeText(context, msg, Toast.LENGTH_LONG).show();
-            if (msg != null) {
-                Logger.getLogger("REGISTRATION").log(Level.INFO, msg);
-                Toast.makeText(context, "Connected to Cloud!", Toast.LENGTH_SHORT).show();
-                mReceiverRegistered = true;
-
-                // update info
-//                GetCareGiverInfoAsyncTask task = new GetCareGiverInfoAsyncTask();
-//                task.email = mEmail;
-//                task.execute();
-
-                if (mReceiverRegistered) {
-                    new GetCareGiverInfoAsyncTask().execute();
-                }
-
-            } else {
-                Toast.makeText(context, "Failed to Connect to Cloud", Toast.LENGTH_SHORT).show();
-            }
-        }
-    }
-
 
     class GetCareGiverInfoAsyncTask extends AsyncTask<Void,String,String> {
         private static final String TAG = "Get Account Info AT";

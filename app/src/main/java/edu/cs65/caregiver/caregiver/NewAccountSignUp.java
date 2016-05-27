@@ -44,7 +44,7 @@ public class NewAccountSignUp extends Activity {
     private static final String ACCNT_KEY = "account key";
     private static final String EMAIL_KEY = "email key";
     private static final String PASSWORD_KEY = "password key";
-    private static final String CAREGIVER_KEY = "caregiver name";
+    private static final String REGISTRATION_KEY = "registration ID";
     private static final String RECIPIENT_NAME_KEY = "recipient name";
 
     @Override
@@ -78,6 +78,7 @@ public class NewAccountSignUp extends Activity {
         editor.putString(ACCNT_KEY, "caregiver");
         editor.putString(EMAIL_KEY, username);
         editor.putString(PASSWORD_KEY, password);
+        editor.putString(REGISTRATION_KEY, registrationID);
         editor.putString(RECIPIENT_NAME_KEY, careRecipient);
         editor.apply();
 

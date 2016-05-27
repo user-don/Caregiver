@@ -52,10 +52,6 @@ import edu.cs65.caregiver.backend.messaging.Messaging;
 public class CareGiverActivity extends AppCompatActivity {
 
     private static final String TAG = "CareGiverActivity";
-
-    //public static String SERVER_ADDR = "http://10.31.39.206:8080";
-    //public static String SERVER_ADDR = "http://0.0.0.0:8080";
-    //public static String SERVER_ADDR = "http://10.0.2.2:8080";
     public static String SERVER_ADDR = "https://handy-empire-131521.appspot.com";
 
     // Changed sender id
@@ -69,12 +65,10 @@ public class CareGiverActivity extends AppCompatActivity {
 
     //private CareGiver mCareGiver;
     private String mEmail = "dummy";
-    private String mRecipientName = "test";     // TODO -- expand to get from preferences / intent
+    private String mRecipientName = "test";
     private Recipient mReceiver;
 
     private static final String EMAIL_KEY = "email key";
-    private static final String PASSWORD_KEY = "password key";
-    private static final String CAREGIVER_KEY = "caregiver name";
     private static final String RECIPIENT_NAME_KEY = "recipient name";
     private SharedPreferences mPrefs;
 
@@ -86,6 +80,10 @@ public class CareGiverActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_care_giver);
+
+        mPrefs = getSharedPreferences(getString(R.string.profile_preference), 0);
+        mEmail = mPrefs.getString(EMAIL_KEY,"");
+        mRecipientName = mPrefs.getString(RECIPIENT_NAME_KEY,"");
 
         //mPrefs = getPreferences(MODE_PRIVATE);
 

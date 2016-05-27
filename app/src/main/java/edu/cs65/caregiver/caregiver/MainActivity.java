@@ -44,36 +44,33 @@ public class MainActivity extends Activity {
         super.onCreate(savedInstanceState);
         new GcmRegistrationAsyncTask(this).execute();
 
-//        SharedPreferences preferences = getSharedPreferences(getString(R.string.profile_preference), 0);
-//        if (!preferences.getString(EMAIL_KEY,"").equals("")){
-//            if (preferences.getString(ACCNT_KEY,"").equals("care recipient")){
-//                Intent newMedication = new Intent(getApplicationContext(), CareRecipientActivity.class);
-//                startActivity(newMedication);
-//                finish();
-//            } else if (preferences.getString(ACCNT_KEY,"").equals("caregiver")){
-//                Intent newMedication = new Intent(getApplicationContext(), CareGiverActivity.class);
-//                startActivity(newMedication);
-//                finish();
-//            }
-//        } else {
-//
-//
-//        }
-
-        setContentView(R.layout.main_landing_page);
-
-        ImageView myImageView= (ImageView)findViewById(R.id.landing_image);
-        Animation myFadeInAnimation = AnimationUtils.loadAnimation(this, R.anim.fadein);
-        myImageView.startAnimation(myFadeInAnimation);
-
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                Intent mainIntent = new Intent(getApplicationContext(), AccountSignOnActivity.class);
-                startActivity(mainIntent);
+        SharedPreferences preferences = getSharedPreferences(getString(R.string.profile_preference), 0);
+        if (!preferences.getString(EMAIL_KEY,"").equals("")){
+            if (preferences.getString(ACCNT_KEY,"").equals("care recipient")){
+                Intent newMedication = new Intent(getApplicationContext(), CareRecipientActivity.class);
+                startActivity(newMedication);
+                finish();
+            } else if (preferences.getString(ACCNT_KEY,"").equals("caregiver")){
+                Intent newMedication = new Intent(getApplicationContext(), CareGiverActivity.class);
+                startActivity(newMedication);
                 finish();
             }
-        }, SPLASH_DISPLAY_LENGTH);
+        } else {
+            setContentView(R.layout.main_landing_page);
+
+            ImageView myImageView= (ImageView)findViewById(R.id.landing_image);
+            Animation myFadeInAnimation = AnimationUtils.loadAnimation(this, R.anim.fadein);
+            myImageView.startAnimation(myFadeInAnimation);
+
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    Intent mainIntent = new Intent(getApplicationContext(), AccountSignOnActivity.class);
+                    startActivity(mainIntent);
+                    finish();
+                }
+            }, SPLASH_DISPLAY_LENGTH);
+        }
     }
 
     class GcmRegistrationAsyncTask extends AsyncTask<Void, Void, String> {

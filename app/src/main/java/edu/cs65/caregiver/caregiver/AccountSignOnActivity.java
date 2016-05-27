@@ -32,7 +32,9 @@ public class AccountSignOnActivity extends Activity {
 
     private static final String TAG = "CareGiverActivity";
     private static final String ACCNT_KEY = "account key";
-    private static final String RECIPIENT_NAME = "recipient name";
+    private static final String EMAIL_KEY = "email key";
+    private static final String REGISTRATION_KEY = "caregiver name";
+    private static final String RECIPIENT_NAME_KEY = "recipient name";
     private static final String SERVER_ADDR = "https://handy-empire-131521.appspot.com";
 
     @Override
@@ -69,7 +71,9 @@ public class AccountSignOnActivity extends Activity {
         SharedPreferences.Editor editor = getSharedPreferences(getString(R.string.profile_preference), MODE_PRIVATE).edit();
         editor.clear();
         editor.putString(ACCNT_KEY, "care recipient");
-        editor.putString(RECIPIENT_NAME, careRecipient);
+        editor.putString(EMAIL_KEY, careGiver);
+        editor.putString(RECIPIENT_NAME_KEY, careRecipient);
+        editor.putString(REGISTRATION_KEY, registrationID);
         editor.apply();
 
         createCarerecipientAccount();
