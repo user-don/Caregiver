@@ -41,7 +41,6 @@ public class LogInServlet extends HttpServlet {
 
         if (account != null && account.getHashedPw() != null) {
             // account exists, see if hashed password matches
-            boolean passCheck = hashedPw.equals(account.getHashedPw());
             if (hashedPw.equals(account.getHashedPw())) {
                 // associate registration ID with the account - we are logged in
                 RegistrationRecord record =
