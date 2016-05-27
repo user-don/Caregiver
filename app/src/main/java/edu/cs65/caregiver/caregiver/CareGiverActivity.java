@@ -163,7 +163,7 @@ public class CareGiverActivity extends AppCompatActivity {
                 edu.cs65.caregiver.backend.messaging.Messaging backend = builder.build();
                 try {
                     Log.d(TAG, "send \'testing\' to test func");
-                    backend.helloTest("testing");
+                    backend.helloTest("testing").execute();
                 } catch (IOException e) {
                     Log.d(TAG, "failed to issue post - Error msg: " + e.getMessage());
                     e.printStackTrace();
