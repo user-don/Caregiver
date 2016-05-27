@@ -115,9 +115,8 @@ public class CareRecipientActivity extends Activity implements ServiceConnection
         // connect service
         myReceiver = new ReceiveMessages();
         mIsBound = false;
-        //automaticBind();
-//
-//
+        automaticBind();
+
 //        if (mCareGiver == null) {
 //            mCareGiver = new CareGiver("test");
 //            mReceiver = mCareGiver.addRecipient("test recipient");
@@ -263,9 +262,7 @@ public class CareRecipientActivity extends Activity implements ServiceConnection
 
     public void onMedClicked(View v){
         // update sortedMeds
-
-
-        if (sortedMeds != null) {
+        if (sortedMeds.size() != 0) {
             DialogFragment fragment = CareGiverDialogFragment.newInstance(CareGiverDialogFragment.DISPLAY_MED_LIST);
             fragment.show(getFragmentManager(),
                     getString(R.string.app_name));
@@ -300,13 +297,14 @@ public class CareRecipientActivity extends Activity implements ServiceConnection
     public ArrayList<MedicationAlert> getMedsForToday() {
         ArrayList<MedicationAlert> medsForToday = new ArrayList<>();
 
-        for (int i = 0; i < mMedicationAlerts.size(); i++) {
-            int[] alertDays = mMedicationAlerts.get(i).mAlertDays;
-            if (alertDays[dayIndex] != 0) {
-                medsForToday.add(mMedicationAlerts.get(i));
+        if (mMedicationAlerts != null) {
+            for (int i = 0; i < mMedicationAlerts.size(); i++) {
+                int[] alertDays = mMedicationAlerts.get(i).mAlertDays;
+                if (alertDays[dayIndex] != 0) {
+                    medsForToday.add(mMedicationAlerts.get(i));
+                }
             }
         }
-
         return medsForToday;
     }
 
