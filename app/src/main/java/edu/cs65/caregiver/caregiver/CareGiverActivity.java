@@ -58,8 +58,8 @@ public class CareGiverActivity extends AppCompatActivity {
     DataController mDataController;
 
     //private CareGiver mCareGiver;
-    public static String mEmail = "dummy";
-    public static String mRecipientName = "test";
+    private String mEmail = "dummy";
+    private String mRecipientName = "test";
     private Recipient mReceiver;
 
     private static final String EMAIL_KEY = "email key";
@@ -69,7 +69,7 @@ public class CareGiverActivity extends AppCompatActivity {
 
     /* --- cloud stuff --- */
     private boolean mReceiverRegistered = false;
-    public static String mRegistrationID;
+    private String mRegistrationID;
     private CareGiverBroadcastReceiver mBroadcastReceiver;
     private IntentFilter mIntentFilter;
 
@@ -288,7 +288,7 @@ public class CareGiverActivity extends AppCompatActivity {
                     mReceiver.addAlert(newAlert);
                     mReceiver = mDataController.setRecipientData(mReceiver);
                     //mDataController.careGiver.setAlert(mRecipientName,newAlert);
-                    //mDataController.careGiver.getRecipient(mRecipientName).addAlert(newAlert);
+                    mDataController.careGiver.getRecipient(mRecipientName).addAlert(newAlert);
                 }
                 break;
 
@@ -657,22 +657,17 @@ public class CareGiverActivity extends AppCompatActivity {
 
             edu.cs65.caregiver.backend.messaging.Messaging backend = builder.build();
 
-            if (mReceiverRegistered) {
-                Log.d(TAG, "Executing update account with email " + mEmail);
-                try {
-                    Gson gson = new Gson();
-                    String data = gson.toJson(mDataController.careGiver);
+            Log.d(TAG, "Executing update account with email " + mEmail);
+            try {
+                Gson gson = new Gson();
+                String data = gson.toJson(mDataController.careGiver);
 
-                    Log.d(TAG,"Updating with information... " + data);
-                    backend.updateEntry(mRegistrationID, mEmail, data).execute();
-                } catch (IOException e) {
-                    Log.d(TAG, "updatedAccountInfo failed");
-                    e.printStackTrace();
-                }
-            } else {
-                Log.d(TAG, "Cannot update account because device is unregistered");
+                Log.d(TAG,"Updating with information... " + data);
+                backend.updateEntry(mRegistrationID, mEmail, data).execute();
+            } catch (IOException e) {
+                Log.d(TAG, "updatedAccountInfo failed");
+                e.printStackTrace();
             }
-
             return null;
         }
 
@@ -696,17 +691,13 @@ public class CareGiverActivity extends AppCompatActivity {
 
             edu.cs65.caregiver.backend.messaging.Messaging backend = builder.build();
 
-            if (mReceiverRegistered) {
-                Log.d(TAG, "Sending message to recipient registered with email " + mEmail);
+            Log.d(TAG, "Sending message to recipient registered with email " + mEmail);
 //                try {
 //                    backend.sendNotificationToPatient(mRegistrationID, mEmail, msg).execute();
 //                } catch (IOException e) {
 //                    Log.d(TAG, "sendNotificationToPatient failed");
 //                    e.printStackTrace();
 //                }
-            } else {
-                Log.d(TAG, "Cannot sendNotificationToPatient because device is unregistered");
-            }
 
             return null;
         }

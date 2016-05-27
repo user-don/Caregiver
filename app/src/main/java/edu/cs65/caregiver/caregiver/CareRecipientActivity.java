@@ -309,7 +309,7 @@ public class CareRecipientActivity extends Activity implements ServiceConnection
     }
 
     public ArrayList<MedEntry> getGroupedMeds(ArrayList<MedicationAlert> todaysMeds) {
-        ArrayList<MedEntry> sortedMeds = new ArrayList<>();
+        ArrayList<MedEntry> sortedMeds = new ArrayList<>(todaysMeds.size());
 
         if (todaysMeds.size() == 1) {
             MedEntry newEntry = new MedEntry(todaysMeds.get(0).mTime.toString(),
@@ -334,9 +334,9 @@ public class CareRecipientActivity extends Activity implements ServiceConnection
             }
             // if found duplicate time, append medications to existing MedEntry object
             else {
-                for (int k = 0; k < todaysMeds.get(j).mMedications.size(); k++) {
-                    sortedMeds.get(i).addMedToEntry(todaysMeds.get(j).mMedications.get(k));
-                }
+                String name = todaysMeds.get(j).mTime.toString();
+                Time time = todaysMeds.get(j).mTime;
+                MedEntry entry = new MedEntry(name,todaysMeds.get(j).mMedications,time);
             }
         }
 
@@ -376,7 +376,7 @@ public class CareRecipientActivity extends Activity implements ServiceConnection
 
     public void loadData() {
         /* takes CareGiver object loaded from backend and parses data into locals */
-        mReceiver = cloudData.getRecipient("test");
+        mReceiver = cloudData.getRecipient(mRecipientName);
         if (mReceiver != null) {
             mMedicationAlerts = mReceiver.mAlerts;
             mCheckInTime = mReceiver.mCheckIntime;
