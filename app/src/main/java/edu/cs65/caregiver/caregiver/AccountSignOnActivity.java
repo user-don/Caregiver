@@ -13,6 +13,8 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.api.client.extensions.android.http.AndroidHttp;
+import com.google.api.client.extensions.android.json.AndroidJsonFactory;
 import com.google.gson.Gson;
 
 import java.io.IOException;
@@ -70,11 +72,7 @@ public class AccountSignOnActivity extends Activity {
         editor.putString(RECIPIENT_NAME, careRecipient);
         editor.apply();
 
-        // connect to patient status page
-        Intent intent = new Intent(getApplicationContext(), CareRecipientActivity.class);
-        startActivity(intent);
-
-
+        createCarerecipientAccount();
     }
 
     // wrong name appears
@@ -101,9 +99,45 @@ public class AccountSignOnActivity extends Activity {
         }
     }
 
-    private void searchAccount(){
-        // TODO -- should have some account management activity
+    public void createCarerecipientAccount() {
 
+        // dummy information below
+        Log.d(TAG, "executing recipient creation");
+        new AsyncTask<Void,Void,Void>() {
+            @Override
+            protected Void doInBackground(Void... params) {
+                HashMap<String, String> account_params = new HashMap<>();
+                account_params.put("email", careGiver);
+                account_params.put("registrationId", registrationID);
+
+                edu.cs65.caregiver.backend.messaging.Messaging.Builder builder =
+                        new edu.cs65.caregiver.backend.messaging.Messaging
+                                .Builder(AndroidHttp.newCompatibleTransport(), new AndroidJsonFactory(), null)
+                                .setRootUrl(SERVER_ADDR + "/_ah/api/");
+
+                edu.cs65.caregiver.backend.messaging.Messaging backend = builder.build();
+
+                try {
+                    backend.registerPatientAccount(careGiver, registrationID);
+
+                    runOnUiThread(new Runnable() {
+                        public void run() {
+                        // connect to patient status page
+                        Intent intent = new Intent(getApplicationContext(), CareRecipientActivity.class);
+                        startActivity(intent);
+                        }
+                    });
+                } catch (IOException e) {
+                    Log.d(TAG, "failed to register recipient account - Error msg: " + e.getMessage());
+                    e.printStackTrace();
+                }
+                return null;
+            }
+
+        }.execute();
+    }
+
+    private void searchAccount(){
         // dummy information below
         Log.d(TAG, "executing account post");
         new AsyncTask<Void,Void,Void>() {

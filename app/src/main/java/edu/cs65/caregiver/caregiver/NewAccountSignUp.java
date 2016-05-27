@@ -70,7 +70,7 @@ public class NewAccountSignUp extends Activity {
 
         mDataController.careGiver = new CareGiver(username);
         mDataController.careGiver.addRecipient(careRecipient);
-        createAccount();
+        createCaregiverAccount();
 
         //add password and username and careRecipient to the database
         SharedPreferences.Editor editor = getSharedPreferences(getString(R.string.profile_preference), MODE_PRIVATE).edit();
@@ -125,7 +125,7 @@ public class NewAccountSignUp extends Activity {
         }
     }
 
-    public void createAccount() {
+    public void createCaregiverAccount() {
         // TODO -- should have some account management activity
 
         // dummy information below
