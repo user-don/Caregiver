@@ -1,5 +1,6 @@
 package edu.cs65.caregiver.caregiver;
 
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -49,6 +50,7 @@ import edu.cs65.caregiver.caregiver.model.CareGiver;
 import edu.cs65.caregiver.caregiver.model.MedicationAlert;
 import edu.cs65.caregiver.caregiver.model.Recipient;
 import edu.cs65.caregiver.backend.messaging.Messaging;
+import edu.cs65.caregiver.caregiver.model.RecipientToCareGiverMessage;
 
 public class CareGiverActivity extends AppCompatActivity {
 
@@ -481,6 +483,49 @@ public class CareGiverActivity extends AppCompatActivity {
         else
             return sb.toString();
 
+    }
+
+    public class CareGiverNotificationReceiver extends BroadcastReceiver {
+        private static final String TAG = "CareGiverNotification";
+
+        @Override
+        public void onReceive(Context c, Intent i) {
+            Log.d(TAG, "received notification broadcast");
+
+            Gson gson = new Gson();
+            RecipientToCareGiverMessage msg = gson.fromJson(i.getStringExtra("msg"),RecipientToCareGiverMessage.class);
+            switch(msg.messageType) {
+                case RecipientToCareGiverMessage.CHECKIN:
+                    mReceiver.mCheckedIn = true;
+                    mDataController.setRecipientData(mReceiver);
+                    mDataController.saveData();
+
+                    new UpdateCareGiverAsyncTask().execute();
+
+                    updateUI();
+                    break;
+
+                case RecipientToCareGiverMessage.MED_TAKEN:
+
+                    for (String alert : msg.medAlertNames) {
+                        // TODO need to check off alerts that have been taken
+                    }
+
+                    break;
+
+                case RecipientToCareGiverMessage.MED_NOT_TAKEN:
+
+                    break;
+
+                case RecipientToCareGiverMessage.HELP:
+                    mReceiver.mRaisedAlert = true;
+                    mDataController.setRecipientData(mReceiver);
+                    mDataController.saveData();
+
+                    updateUI();
+                    break;
+            }
+        }
     }
 
     // GCM registration ... called in Main Activity
