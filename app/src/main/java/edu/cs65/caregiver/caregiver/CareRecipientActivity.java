@@ -211,8 +211,7 @@ public class CareRecipientActivity extends Activity implements ServiceConnection
                                         null,
                                         Calendar.getInstance().getTime().getTime());
 
-                        backend.sendNotificationToCaregiver(mRegistrationID, mEmail, msg.selfToString());
-                        backend.getAccountInfo(mEmail).execute();
+                        backend.sendNotificationToCaregiver(mRegistrationID, mEmail, msg.selfToString()).execute();
                     } catch (IOException e) {
                         Log.d(TAG, "send help failed");
                         e.printStackTrace();
