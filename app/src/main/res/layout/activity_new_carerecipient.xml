@@ -41,7 +41,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/btn_search"
-                android:textSize="20dp"
+                android:textSize="25dp"
                 android:fontFamily="serif"
                 android:gravity="center"
                 android:onClick="onSearch"/>
