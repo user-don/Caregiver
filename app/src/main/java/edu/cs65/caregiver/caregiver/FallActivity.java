@@ -7,10 +7,16 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
+import java.util.Timer;
+import java.util.TimerTask;
+
 /**
  * Created by ellenli on 5/19/16.
  */
 public class FallActivity extends Activity {
+
+    private static FallActivity parent;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -35,5 +41,18 @@ public class FallActivity extends Activity {
                 finish();
             }
         });
+
+        new Timer().schedule(new TimerTask() {
+            @Override
+            public void run() {
+
+
+
+//                Toast.makeText(getParent().getBaseContext(), "HELP REQUESTED",
+//                        Toast.LENGTH_LONG).show();
+                finish();
+            }
+        }, 6000);
+
     }
 }
