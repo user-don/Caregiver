@@ -73,6 +73,8 @@ public class AccountSignOnActivity extends Activity {
         // connect to patient status page
         Intent intent = new Intent(getApplicationContext(), CareRecipientActivity.class);
         startActivity(intent);
+
+
     }
 
     // wrong name appears
@@ -100,14 +102,6 @@ public class AccountSignOnActivity extends Activity {
     }
 
     private void searchAccount(){
-        // search the database for the name that matches input caregiver
-        careRecipient = "Sean Oh";
-        setContentView(R.layout.activity_new_carerecipient_search);
-        TextView nameSearch = (TextView)findViewById(R.id.carerecipient_name_search);
-        nameSearch.setText(careRecipient);
-
-        history = 2;
-
         // TODO -- should have some account management activity
 
         // dummy information below
@@ -132,10 +126,19 @@ public class AccountSignOnActivity extends Activity {
                           }
                         });
                     } else{
-//                        String storedPackage = gson.toJson(response);
-//                        CareGiver loaded_data = gson.fromJson(response, CareGiver.class);
+                        CareGiver loaded_data = gson.fromJson(response, CareGiver.class);
 
-                        System.out.println("package " + response);
+                        // search the database for the name that matches input caregiver
+                        careRecipient = loaded_data.mRecipients.get(0).mName;
+                        runOnUiThread(new Runnable() {
+                            public void run() {
+                                setContentView(R.layout.activity_new_carerecipient_search);
+                                TextView nameSearch = (TextView) findViewById(R.id.carerecipient_name_search);
+                                nameSearch.setText(careRecipient);
+                            }
+                        });
+
+                        history = 2;
                     }
                 } catch (IOException e) {
                     Log.d(TAG, "failed to issue post - Error msg: " + e.getMessage());
