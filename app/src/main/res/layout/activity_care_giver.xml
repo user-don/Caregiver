@@ -3,50 +3,17 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:paddingBottom="@dimen/activity_vertical_margin"
-    android:paddingLeft="@dimen/activity_horizontal_margin"
-    android:paddingRight="@dimen/activity_horizontal_margin"
-    android:paddingTop="@dimen/activity_vertical_margin"
+    android:background="@color/lightpaper"
     tools:context="edu.cs65.caregiver.caregiver.CareGiverActivity">
-
-    <LinearLayout
-        android:orientation="horizontal"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:gravity="center_horizontal"
-        android:id="@+id/linearLayout">
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceLarge"
-            android:text="@string/recipient"
-            android:id="@+id/textView" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceLarge"
-            android:text="@string/na"
-            android:id="@+id/recipient_name" />
-
-    </LinearLayout>
-
-    <Space
-        android:layout_width="fill_parent"
-        android:layout_height="15dp"
-        android:id="@+id/space2"
-        android:layout_below="@+id/linearLayout"
-        android:layout_alignParentEnd="true" />
 
     <LinearLayout
         android:id="@+id/table_header"
         android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/space2"
         android:layout_centerHorizontal="true"
+        android:layout_marginTop="20dp"
+        android:layout_marginBottom="5dp"
         android:gravity="center_horizontal"
         android:layout_alignParentStart="false">
 
@@ -57,17 +24,18 @@
             android:text="@string/list_of_todays_medication"
             android:id="@+id/textView4"
             android:textIsSelectable="false"
-            android:textSize="@dimen/abc_text_size_large_material"
-            android:layout_gravity="center"
-            android:layout_weight="1" />
+            android:textSize="25dp" />
 
-        <Button
+        <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/schedule_new_medication"
-            android:id="@+id/schedule_med_button"
-            android:onClick="onClickNewMedication"
-            android:layout_weight="0" />
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:text="@string/new_careGiver_default"
+            android:id="@+id/caregiver_recipient"
+            android:textIsSelectable="false"
+            android:textSize="25dp"
+            android:textStyle="bold"
+            android:layout_gravity="center" />
 
     </LinearLayout>
 
@@ -77,24 +45,18 @@
         android:layout_height="match_parent"
         android:layout_below="@+id/table_header"
         android:layout_centerHorizontal="true"
-        android:layout_above="@+id/alert_list_note">
+        android:layout_marginBottom="70dp">
 
         <ListView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:id="@+id/medication_alert_list2"
             android:layout_gravity="center_horizontal"
+            android:layout_marginRight="10dp"
+            android:layout_marginLeft="10dp"
             android:nestedScrollingEnabled="true" />
 
     </LinearLayout>
-
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/alert_list_note"
-        android:layout_above="@+id/linearLayout2"
-        android:gravity="center"
-        android:text="Tap Alert To Edit Or Delete" />
 
     <LinearLayout
         android:orientation="horizontal"
@@ -104,24 +66,49 @@
         android:layout_centerHorizontal="true"
         android:id="@+id/linearLayout2">
 
-        <Button
-            android:layout_width="wrap_content"
-            android:layout_height="100dp"
-            android:text="@string/check_in_status"
-            android:id="@+id/checkin_status_button"
-            android:layout_weight="1"
-            android:onClick="onClickCheckInStatus" />
-
-        <Button
-            android:layout_width="wrap_content"
-            android:layout_height="100dp"
-            android:text="@string/alert_status"
-            android:id="@+id/alert_status_button"
-            android:layout_weight="1"
-            android:onClick="onClickAlertStatus" />
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/alert_list_note"
+            android:layout_marginBottom="65dp"
+            android:gravity="center"
+            android:text="Tap Alert To Edit Or Delete" />
 
     </LinearLayout>
 
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/toolbar_bottom"
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:background="@color/canvas"
+        android:layout_alignParentBottom="true"
+        android:minHeight="?attr/actionBarSize" >
 
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="35dp"
+                android:src="@drawable/list_white"
+                android:layout_weight="115"
+                android:onClick="onClickCheckInStatus"/>
+
+            <View
+                android:layout_width="2dp"
+                android:layout_height="match_parent"
+                android:layout_gravity="center"
+                android:background="@color/white" />
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="35dp"
+                android:src="@drawable/alarm_white"
+                android:layout_weight="128"
+                android:onClick="onClickAlertStatus"/>
+        </LinearLayout>
+
+    </android.support.v7.widget.Toolbar>
 
 </RelativeLayout>

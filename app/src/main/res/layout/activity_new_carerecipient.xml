@@ -1,43 +1,52 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:gravity="center"
     android:includeFontPadding="false">
 
     <LinearLayout
-        android:id="@+id/find_caregiver_prompt"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="20dp"
-        android:layout_marginRight="20dp"
-        android:orientation="vertical">
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:gravity="center">
 
         <TextView
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="5dp"
-            android:text="@string/new_careRecipient_label" />
-
+            android:layout_marginTop="-45dp"
+            android:textSize="30dp"
+            android:layout_marginBottom="35dp"
+            android:textStyle="italic"
+            android:fontFamily="serif"
+            android:gravity="center"
+            android:text="@string/new_careRecipient_label"/>
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
+            android:orientation="vertical"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp">
 
             <EditText
                 android:id="@+id/find_caregiver"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:fontFamily="serif"
                 android:hint="@string/new_careRecipient_default"
+                android:textColorHint="@color/middlegrey"
                 android:layout_weight="3"/>
 
             <Button
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="match_parent"
+                android:layout_height="70dp"
                 android:text="@string/btn_search"
+                android:textSize="25dp"
+                android:fontFamily="serif"
+                android:gravity="center"
                 android:onClick="onSearch"/>
         </LinearLayout>
+
     </LinearLayout>
 
-</LinearLayout>
+</RelativeLayout>

@@ -22,7 +22,7 @@ import edu.cs65.caregiver.caregiver.model.RecipientToCareGiverMessage;
 public class Checkin extends AppCompatActivity {
 
     private Vibrator v;
-
+    private static final String SERVER_ADDR = "https://handy-empire-131521.appspot.com";
     private String mRegistration;
     private String mEmail;
 
@@ -50,7 +50,7 @@ public class Checkin extends AppCompatActivity {
                 edu.cs65.caregiver.backend.messaging.Messaging.Builder builder =
                         new edu.cs65.caregiver.backend.messaging.Messaging
                                 .Builder(AndroidHttp.newCompatibleTransport(), new AndroidJsonFactory(), null)
-                                .setRootUrl(CareRecipientActivity.SERVER_ADDR + "/_ah/api/");
+                                .setRootUrl(SERVER_ADDR + "/_ah/api/");
 
                 edu.cs65.caregiver.backend.messaging.Messaging backend = builder.build();
 

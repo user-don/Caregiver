@@ -68,6 +68,15 @@ public class RegistrationEndpoint {
             log.info("Device " + regId + " not registered, skipping unregister");
             return;
         }
+        List<AccountObject> accounts = ofy().load().type(AccountObject.class).list();
+        for (AccountObject account : accounts) {
+            List<RegistrationRecord> records = account.getRegistrations();
+            for (RegistrationRecord rec : records) {
+                if (rec.getRegId().equals(regId)) {
+                    records.remove(rec);
+                }
+            }
+        }
         ofy().delete().entity(record).now();
     }
 

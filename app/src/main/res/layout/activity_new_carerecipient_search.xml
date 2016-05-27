@@ -15,7 +15,8 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textSize="15dp"
+            android:textSize="25dp"
+            android:fontFamily="serif"
             android:gravity="center"
             android:text="@string/new_careRecipient_search_label"/>
 
@@ -24,8 +25,9 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="John Doe"
-            android:textSize="30dp"
-            android:textStyle="bold"
+            android:textSize="50dp"
+            android:fontFamily="serif"
+            android:textStyle="italic"
             android:gravity="center"
             android:layout_marginTop="10dp"
             android:layout_marginRight="15dp"
@@ -41,20 +43,24 @@
             <Button
                 android:id="@+id/btn_confirm_image"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_height="70dp"
                 android:layout_weight="1"
                 android:layout_marginLeft="15dp"
+                android:textSize="25dp"
                 android:text="@string/btn_no"
+                android:fontFamily="serif"
                 android:onClick="onNameReject">
             </Button>
 
             <Button
                 android:id="@+id/btn_cancel_image"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_height="70dp"
                 android:layout_weight="1"
                 android:layout_marginRight="15dp"
+                android:textSize="25dp"
                 android:text="@string/btn_yes"
+                android:fontFamily="serif"
                 android:onClick="onNameConfirm">
             </Button>
 

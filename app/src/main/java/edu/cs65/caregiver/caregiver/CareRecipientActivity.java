@@ -1,16 +1,20 @@
 package edu.cs65.caregiver.caregiver;
 
+import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.DialogFragment;
 import android.app.ListActivity;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.media.MediaPlayer;
 import android.media.RingtoneManager;
 import android.os.AsyncTask;
@@ -22,6 +26,7 @@ import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
+import android.support.v7.widget.Toolbar;
 
 import com.google.android.gms.gcm.GoogleCloudMessaging;
 import com.google.api.client.extensions.android.http.AndroidHttp;
@@ -46,7 +51,7 @@ import edu.cs65.caregiver.caregiver.model.Recipient;
 import edu.cs65.caregiver.caregiver.model.RecipientToCareGiverMessage;
 
 
-public class CareRecipientActivity extends ListActivity implements ServiceConnection {
+public class CareRecipientActivity extends Activity implements ServiceConnection {
 
     private static final String TAG = "CareRecipientActivity";
 
@@ -80,9 +85,14 @@ public class CareRecipientActivity extends ListActivity implements ServiceConnec
     private ServiceConnection mConnection = this;
     private Context mContext = this;
 
+    private CareRecipientBroadcastReceiver mBroadcastReceiver;
+    private IntentFilter mIntentFilter;
 
     private String mEmail = "dummy";
     private String mRecipientName = "test";
+    private static final String EMAIL_KEY = "email key";
+    private static final String REGISTRATION_KEY = "registration key";
+    private static final String RECIPIENT_NAME_KEY = "recipient name";
 
 
     @Override
@@ -90,14 +100,23 @@ public class CareRecipientActivity extends ListActivity implements ServiceConnec
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_care_recipient);
+        mContext = getApplicationContext();
 
-        new GcmRegistrationAsyncTask(this).execute();
+        SharedPreferences preferences = getSharedPreferences(getString(R.string.profile_preference), 0);
+        mEmail = preferences.getString(EMAIL_KEY, "");
+        mRecipientName = preferences.getString(RECIPIENT_NAME_KEY, "");
+        mRegistrationID = preferences.getString(REGISTRATION_KEY,"");
+
+        // register receiver for gcm message broadcasts
+        mBroadcastReceiver = new CareRecipientBroadcastReceiver();
+        mIntentFilter = new IntentFilter("edu.cs65.caregiver.caregiver.CARERECIPIENT_BROADCAST");
+        registerReceiver(mBroadcastReceiver, mIntentFilter);
 
         // connect service
         myReceiver = new ReceiveMessages();
         mIsBound = false;
+        //automaticBind();
 
-//        automaticBind();
 
         if (mCareGiver == null) {
             mCareGiver = new CareGiver("test");
@@ -124,6 +143,9 @@ public class CareRecipientActivity extends ListActivity implements ServiceConnec
 
         // schedule alarms
         PSMScheduler.setSchedule(this);
+
+        Toolbar header = (Toolbar)findViewById(R.id.toolbar);
+        header.setTitle(mRecipientName);
     }
 
 
@@ -133,11 +155,11 @@ public class CareRecipientActivity extends ListActivity implements ServiceConnec
         dayIndex = mDay - 1; // convert to match MedicationAlert int values
     }
 
-    @Override
-    protected void onListItemClick(ListView list, View view, int position, long id) {
-        super.onListItemClick(list, view, position, id);
-        displayMedDialog(sortedMeds.get(position));
-    }
+//    @Override
+//    protected void onListItemClick(ListView list, View view, int position, long id) {
+//        super.onListItemClick(list, view, position, id);
+//        displayMedDialog(sortedMeds.get(position));
+//    }
 
     public void displayMedDialog(MedEntry entry) {
         final ArrayList selectedItems = new ArrayList();
@@ -205,25 +227,22 @@ public class CareRecipientActivity extends ListActivity implements ServiceConnec
 
                 edu.cs65.caregiver.backend.messaging.Messaging backend = builder.build();
 
-                if (mReceiverRegistered) {
-                    Log.d(TAG, "Notifying caregiver of help: " + mEmail);
-                    try {
 
-                        // make help message
-                        RecipientToCareGiverMessage msg =
-                                new RecipientToCareGiverMessage(RecipientToCareGiverMessage.HELP,
-                                        null,
-                                        Calendar.getInstance().getTime().getTime());
+                Log.d(TAG, "Notifying caregiver of help: " + mEmail);
+                try {
 
-                        backend.sendNotificationToCaregiver(mRegistrationID, mEmail, msg.selfToString());
-                        backend.getAccountInfo(mEmail).execute();
-                    } catch (IOException e) {
-                        Log.d(TAG, "send help failed");
-                        e.printStackTrace();
-                    }
-                } else {
-                    Log.d(TAG, "Cannot send help message because device is unregistered");
+                    // make help message
+                    RecipientToCareGiverMessage msg =
+                            new RecipientToCareGiverMessage(RecipientToCareGiverMessage.HELP,
+                                    null,
+                                    Calendar.getInstance().getTime().getTime());
+
+                    backend.sendNotificationToCaregiver(mRegistrationID, mEmail, msg.selfToString()).execute();
+                } catch (IOException e) {
+                    Log.d(TAG, "send help failed");
+                    e.printStackTrace();
                 }
+
 
                 return null;
             }
@@ -236,6 +255,12 @@ public class CareRecipientActivity extends ListActivity implements ServiceConnec
             }
         }.execute();
 
+    }
+
+    public void onMedClicked(View v){
+        DialogFragment fragment = CareGiverDialogFragment.newInstance(CareGiverDialogFragment.DISPLAY_MED_LIST);
+        fragment.show(getFragmentManager(),
+                getString(R.string.app_name));
     }
 
     public void onMenuClicked(View v) {
@@ -254,11 +279,11 @@ public class CareRecipientActivity extends ListActivity implements ServiceConnec
         }
 
         // initiate list adapter
-        ArrayAdapter<String> myAdapter = new ArrayAdapter<String>(this, R.layout.row_layout,
-                R.id.listText, listValues);
+        //ArrayAdapter<String> myAdapter = new ArrayAdapter<String>(this, R.layout.row_layout,
+        //        R.id.listText, listValues);
 
         // assign the list adapter
-        setListAdapter(myAdapter);
+        //setListAdapter(myAdapter);
     }
 
     public ArrayList<MedicationAlert> getMedsForToday() {
@@ -353,7 +378,18 @@ public class CareRecipientActivity extends ListActivity implements ServiceConnec
         /* takes locals and updates the appropriate UI components */
         loadData();
         setUpAdapter();
+
         PSMScheduler.setSchedule(this); // update alarms
+    }
+
+    public class CareRecipientBroadcastReceiver extends BroadcastReceiver {
+        private static final String TAG = "CareRecipientReceiver";
+
+        @Override
+        public void onReceive(Context c, Intent i) {
+            Log.d(TAG, "Received broadcast -> updating information");
+            new GetCareGiverInfoAsyncTask().execute();
+        }
     }
 
     /* –––––––––––––––– Testing ONLY –––––––––––––––– */
@@ -452,7 +488,6 @@ public class CareRecipientActivity extends ListActivity implements ServiceConnec
             mIsBound = false;
         }
     }
-
     @Override
     public void onServiceConnected(ComponentName name, IBinder service) {
         SensorService.MyLocalBinder binder = (SensorService.MyLocalBinder) service;
@@ -464,7 +499,6 @@ public class CareRecipientActivity extends ListActivity implements ServiceConnec
     public void onServiceDisconnected(ComponentName name) {
         mIsBound = false;
     }
-
     // ****************** receiver methods ***************************//
 
     public class ReceiveMessages extends BroadcastReceiver {
@@ -534,7 +568,6 @@ public class CareRecipientActivity extends ListActivity implements ServiceConnec
 
         }
     }
-
 
     // GCM registration ... called in Main Activity
     class GcmRegistrationAsyncTask extends AsyncTask<Void, Void, String> {
@@ -607,8 +640,8 @@ public class CareRecipientActivity extends ListActivity implements ServiceConnec
         }
     }
 
+    class GetCareGiverInfoAsyncTask extends AsyncTask<Void,String,String> {
 
-    class GetCareGiverInfoAsyncTask extends AsyncTask<Void,Void,String> {
         private static final String TAG = "Get Account Info AT";
         Gson gson;
 

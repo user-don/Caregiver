@@ -1,13 +1,12 @@
 package edu.cs65.caregiver.caregiver;
 
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
-import android.graphics.Color;
-import android.graphics.PorterDuff;
 import android.os.AsyncTask;
-import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -25,37 +24,28 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.support.v7.widget.Toolbar;
 
+import com.google.android.gms.gcm.GcmListenerService;
 import com.google.android.gms.gcm.GoogleCloudMessaging;
 import com.google.api.client.extensions.android.http.AndroidHttp;
 import com.google.api.client.extensions.android.json.AndroidJsonFactory;
-import com.google.api.client.googleapis.services.AbstractGoogleClientRequest;
-import com.google.api.client.googleapis.services.GoogleClientRequestInitializer;
 import com.google.gson.Gson;
-
-import org.w3c.dom.Text;
 
 import java.io.IOException;
 import java.sql.Time;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
-import edu.cs65.caregiver.backend.registration.Registration;
 import edu.cs65.caregiver.caregiver.controllers.DataController;
 import edu.cs65.caregiver.caregiver.model.CareGiver;
 import edu.cs65.caregiver.caregiver.model.MedicationAlert;
 import edu.cs65.caregiver.caregiver.model.Recipient;
 import edu.cs65.caregiver.backend.messaging.Messaging;
+import edu.cs65.caregiver.caregiver.model.RecipientToCareGiverMessage;
 
 public class CareGiverActivity extends AppCompatActivity {
 
     private static final String TAG = "CareGiverActivity";
-
-    //public static String SERVER_ADDR = "http://10.31.39.206:8080";
-    //public static String SERVER_ADDR = "http://0.0.0.0:8080";
-    //public static String SERVER_ADDR = "http://10.0.2.2:8080";
     public static String SERVER_ADDR = "https://handy-empire-131521.appspot.com";
 
     // Changed sender id
@@ -69,29 +59,32 @@ public class CareGiverActivity extends AppCompatActivity {
 
     //private CareGiver mCareGiver;
     private String mEmail = "dummy";
-    private String mRecipientName = "test";     // TODO -- expand to get from preferences / intent
+    private String mRecipientName = "test";
     private Recipient mReceiver;
 
     private static final String EMAIL_KEY = "email key";
-    private static final String PASSWORD_KEY = "password key";
-    private static final String CAREGIVER_KEY = "caregiver name";
+    private static final String REGISTRATION_KEY = "registration key";
     private static final String RECIPIENT_NAME_KEY = "recipient name";
     private SharedPreferences mPrefs;
 
     /* --- cloud stuff --- */
     private boolean mReceiverRegistered = false;
     private String mRegistrationID;
+    private CareGiverBroadcastReceiver mBroadcastReceiver;
+    private IntentFilter mIntentFilter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_care_giver);
 
-        //mPrefs = getPreferences(MODE_PRIVATE);
+        mPrefs = getSharedPreferences(getString(R.string.profile_preference), 0);
+        mEmail = mPrefs.getString(EMAIL_KEY,"");
+        mRecipientName = mPrefs.getString(RECIPIENT_NAME_KEY,"");
+        mRegistrationID = mPrefs.getString(REGISTRATION_KEY,"");
 
-        /* TODO -> CONNECT WITH BACKEND AND REQUEST ALL MEDICATIONS FOR CAREGIVER'S RECIPIENT */
-        // register phone with GCM
-        new GcmRegistrationAsyncTask(this).execute();
+        mBroadcastReceiver = new CareGiverBroadcastReceiver();
+        mIntentFilter = new IntentFilter("edu.cs65.caregiver.caregiver.CAREGIVER_BROADCAST");
 
         mDataController = DataController.getInstance(getApplicationContext());
         mDataController.initializeData(getApplicationContext());
@@ -111,14 +104,27 @@ public class CareGiverActivity extends AppCompatActivity {
         }
 
         setAlertAdapter();
-
         updateUI();
+
+        GetCareGiverInfoAsyncTask task = new GetCareGiverInfoAsyncTask();
+        task.email = mEmail;
+        task.execute();
+
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.care_giver_activity_menu, menu);
+
+        Toolbar toolbarBottom = (Toolbar) findViewById(R.id.toolbar_bottom);
+        toolbarBottom.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                return true;
+            }
+        });
+
         return true;
     }
 
@@ -131,51 +137,78 @@ public class CareGiverActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
+        registerReceiver(mBroadcastReceiver, mIntentFilter);
         //registerReceiver();
     }
 
     @Override
     protected void onPause() {
+        unregisterReceiver(mBroadcastReceiver);
         //LocalBroadcastManager.getInstance(this).unregisterReceiver(mRegistrationBroadcastReceiver);
         //isReceiverRegistered = false;
         super.onPause();
     }
 
-    public void onClickNewMedication(View v) {
+    public void onClickNewMedication(MenuItem menuItem) {
         Intent i = new Intent(this, NewMedicationActivity.class);
         startActivityForResult(i, NEW_MEDICATION_REQUEST);
     }
 
-    public void onClickAccount(MenuItem menuItem) {
-        // TODO -- should have some account management activity
-
-        // dummy information below
-        Log.d(TAG, "executing account post");
-        new AsyncTask<Void,Void,Void>() {
-            @Override
-            protected Void doInBackground(Void... params) {
-                Gson gson = new Gson();
-
-                HashMap<String, String> account_params = new HashMap<>();
-                account_params.put("email", mEmail);
-                account_params.put("password","dummy_pass");
-                account_params.put("registrationId", mRegistrationID);
-                account_params.put("caregiver", gson.toJson(mDataController.careGiver));
-
-                try {
-                    String response = ServerUtilities.post(SERVER_ADDR + "/create_account.do", account_params);
-                    Log.d(TAG, "post response: " + response);
-                } catch (IOException e) {
-                    Log.d(TAG, "failed to issue post - Error msg: " + e.getMessage());
-                    e.printStackTrace();
-                }
-                return null;
-            }
-
-        }.execute();
-
-
-    }
+//    public void onClickAccount(MenuItem menuItem) {
+//        // TODO -- should have some account management activity
+//
+//        Log.d(TAG, "test ");
+//        new AsyncTask<Void,Void,Void>() {
+//            @Override
+//            protected Void doInBackground(Void... params) {
+//                Gson gson = new Gson();
+//
+//                edu.cs65.caregiver.backend.messaging.Messaging.Builder builder =
+//                        new edu.cs65.caregiver.backend.messaging.Messaging
+//                                .Builder(AndroidHttp.newCompatibleTransport(), new AndroidJsonFactory(), null)
+//                                .setRootUrl(SERVER_ADDR + "/_ah/api/");
+//
+//                edu.cs65.caregiver.backend.messaging.Messaging backend = builder.build();
+//                try {
+//                    Log.d(TAG, "send \'testing\' to test func");
+//                    backend.helloTest("testing").execute();
+//                } catch (IOException e) {
+//                    Log.d(TAG, "failed to issue post - Error msg: " + e.getMessage());
+//                    e.printStackTrace();
+//                }
+//                return null;
+//            }
+//
+//        }.execute();
+//
+//
+//        // dummy information below
+////        Log.d(TAG, "executing account post");
+////        new AsyncTask<Void,Void,Void>() {
+////            @Override
+////            protected Void doInBackground(Void... params) {
+////                Gson gson = new Gson();
+////
+////                HashMap<String, String> account_params = new HashMap<>();
+////                account_params.put("email", mEmail);
+////                account_params.put("password","dummy_pass");
+////                account_params.put("registrationId", mRegistrationID);
+////                account_params.put("caregiver", gson.toJson(mDataController.careGiver));
+////
+////                try {
+////                    String response = ServerUtilities.post(SERVER_ADDR + "/create_account.do", account_params);
+////                    Log.d(TAG, "post response: " + response);
+////                } catch (IOException e) {
+////                    Log.d(TAG, "failed to issue post - Error msg: " + e.getMessage());
+////                    e.printStackTrace();
+////                }
+////                return null;
+////            }
+////
+////        }.execute();
+//
+//
+//    }
 
 
     public void onClickCheckInStatus(View v) {
@@ -296,26 +329,26 @@ public class CareGiverActivity extends AppCompatActivity {
         ListView alertList = (ListView) findViewById(R.id.medication_alert_list2);
         ((ArrayAdapter) alertList.getAdapter()).notifyDataSetChanged();
 
-        TextView recipientText = (TextView) findViewById(R.id.recipient_name);
-        recipientText.setText(mReceiver.mName);
+        TextView recipientText = (TextView) findViewById(R.id.caregiver_recipient);
+        recipientText.setText(" " + mRecipientName);
 
-        Button mAlertButton = (Button) findViewById(R.id.alert_status_button);
-        if (mReceiver.mRaisedAlert) {
-            mAlertButton.getBackground().setColorFilter(Color.RED, PorterDuff.Mode.MULTIPLY);
-            //mAlertButton.setBackgroundColor(Color.RED);
-        } else {
-            mAlertButton.getBackground().setColorFilter(Color.LTGRAY, PorterDuff.Mode.MULTIPLY);
-            //mAlertButton.setBackgroundColor(Color.GRAY);
-        }
-
-        Button mStatusButton = (Button) findViewById(R.id.checkin_status_button);
-        if (mReceiver.mHasCheckedInToday) {
-            mStatusButton.getBackground().setColorFilter(Color.BLUE, PorterDuff.Mode.MULTIPLY);
-            //mStatusButton.setcolor(Color.BLUE);
-        } else {
-            mStatusButton.getBackground().setColorFilter(Color.LTGRAY, PorterDuff.Mode.MULTIPLY);
-            //mStatusButton.setBackgroundColor(Color.GRAY);
-        }
+//        Button mAlertButton = (Button) findViewById(R.id.alert_status_button);
+//        if (mReceiver.mRaisedAlert) {
+//            mAlertButton.getBackground().setColorFilter(Color.RED, PorterDuff.Mode.MULTIPLY);
+//            //mAlertButton.setBackgroundColor(Color.RED);
+//        } else {
+//            mAlertButton.getBackground().setColorFilter(Color.LTGRAY, PorterDuff.Mode.MULTIPLY);
+//            //mAlertButton.setBackgroundColor(Color.GRAY);
+//        }
+//
+//        Button mStatusButton = (Button) findViewById(R.id.checkin_status_button);
+//        if (mReceiver.mHasCheckedInToday) {
+//            mStatusButton.getBackground().setColorFilter(Color.BLUE, PorterDuff.Mode.MULTIPLY);
+//            //mStatusButton.setcolor(Color.BLUE);
+//        } else {
+//            mStatusButton.getBackground().setColorFilter(Color.LTGRAY, PorterDuff.Mode.MULTIPLY);
+//            //mStatusButton.setBackgroundColor(Color.GRAY);
+//        }
     }
 
     public void setAlertAdapter() {
@@ -458,74 +491,119 @@ public class CareGiverActivity extends AppCompatActivity {
 
     }
 
-    // GCM registration ... called in Main Activity
-    class GcmRegistrationAsyncTask extends AsyncTask<Void, Void, String> {
-        private Registration regService = null;
-        private GoogleCloudMessaging gcm;
-        private Context context;
-
-        public GcmRegistrationAsyncTask(Context context) {
-            this.context = context;
-        }
+    public class CareGiverBroadcastReceiver extends BroadcastReceiver {
+        private static final String TAG = "CareGiverNotification";
 
         @Override
-        protected String doInBackground(Void... params) {
-            if (regService == null) {
-                Registration.Builder builder = new Registration.Builder(AndroidHttp.newCompatibleTransport(),
-                        new AndroidJsonFactory(), null)
-                        .setRootUrl(SERVER_ADDR + "/_ah/api/");
-                // UNCOMMENT TO RUN LOCALLY
-//                        .setGoogleClientRequestInitializer(new GoogleClientRequestInitializer() {
-//                            @Override
-//                            public void initialize(AbstractGoogleClientRequest<?> abstractGoogleClientRequest)
-//                                    throws IOException {
-//                                abstractGoogleClientRequest.setDisableGZipContent(true);
-//                            }
-//                        });
-                // end of optional local run code
+        public void onReceive(Context c, Intent i) {
+            Log.d(TAG, "received notification broadcast");
 
-                regService = builder.build();
-            }
+            Gson gson = new Gson();
+            RecipientToCareGiverMessage msg = gson.fromJson(i.getStringExtra("msg"),RecipientToCareGiverMessage.class);
+            switch(msg.messageType) {
+                case RecipientToCareGiverMessage.CHECKIN:
+                    mReceiver.mCheckedIn = true;
+                    mDataController.setRecipientData(mReceiver);
+                    mDataController.saveData();
 
-            String msg = "";
-            try {
-                if (gcm == null) {
-                    gcm = GoogleCloudMessaging.getInstance(context);
-                }
-                mRegistrationID = gcm.register(SENDER_ID);
-                msg = "Device registered, registration ID = " + mRegistrationID;
+                    new UpdateCareGiverAsyncTask().execute();
 
-                // Send registration ID to server over HTTP so it can use GCM/HTTP
-                // to send messages to the app.
-                regService.register(mRegistrationID).execute();
+                    updateUI();
+                    break;
 
-            } catch (IOException ex) {
-                ex.printStackTrace();
-                Log.d(TAG, "Error: " + ex.getMessage());
-                msg = null;
-            }
-            return msg;
-        }
+                case RecipientToCareGiverMessage.MED_TAKEN:
 
-        @Override
-        protected void onPostExecute(String msg) {
+                    for (String alert : msg.medAlertNames) {
+                        Log.d(TAG, "Recipient has taken " + alert);
+                        // checkOffAlert()
+                        // TODO need to check off alerts that have been taken
+                    }
 
-            //Toast.makeText(context, msg, Toast.LENGTH_LONG).show();
-            if (msg != null) {
-                Logger.getLogger("REGISTRATION").log(Level.INFO, msg);
-                Toast.makeText(context, "Connected to Cloud!", Toast.LENGTH_SHORT).show();
-                mReceiverRegistered = true;
+                    break;
 
-                // update info
-                GetCareGiverInfoAsyncTask task = new GetCareGiverInfoAsyncTask();
-                task.email = mEmail;
-                task.execute();
+                case RecipientToCareGiverMessage.MED_NOT_TAKEN:
 
-            } else {
-                Toast.makeText(context, "Failed to Connect to Cloud", Toast.LENGTH_SHORT).show();
+                    break;
+
+                case RecipientToCareGiverMessage.HELP:
+                    mReceiver.mRaisedAlert = true;
+                    mDataController.setRecipientData(mReceiver);
+                    mDataController.saveData();
+
+                    updateUI();
+                    break;
             }
         }
     }
+
+//    // GCM registration ... called in Main Activity
+//    class GcmRegistrationAsyncTask extends AsyncTask<Void, Void, String> {
+//        private Registration regService = null;
+//        private GoogleCloudMessaging gcm;
+//        private Context context;
+//
+//        public GcmRegistrationAsyncTask(Context context) {
+//            this.context = context;
+//        }
+//
+//        @Override
+//        protected String doInBackground(Void... params) {
+//            if (regService == null) {
+//                Registration.Builder builder = new Registration.Builder(AndroidHttp.newCompatibleTransport(),
+//                        new AndroidJsonFactory(), null)
+//                        .setRootUrl(SERVER_ADDR + "/_ah/api/");
+//                // UNCOMMENT TO RUN LOCALLY
+////                        .setGoogleClientRequestInitializer(new GoogleClientRequestInitializer() {
+////                            @Override
+////                            public void initialize(AbstractGoogleClientRequest<?> abstractGoogleClientRequest)
+////                                    throws IOException {
+////                                abstractGoogleClientRequest.setDisableGZipContent(true);
+////                            }
+////                        });
+//                // end of optional local run code
+//
+//                regService = builder.build();
+//            }
+//
+//            String msg = "";
+//            try {
+//                if (gcm == null) {
+//                    gcm = GoogleCloudMessaging.getInstance(context);
+//                }
+//                mRegistrationID = gcm.register(SENDER_ID);
+//                msg = "Device registered, registration ID = " + mRegistrationID;
+//
+//                // Send registration ID to server over HTTP so it can use GCM/HTTP
+//                // to send messages to the app.
+//                regService.register(mRegistrationID).execute();
+//
+//            } catch (IOException ex) {
+//                ex.printStackTrace();
+//                Log.d(TAG, "Error: " + ex.getMessage());
+//                msg = null;
+//            }
+//            return msg;
+//        }
+//
+//        @Override
+//        protected void onPostExecute(String msg) {
+//
+//            //Toast.makeText(context, msg, Toast.LENGTH_LONG).show();
+//            if (msg != null) {
+//                Logger.getLogger("REGISTRATION").log(Level.INFO, msg);
+//                Toast.makeText(context, "Connected to Cloud!", Toast.LENGTH_SHORT).show();
+//                mReceiverRegistered = true;
+//
+//                // update info
+//                GetCareGiverInfoAsyncTask task = new GetCareGiverInfoAsyncTask();
+//                task.email = mEmail;
+//                task.execute();
+//
+//            } else {
+//                Toast.makeText(context, "Failed to Connect to Cloud", Toast.LENGTH_SHORT).show();
+//            }
+//        }
+//    }
 
     class GetCareGiverInfoAsyncTask extends AsyncTask<Void,String,String> {
         private static final String TAG = "Get Account Info AT";
@@ -543,16 +621,12 @@ public class CareGiverActivity extends AppCompatActivity {
             edu.cs65.caregiver.backend.messaging.Messaging backend = builder.build();
             edu.cs65.caregiver.backend.messaging.model.CaregiverEndpointsObject response = null;
 
-            if (mReceiverRegistered) {
-                Log.d(TAG, "Executing getAccountInfo with email " + email);
-                try {
-                    response = backend.getAccountInfo(email).execute();
-                } catch (IOException e) {
-                    Log.d(TAG, "getAccountInfo failed");
-                    e.printStackTrace();
-                }
-            } else {
-                Log.d(TAG, "Cannot update account because device is unregistered");
+            Log.d(TAG, "Executing getAccountInfo with email " + email);
+            try {
+                response = backend.getAccountInfo(email).execute();
+            } catch (IOException e) {
+                Log.d(TAG, "getAccountInfo failed");
+                e.printStackTrace();
             }
 
             return (response != null) ? response.getData() : null;
@@ -624,12 +698,12 @@ public class CareGiverActivity extends AppCompatActivity {
 
             if (mReceiverRegistered) {
                 Log.d(TAG, "Sending message to recipient registered with email " + mEmail);
-                try {
-                    backend.sendNotificationToPatient(mRegistrationID, mEmail, msg).execute();
-                } catch (IOException e) {
-                    Log.d(TAG, "sendNotificationToPatient failed");
-                    e.printStackTrace();
-                }
+//                try {
+//                    backend.sendNotificationToPatient(mRegistrationID, mEmail, msg).execute();
+//                } catch (IOException e) {
+//                    Log.d(TAG, "sendNotificationToPatient failed");
+//                    e.printStackTrace();
+//                }
             } else {
                 Log.d(TAG, "Cannot sendNotificationToPatient because device is unregistered");
             }

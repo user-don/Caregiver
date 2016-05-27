@@ -106,7 +106,7 @@ public class MessagingEndpoint {
 
 
     /**
-     * Send to the first 10 devices (You can modify this to send to any number of devices or a specific device)
+     * Send to the all devices registered with user
      *
      * @param message The message to send
      */
@@ -215,7 +215,7 @@ public class MessagingEndpoint {
                 temp.setRegistrations(tempRegs);
                 try {
                     //sendMessage(message); // change back!
-                    sendMessageToAll("sending notification to caregiver");
+                    //sendMessageToAll("sending notification to caregiver");
                     sendMessage(message, temp);
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -265,7 +265,7 @@ public class MessagingEndpoint {
                 temp.setRegistrations(tempRegs);
                 try {
                     //sendMessage(message); // change back!
-                    sendMessageToAll("sending notification to caregiver");
+                    //sendMessageToAll("sending notification to caregiver");
                     sendMessage(message, temp);
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -315,8 +315,13 @@ public class MessagingEndpoint {
         }
         RegistrationRecord record =
                 ofy().load().type(RegistrationRecord.class).filter("regId", regId).first().now();
+        if (record == null) {
+            throw new BadRequestException("No record with this registration exists");
+        }
         record.setRole("patient");
         account.addRegistration(record);
+        ofy().save().entity(account).now();
+        ofy().save().entity(record).now();
     }
 
 
