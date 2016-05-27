@@ -29,6 +29,10 @@ public class SensorService extends Service implements SensorEventListener {
     private ArrayList<Double> featVect = new ArrayList<>();
     private static ArrayBlockingQueue<Double> mAccBuffer;
     private OnSensorChangedTask mAsyncTask;
+
+    private Runnable mReadData;
+    private Thread mDataThread;
+
     private Context mContext = this;
 
     public static final int ACCELEROMETER_BUFFER_CAPACITY = 2048;
@@ -50,7 +54,81 @@ public class SensorService extends Service implements SensorEventListener {
                 SensorManager.SENSOR_DELAY_FASTEST);
 
         mAsyncTask = new OnSensorChangedTask();
+
+        mReadData = new Runnable() {
+            @Override
+            public void run() {
+                {
+
+                    Double[] toClassify = new Double[ACCELEROMETER_BLOCK_CAPACITY + 1];
+
+                    int blockSize = 0;
+                    FFT fft = new FFT(ACCELEROMETER_BLOCK_CAPACITY);
+                    double[] accBlock = new double[ACCELEROMETER_BLOCK_CAPACITY];
+                    double[] re = accBlock;
+                    double[] im = new double[ACCELEROMETER_BLOCK_CAPACITY];
+
+                    double max = Double.MIN_VALUE;
+
+                    while (true) {
+                        try {
+
+                            // Dumping buffer
+                            accBlock[blockSize++] = mAccBuffer.take().doubleValue();
+
+                            // once app has 64 readings
+                            if (blockSize == ACCELEROMETER_BLOCK_CAPACITY) {
+                                blockSize = 0;
+                                max = .0;
+
+                                for (double val : accBlock) {
+                                    if (max < val) {
+                                        max = val;
+                                    }
+                                }
+
+                                fft.fft(re, im);
+
+                                for (int i = 0; i < re.length; i++) {
+                                    // Compute each coefficient
+                                    double mag = Math.sqrt(re[i] * re[i] + im[i]* im[i]);
+                                    toClassify[i] = mag;
+                                    im[i] = .0; // Clear the field
+                                }
+
+                                // Finally, append max after frequency components
+                                toClassify[ACCELEROMETER_BLOCK_CAPACITY] = max;
+                                int label = (int) WekaClassifier.classify(toClassify);
+
+                                switch ((int) label) {
+                                    case 0:
+                                        // nothing wrong
+                                        break;
+                                    case 1:
+                                        Intent fallIntent = new Intent(mContext, FallActivity.class);
+                                        fallIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                                        mContext.startActivity(fallIntent);
+                                        break;
+                                }
+
+                                Intent i = new Intent(BROADCAST_LABEL_CHANGE);
+                                sendBroadcast(i);
+                                featVect.clear();
+                            }
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+            }
+
+        };
+        mDataThread = new Thread(mReadData);
+        mDataThread.start();
+
         mAsyncTask.execute(new Void[0]);
+
+
     }
 
 
@@ -91,7 +169,8 @@ public class SensorService extends Service implements SensorEventListener {
     }
 
     public void onDestroy() {
-        mAsyncTask.cancel(true);
+        mDataThread.stop();
+//        mAsyncTask.cancel(true);
         try {
             Thread.sleep(100);
         } catch (InterruptedException e) {
@@ -116,59 +195,60 @@ public class SensorService extends Service implements SensorEventListener {
 
             double max = Double.MIN_VALUE;
 
-            while (true) {
-                try {
-                    // need to check if the AsyncTask is cancelled or not in the while loop
-                    if (isCancelled() == true) {
-                        return null;
-                    }
-
-                    // Dumping buffer
-                    accBlock[blockSize++] = mAccBuffer.take().doubleValue();
-
-                    // once app has 64 readings
-                    if (blockSize == ACCELEROMETER_BLOCK_CAPACITY) {
-                        blockSize = 0;
-                        max = .0;
-
-                        for (double val : accBlock) {
-                            if (max < val) {
-                                max = val;
-                            }
-                        }
-
-                        fft.fft(re, im);
-
-                        for (int i = 0; i < re.length; i++) {
-                            // Compute each coefficient
-                            double mag = Math.sqrt(re[i] * re[i] + im[i]* im[i]);
-                            toClassify[i] = mag;
-                            im[i] = .0; // Clear the field
-                        }
-
-                        // Finally, append max after frequency components
-                        toClassify[ACCELEROMETER_BLOCK_CAPACITY] = max;
-                        int label = (int) WekaClassifier.classify(toClassify);
-
-                        switch ((int) label) {
-                            case 0:
-                                // nothing wrong
-                                break;
-                            case 1:
-                                Intent fallIntent = new Intent(mContext, FallActivity.class);
-                                fallIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                                mContext.startActivity(fallIntent);
-                                break;
-                        }
-
-                        Intent i = new Intent(BROADCAST_LABEL_CHANGE);
-                        sendBroadcast(i);
-                        featVect.clear();
-                    }
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
+//            while (true) {
+//                try {
+//                    // need to check if the AsyncTask is cancelled or not in the while loop
+//                    if (isCancelled() == true) {
+//                        return null;
+//                    }
+//
+//                    // Dumping buffer
+//                    accBlock[blockSize++] = mAccBuffer.take().doubleValue();
+//
+//                    // once app has 64 readings
+//                    if (blockSize == ACCELEROMETER_BLOCK_CAPACITY) {
+//                        blockSize = 0;
+//                        max = .0;
+//
+//                        for (double val : accBlock) {
+//                            if (max < val) {
+//                                max = val;
+//                            }
+//                        }
+//
+//                        fft.fft(re, im);
+//
+//                        for (int i = 0; i < re.length; i++) {
+//                            // Compute each coefficient
+//                            double mag = Math.sqrt(re[i] * re[i] + im[i]* im[i]);
+//                            toClassify[i] = mag;
+//                            im[i] = .0; // Clear the field
+//                        }
+//
+//                        // Finally, append max after frequency components
+//                        toClassify[ACCELEROMETER_BLOCK_CAPACITY] = max;
+//                        int label = (int) WekaClassifier.classify(toClassify);
+//
+//                        switch ((int) label) {
+//                            case 0:
+//                                // nothing wrong
+//                                break;
+//                            case 1:
+//                                Intent fallIntent = new Intent(mContext, FallActivity.class);
+//                                fallIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+//                                mContext.startActivity(fallIntent);
+//                                break;
+//                        }
+//
+//                        Intent i = new Intent(BROADCAST_LABEL_CHANGE);
+//                        sendBroadcast(i);
+//                        featVect.clear();
+//                    }
+//                } catch (Exception e) {
+//                    e.printStackTrace();
+//                }
+//            }
+            return null;
         }
     }
 

@@ -58,8 +58,8 @@ public class CareGiverActivity extends AppCompatActivity {
     DataController mDataController;
 
     //private CareGiver mCareGiver;
-    private String mEmail = "dummy";
-    private String mRecipientName = "test";
+    public static String mEmail = "dummy";
+    public static String mRecipientName = "test";
     private Recipient mReceiver;
 
     private static final String EMAIL_KEY = "email key";
@@ -69,7 +69,7 @@ public class CareGiverActivity extends AppCompatActivity {
 
     /* --- cloud stuff --- */
     private boolean mReceiverRegistered = false;
-    private String mRegistrationID;
+    public static String mRegistrationID;
     private CareGiverBroadcastReceiver mBroadcastReceiver;
     private IntentFilter mIntentFilter;
 
