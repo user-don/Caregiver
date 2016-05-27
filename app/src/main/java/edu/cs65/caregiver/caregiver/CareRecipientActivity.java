@@ -89,7 +89,7 @@ public class CareRecipientActivity extends Activity implements ServiceConnection
     private IntentFilter mIntentFilter;
 
     private String mEmail = "dummy";
-    private String mRecipientName = "test";
+    public static String mRecipientName = "test";
     private static final String EMAIL_KEY = "email key";
     private static final String REGISTRATION_KEY = "registration key";
     private static final String RECIPIENT_NAME_KEY = "recipient name";
