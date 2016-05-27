@@ -19,8 +19,8 @@
     </string-array>
 
     <!-- Account login Strings -->
-    <string name="account_sign_username_label">Username (email)</string>
-    <string name="account_sign_username_default">abc@xyz.com</string>
+    <string name="account_sign_username_label">Username</string>
+    <string name="account_sign_username_default">John Doe</string>
     <string name="account_sign_password_label">Password</string>
     <string name="account_sign_password_default">······</string>
     <string name="account_sign_login_btn">Log in</string>

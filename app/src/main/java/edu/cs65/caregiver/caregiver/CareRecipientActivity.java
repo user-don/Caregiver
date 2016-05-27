@@ -99,7 +99,7 @@ public class CareRecipientActivity extends Activity implements ServiceConnection
         // connect service
         myReceiver = new ReceiveMessages();
         mIsBound = false;
-        automaticBind();
+        //automaticBind();
 
         if (mCareGiver == null) {
             mCareGiver = new CareGiver("test");

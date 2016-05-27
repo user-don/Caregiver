@@ -362,8 +362,12 @@ public class MessagingEndpoint {
         }
         RegistrationRecord record =
                 ofy().load().type(RegistrationRecord.class).filter("regId", regId).first().now();
+        if (record == null) {
+            throw new BadRequestException("No record with this registration exists");
+        }
         record.setRole("patient");
         account.addRegistration(record);
+        ofy().save().entity(account).now();
         ofy().save().entity(record).now();
     }
 

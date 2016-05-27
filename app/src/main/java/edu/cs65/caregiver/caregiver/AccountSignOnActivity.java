@@ -118,7 +118,7 @@ public class AccountSignOnActivity extends Activity {
                 edu.cs65.caregiver.backend.messaging.Messaging backend = builder.build();
 
                 try {
-                    backend.registerPatientAccount(careGiver, registrationID);
+                    backend.registerPatientAccount(careGiver, registrationID).execute();
 
                     runOnUiThread(new Runnable() {
                         public void run() {
