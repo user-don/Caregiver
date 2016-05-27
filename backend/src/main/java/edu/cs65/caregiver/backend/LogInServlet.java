@@ -51,6 +51,7 @@ public class LogInServlet extends HttpServlet {
                 account.addRegistration(record);
                 // update account in google database
                 ofy().save().entity(account).now();
+                ofy().save().entity(record).now();
                 CaregiverObject co = ofy().load().type(CaregiverObject.class)
                         .filter("email", email).first().now();
                 // write out the serialized CaregiverObject entry

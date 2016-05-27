@@ -48,6 +48,7 @@ public class CreateAccountServlet extends HttpServlet {
         if (ofy().load().type(AccountObject.class).filter("email", email).first().now() == null) {
             // does not yet exist, create account
             ofy().save().entity(account).now();
+            ofy().save().entity(record).now();
             // create the caregiver object to be stored in the database
             CaregiverObject co = new CaregiverObject();
             co.setData(caregiverJson);
