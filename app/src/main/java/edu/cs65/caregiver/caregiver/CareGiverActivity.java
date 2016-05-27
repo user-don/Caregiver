@@ -4,6 +4,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
@@ -78,6 +79,8 @@ public class CareGiverActivity extends AppCompatActivity {
     /* --- cloud stuff --- */
     private boolean mReceiverRegistered = false;
     private String mRegistrationID;
+    private CareGiverBroadcastReceiver mBroadcastReceiver;
+    private IntentFilter mIntentFilter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -93,6 +96,9 @@ public class CareGiverActivity extends AppCompatActivity {
         /* TODO -> CONNECT WITH BACKEND AND REQUEST ALL MEDICATIONS FOR CAREGIVER'S RECIPIENT */
         // register phone with GCM
         new GcmRegistrationAsyncTask(this).execute();
+
+        mBroadcastReceiver = new CareGiverBroadcastReceiver();
+        mIntentFilter = new IntentFilter("edu.cs65.caregiver.caregiver.CAREGIVER_BROADCAST");
 
         mDataController = DataController.getInstance(getApplicationContext());
         mDataController.initializeData(getApplicationContext());
@@ -133,11 +139,13 @@ public class CareGiverActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
+        registerReceiver(mBroadcastReceiver, mIntentFilter);
         //registerReceiver();
     }
 
     @Override
     protected void onPause() {
+        unregisterReceiver(mBroadcastReceiver);
         //LocalBroadcastManager.getInstance(this).unregisterReceiver(mRegistrationBroadcastReceiver);
         //isReceiverRegistered = false;
         super.onPause();
@@ -485,7 +493,7 @@ public class CareGiverActivity extends AppCompatActivity {
 
     }
 
-    public class CareGiverNotificationReceiver extends BroadcastReceiver {
+    public class CareGiverBroadcastReceiver extends BroadcastReceiver {
         private static final String TAG = "CareGiverNotification";
 
         @Override
@@ -508,6 +516,8 @@ public class CareGiverActivity extends AppCompatActivity {
                 case RecipientToCareGiverMessage.MED_TAKEN:
 
                     for (String alert : msg.medAlertNames) {
+                        Log.d(TAG, "Recipient has taken " + alert);
+                        // checkOffAlert()
                         // TODO need to check off alerts that have been taken
                     }
 

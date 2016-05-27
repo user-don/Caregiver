@@ -9,6 +9,7 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -83,6 +84,8 @@ public class CareRecipientActivity extends Activity implements ServiceConnection
     private ServiceConnection mConnection = this;
     private Context mContext = this;
 
+    private CareRecipientBroadcastReceiver mBroadcastReceiver;
+    private IntentFilter mIntentFilter;
 
     private String mEmail = "dummy";
     private String mRecipientName = "test";
@@ -100,6 +103,11 @@ public class CareRecipientActivity extends Activity implements ServiceConnection
         SharedPreferences preferences = getSharedPreferences(getString(R.string.profile_preference), 0);
         mEmail = preferences.getString(EMAIL_KEY,"");
         mRecipientName = preferences.getString(RECIPIENT_NAME_KEY, "");
+
+        // register receiver for gcm message broadcasts
+        mBroadcastReceiver = new CareRecipientBroadcastReceiver();
+        mIntentFilter = new IntentFilter("edu.cs65.caregiver.caregiver.CARERECIPIENT_BROADCAST");
+        registerReceiver(mBroadcastReceiver, mIntentFilter);
 
         // connect service
         myReceiver = new ReceiveMessages();
@@ -346,6 +354,16 @@ public class CareRecipientActivity extends Activity implements ServiceConnection
 
     public void updateUI() {
         /* takes locals and updates the appropriate UI components */
+    }
+
+    public class CareRecipientBroadcastReceiver extends BroadcastReceiver {
+        private static final String TAG = "CareRecipientReceiver";
+
+        @Override
+        public void onReceive(Context c, Intent i) {
+            Log.d(TAG, "Received broadcast -> updating information");
+            new GetCareGiverInfoAsyncTask().execute();
+        }
     }
 
     /* –––––––––––––––– Testing ONLY –––––––––––––––– */

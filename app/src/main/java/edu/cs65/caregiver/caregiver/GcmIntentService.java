@@ -38,6 +38,8 @@ public class GcmIntentService extends IntentService {
     private SharedPreferences prefs;
     private String mRecipientName;
 
+    public static final String BROADCAST_MESSAGE = "broadcast message";
+
     public GcmIntentService() {
 
         super("GcmIntentService");
@@ -67,11 +69,13 @@ public class GcmIntentService extends IntentService {
                     case RecipientToCareGiverMessage.CHECKIN:
                         //showToast("Recipient Checked In!");
                         sendCareGiverNotification(mRecipientName + " Checked In!");
+                        sendBroadcast("edu.cs65.caregiver.caregiver.CAREGIVER_BROADCAST", msg);
                         break;
 
                     case RecipientToCareGiverMessage.HELP:
                         //showToast("Recipient Needs Help!");
                         sendCareGiverNotification(mRecipientName + " Needs Help!");
+                        sendBroadcast("edu.cs65.caregiver.caregiver.CAREGIVER_BROADCAST", msg);
                         break;
 
                     case RecipientToCareGiverMessage.MED_TAKEN:
@@ -81,6 +85,7 @@ public class GcmIntentService extends IntentService {
                             sb.append(alert + ", ");
                         }
                         sendCareGiverNotification(mRecipientName + " Took Meds: " + sb.toString());
+                        sendBroadcast("edu.cs65.caregiver.caregiver.CAREGIVER_BROADCAST", msg);
                         break;
 
                     case RecipientToCareGiverMessage.MED_NOT_TAKEN:
@@ -89,11 +94,13 @@ public class GcmIntentService extends IntentService {
                             sb2.append(alert + ", ");
                         }
                         sendCareGiverNotification(mRecipientName + " Hasn't Taken: " + sb2.toString());
+                        sendBroadcast("edu.cs65.caregiver.caregiver.CAREGIVER_BROADCAST", msg);
                         break;
 
                     case RecipientToCareGiverMessage.UPDATE_INFO:
 
                         // launch intent to send information to CareRecipient activity
+                        sendBroadcast("edu.cs65.caregiver.caregiver.CARERECIPIENT_BROADCAST", msg);
                         break;
                 }
 
@@ -111,9 +118,12 @@ public class GcmIntentService extends IntentService {
         });
     }
 
-    private void sendBroadcast(
-            
-    )
+    private void sendBroadcast(String action, String message)  {
+        Log.d(TAG, "sending broadcast: " + action);
+        Intent i = new Intent(action);
+        i.putExtra(BROADCAST_MESSAGE, message);
+        sendBroadcast(i);
+    }
 
     /**
      * Create and show a simple notification containing the received GCM message.
