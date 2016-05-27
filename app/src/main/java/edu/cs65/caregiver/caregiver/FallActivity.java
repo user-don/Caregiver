@@ -1,5 +1,6 @@
 package edu.cs65.caregiver.caregiver;
 
+import android.app.Activity;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
@@ -9,7 +10,7 @@ import android.widget.Toast;
 /**
  * Created by ellenli on 5/19/16.
  */
-public class FallActivity extends AppCompatActivity {
+public class FallActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

@@ -1,6 +1,8 @@
 package edu.cs65.caregiver.caregiver;
 
+import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.DialogFragment;
 import android.app.ListActivity;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
@@ -46,7 +48,7 @@ import edu.cs65.caregiver.caregiver.model.Recipient;
 import edu.cs65.caregiver.caregiver.model.RecipientToCareGiverMessage;
 
 
-public class CareRecipientActivity extends ListActivity implements ServiceConnection {
+public class CareRecipientActivity extends Activity implements ServiceConnection {
 
     private static final String TAG = "CareRecipientActivity";
 
@@ -90,13 +92,14 @@ public class CareRecipientActivity extends ListActivity implements ServiceConnec
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_care_recipient);
+        mContext = getApplicationContext();
 
         new GcmRegistrationAsyncTask(this).execute();
 
         // connect service
         myReceiver = new ReceiveMessages();
         mIsBound = false;
-        automaticBind();
+        //automaticBind();
 
         if (mCareGiver == null) {
             mCareGiver = new CareGiver("test");
@@ -132,11 +135,11 @@ public class CareRecipientActivity extends ListActivity implements ServiceConnec
         dayIndex = mDay - 1; // convert to match MedicationAlert int values
     }
 
-    @Override
-    protected void onListItemClick(ListView list, View view, int position, long id) {
-        super.onListItemClick(list, view, position, id);
-        displayMedDialog(sortedMeds.get(position));
-    }
+//    @Override
+//    protected void onListItemClick(ListView list, View view, int position, long id) {
+//        super.onListItemClick(list, view, position, id);
+//        displayMedDialog(sortedMeds.get(position));
+//    }
 
     public void displayMedDialog(MedEntry entry) {
         final ArrayList selectedItems = new ArrayList();
@@ -232,6 +235,12 @@ public class CareRecipientActivity extends ListActivity implements ServiceConnec
 
     }
 
+    public void onMedClicked(View v){
+        DialogFragment fragment = CareGiverDialogFragment.newInstance(CareGiverDialogFragment.DISPLAY_MED_LIST);
+        fragment.show(getFragmentManager(),
+                getString(R.string.app_name));
+    }
+
     public void onMenuClicked(View v) {
 //        displayMedDialog(CareGiverDialogFragment.DIALOG_MENU);
     }
@@ -248,11 +257,11 @@ public class CareRecipientActivity extends ListActivity implements ServiceConnec
         }
 
         // initiate list adapter
-        ArrayAdapter<String> myAdapter = new ArrayAdapter<String>(this, R.layout.row_layout,
-                R.id.listText, listValues);
+        //ArrayAdapter<String> myAdapter = new ArrayAdapter<String>(this, R.layout.row_layout,
+        //        R.id.listText, listValues);
 
         // assign the list adapter
-        setListAdapter(myAdapter);
+        //setListAdapter(myAdapter);
     }
 
     public ArrayList<MedicationAlert> getMedsForToday() {
@@ -432,7 +441,6 @@ public class CareRecipientActivity extends ListActivity implements ServiceConnec
             mIsBound = false;
         }
     }
-
     @Override
     public void onServiceConnected(ComponentName name, IBinder service) {
         SensorService.MyLocalBinder binder = (SensorService.MyLocalBinder) service;
@@ -444,7 +452,6 @@ public class CareRecipientActivity extends ListActivity implements ServiceConnec
     public void onServiceDisconnected(ComponentName name) {
         mIsBound = false;
     }
-
     // ****************** receiver methods ***************************//
 
     public class ReceiveMessages extends BroadcastReceiver {

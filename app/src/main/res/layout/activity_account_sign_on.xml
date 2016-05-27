@@ -7,95 +7,130 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
+    android:background="@color/paper"
+    android:focusable="true"
+    android:focusableInTouchMode="true"
     tools:context="edu.cs65.caregiver.caregiver.AccountSignOnActivity">
 
-    <LinearLayout
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
-        android:orientation="vertical"
-        android:gravity="center"
-        android:includeFontPadding="false">
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
 
         <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="20dp"
-            android:layout_marginRight="20dp"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
             android:orientation="vertical">
 
             <TextView
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="5dp"
-                android:text="@string/account_sign_username_label" />
+                android:text="@string/app_name"
+                android:gravity="center"
+                android:textSize="60dp"
+                android:fontFamily="serif"
+                android:textStyle="italic"
+                android:textColor="@color/grey"
+                android:layout_marginTop="85dp"
+                android:layout_marginBottom="50dp"/>
 
-            <EditText
-                android:id="@+id/username"
-                android:layout_width="fill_parent"
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="5dp"
-                android:layout_marginLeft="5dp"
-                android:layout_marginRight="5dp"
-                android:hint="@string/account_sign_username_default"
-                android:inputType="text" />
+                android:layout_marginLeft="20dp"
+                android:layout_marginRight="20dp"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="5dp"
+                    android:textColor="@color/grey"
+                    android:fontFamily="serif"
+                    android:textSize="15dp"
+                    android:text="@string/account_sign_username_label" />
+
+                <EditText
+                    android:id="@+id/username"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="5dp"
+                    android:layout_marginLeft="5dp"
+                    android:layout_marginRight="5dp"
+                    android:textColorHint="@color/middlegrey"
+                    android:backgroundTint="@color/grey"
+                    android:textColor="@color/grey"
+                    android:hint="@string/account_sign_username_default"
+                    android:fontFamily="serif"
+                    android:inputType="text" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:layout_marginLeft="20dp"
+                android:layout_marginRight="20dp"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="5dp"
+                    android:textColor="@color/grey"
+                    android:fontFamily="serif"
+                    android:textSize="15dp"
+                    android:text="@string/account_sign_password_label" />
+
+                <EditText
+                    android:id="@+id/password"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="5dp"
+                    android:layout_marginLeft="5dp"
+                    android:layout_marginRight="5dp"
+                    android:backgroundTint="@color/grey"
+                    android:textColor="@color/grey"
+                    android:textColorHint="@color/middlegrey"
+                    android:hint="@string/account_sign_password_default"
+                    android:inputType="text"
+                    android:fontFamily="serif"
+                    android:password="true"/>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="15dp"
+                android:layout_marginBottom="20dp"
+                android:orientation="horizontal" >
+
+                <Button
+                    android:id="@+id/btn_profile_signup"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginLeft="15dp"
+                    android:text="@string/account_sign_signup_btn"
+                    android:fontFamily="serif"
+                    android:onClick="onSignUp">
+                </Button>
+
+                <Button
+                    android:id="@+id/btn_profile_login"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginRight="15dp"
+                    android:text="@string/account_sign_login_btn"
+                    android:fontFamily="serif"
+                    android:onClick="onLogIn">
+                </Button>
+
+            </LinearLayout>
 
         </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:layout_marginLeft="20dp"
-            android:layout_marginRight="20dp"
-            android:orientation="vertical">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="5dp"
-                android:text="@string/account_sign_password_label" />
-
-            <EditText
-                android:id="@+id/password"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="5dp"
-                android:layout_marginLeft="5dp"
-                android:layout_marginRight="5dp"
-                android:hint="@string/account_sign_password_default"
-                android:inputType="text" />
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:layout_marginBottom="20dp"
-            android:orientation="horizontal" >
-
-            <Button
-                android:id="@+id/btn_profile_signup"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:layout_marginLeft="15dp"
-                android:text="@string/account_sign_signup_btn"
-                android:onClick="onSignUp">
-            </Button>
-
-            <Button
-                android:id="@+id/btn_profile_login"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:layout_marginRight="15dp"
-                android:text="@string/account_sign_login_btn"
-                android:onClick="onLogIn">
-            </Button>
-
-        </LinearLayout>
-
-    </LinearLayout>
+    </ScrollView>
 
 </RelativeLayout>

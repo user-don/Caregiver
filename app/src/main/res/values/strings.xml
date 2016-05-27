@@ -19,15 +19,15 @@
     </string-array>
 
     <!-- Account login Strings -->
-    <string name="account_sign_username_label">Username (email)</string>
-    <string name="account_sign_username_default">abc@xyz.com</string>
+    <string name="account_sign_username_label">Username</string>
+    <string name="account_sign_username_default">John Doe</string>
     <string name="account_sign_password_label">Password</string>
-    <string name="account_sign_password_default">******</string>
+    <string name="account_sign_password_default">······</string>
     <string name="account_sign_login_btn">Log in</string>
     <string name="account_sign_signup_btn">Sign up</string>
 
     <!-- New Account Strings -->
-    <string name="new_account_label">What role do you play?</string>
+    <string name="new_account_label">What role do you play? </string>
     <string name="new_account_careGiver">Caregiver</string>
     <string name="new_account_careRecipient">Care Recipient</string>
     <string name="new_careGiver_label">Who are you caring for?</string>
@@ -43,17 +43,21 @@
     <string name="ui_start_care_receiver">Click here to start care receiver</string>
 
     <!-- CareRecipient Strings -->
-    <string name="ui_helpBtn_title">HELP!</string>
+    <string name="recipient_name">John Doe</string>
+    <string name="ui_helpBtn_title">HELP</string>
+    <string name="ui_medBtn_title">MEDICATION DETAILS</string>
     <string name="toolbar_title_care_recipient">Caregiver</string>
     <string name="schedule_title">Upcoming Medications</string>
     <string name="ui_title_checkin_Btn">Check-in</string>
     <string name="ui_title_fall_Btn">Fall Alert</string>
     <string name="ui_title_fall_activity">FALL DETECTED!</string>
+    <string name="recipient_medication_label">Below are todays medications</string>
 
     <!-- Fall Actvity Strings-->
     <string name="ui_OK_Btn">I am OK</string>
     <string name="ui_HELP_Btn">HELP</string>
 
+    <string name="profile_preference">caregiver_profile_preferences</string>
     <!-- Checkin Activity Strings -->
     <string name="ui_checkin_welcome_text">Click the button below to check-in!</string>
     <string name="ui_Checkin_Btn">Check-in!</string>

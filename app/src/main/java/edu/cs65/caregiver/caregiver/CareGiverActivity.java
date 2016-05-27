@@ -649,12 +649,12 @@ public class CareGiverActivity extends AppCompatActivity {
 
             if (mReceiverRegistered) {
                 Log.d(TAG, "Sending message to recipient registered with email " + mEmail);
-                try {
-                    backend.sendNotificationToPatient(mRegistrationID, mEmail, msg).execute();
-                } catch (IOException e) {
-                    Log.d(TAG, "sendNotificationToPatient failed");
-                    e.printStackTrace();
-                }
+//                try {
+//                    backend.sendNotificationToPatient(mRegistrationID, mEmail, msg).execute();
+//                } catch (IOException e) {
+//                    Log.d(TAG, "sendNotificationToPatient failed");
+//                    e.printStackTrace();
+//                }
             } else {
                 Log.d(TAG, "Cannot sendNotificationToPatient because device is unregistered");
             }
