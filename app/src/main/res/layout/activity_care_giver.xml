@@ -12,7 +12,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="15dp"
+        android:layout_marginTop="20dp"
         android:layout_marginBottom="5dp"
         android:gravity="center_horizontal"
         android:layout_alignParentStart="false">
@@ -24,7 +24,7 @@
             android:text="@string/list_of_todays_medication"
             android:id="@+id/textView4"
             android:textIsSelectable="false"
-            android:textSize="@dimen/abc_text_size_large_material" />
+            android:textSize="25dp" />
 
         <TextView
             android:layout_width="wrap_content"
@@ -33,7 +33,7 @@
             android:text="@string/new_careGiver_default"
             android:id="@+id/caregiver_recipient"
             android:textIsSelectable="false"
-            android:textSize="@dimen/abc_text_size_large_material"
+            android:textSize="25dp"
             android:textStyle="bold"
             android:layout_gravity="center" />
 

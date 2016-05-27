@@ -104,8 +104,11 @@ public class CareGiverActivity extends AppCompatActivity {
         }
 
         setAlertAdapter();
-
         updateUI();
+
+        GetCareGiverInfoAsyncTask task = new GetCareGiverInfoAsyncTask();
+        task.email = mEmail;
+        task.execute();
 
     }
 
