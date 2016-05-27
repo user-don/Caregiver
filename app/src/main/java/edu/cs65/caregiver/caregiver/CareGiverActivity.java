@@ -499,7 +499,14 @@ public class CareGiverActivity extends AppCompatActivity {
             Log.d(TAG, "received notification broadcast");
 
             Gson gson = new Gson();
-            RecipientToCareGiverMessage msg = gson.fromJson(i.getStringExtra("msg"),RecipientToCareGiverMessage.class);
+            // TODO: java.lang.RuntimeException: Error receiving broadcast
+            // Intent { act=edu.cs65.caregiver.caregiver.CAREGIVER_BROADCAST flg=0x10 (has extras) }
+            // in edu.cs65.caregiver.caregiver.CareGiverActivity$CareGiverBroadcastReceiver@bb4f027
+
+            // GET STRING FROM INTENT
+            String message = i.getStringExtra(GcmIntentService.BROADCAST_MESSAGE);
+
+            RecipientToCareGiverMessage msg = gson.fromJson(message,RecipientToCareGiverMessage.class);
             switch(msg.messageType) {
                 case RecipientToCareGiverMessage.CHECKIN:
                     mReceiver.mCheckedIn = true;
