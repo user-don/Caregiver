@@ -6,7 +6,7 @@
     <uses-permission android:name="android.permission.GET_ACCOUNTS" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-    <uses-permission android:name="com.google.android.c2dm.permission.RECEIVE" />
+
     <uses-permission android:name="android.permission.VIBRATE"/>
     <uses-permission android:name="android.permission.WAKE_LOCK" />
 
@@ -15,6 +15,7 @@
         android:name="edu.cs65.caregiver.caregiver.permission.C2D_MESSAGE"
         android:protectionLevel="signature" />
 
+    <uses-permission android:name="com.google.android.c2dm.permission.RECEIVE" />
     <uses-permission android:name="edu.cs65.caregiver.caregiver.permission.C2D_MESSAGE" />
 
     <application
@@ -38,7 +39,11 @@
 
         <activity android:name=".CareGiverActivity"
             android:uiOptions="splitActionBarWhenNarrow">
-
+            <receiver android:name=".CareGiverBroadcastReceiver" >
+                <intent-filter>
+                    <action android:name=".CAREGIVER_BROADCAST" />
+                </intent-filter>
+            </receiver>
         </activity>
 
         <activity android:name=".NewMedicationActivity"
@@ -50,6 +55,12 @@
 
         <activity android:name=".CareRecipientActivity">
             <receiver android:name=".EMAAlarmReceiver" />
+            <receiver android:name=".CareRecipientBroadcastReceiver" >
+                <intent-filter>
+                    <action android:name=".CARERECIPIENT_BROADCAST" />
+                </intent-filter>
+            </receiver>
+
             <!--<intent-filter>-->
             <!--<action android:name="android.intent.action.MAIN" />-->
 
@@ -63,25 +74,26 @@
 
         <service android:name=".SensorService" />
 
+        <service
+            android:name="edu.cs65.caregiver.caregiver.MyGcmListenerService"
+            android:exported="false" >
+            <intent-filter>
+                <action android:name="com.google.android.c2dm.intent.RECEIVE" />
+            </intent-filter>
+        </service>
+
+        <receiver
+            android:name=".GcmBroadcastReceiver"
+            android:permission="com.google.android.c2dm.permission.SEND" >
+            <intent-filter>
+                <action android:name="com.google.android.c2dm.intent.RECEIVE" />
+                <category android:name="edu.cs65.caregiver.caregiver" />
+            </intent-filter>
+        </receiver>
+        <service android:name=".GcmIntentService" />
 
     </application>
 
-    <service
-        android:name="edu.cs65.caregiver.caregiver.MyGcmListenerService"
-        android:exported="false" >
-        <intent-filter>
-            <action android:name="com.google.android.c2dm.intent.RECEIVE" />
-        </intent-filter>
-    </service>
 
-    <receiver
-        android:name=".GcmBroadcastReceiver"
-        android:permission="com.google.android.c2dm.permission.SEND" >
-        <intent-filter>
-            <action android:name="com.google.android.c2dm.intent.RECEIVE" />
-            <category android:name="edu.cs65.caregiver.caregiver" />
-        </intent-filter>
-    </receiver>
-    <service android:name=".GcmIntentService" />
 
 </manifest>

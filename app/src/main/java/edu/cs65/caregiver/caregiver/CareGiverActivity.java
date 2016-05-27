@@ -1,8 +1,10 @@
 package edu.cs65.caregiver.caregiver;
 
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.support.v7.app.AlertDialog;
@@ -24,6 +26,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.support.v7.widget.Toolbar;
 
+import com.google.android.gms.gcm.GcmListenerService;
+import com.google.android.gms.gcm.GoogleCloudMessaging;
 import com.google.api.client.extensions.android.http.AndroidHttp;
 import com.google.api.client.extensions.android.json.AndroidJsonFactory;
 import com.google.gson.Gson;
@@ -37,6 +41,7 @@ import edu.cs65.caregiver.caregiver.model.CareGiver;
 import edu.cs65.caregiver.caregiver.model.MedicationAlert;
 import edu.cs65.caregiver.caregiver.model.Recipient;
 import edu.cs65.caregiver.backend.messaging.Messaging;
+import edu.cs65.caregiver.caregiver.model.RecipientToCareGiverMessage;
 
 public class CareGiverActivity extends AppCompatActivity {
 
@@ -65,6 +70,8 @@ public class CareGiverActivity extends AppCompatActivity {
     /* --- cloud stuff --- */
     private boolean mReceiverRegistered = false;
     private String mRegistrationID;
+    private CareGiverBroadcastReceiver mBroadcastReceiver;
+    private IntentFilter mIntentFilter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -75,6 +82,9 @@ public class CareGiverActivity extends AppCompatActivity {
         mEmail = mPrefs.getString(EMAIL_KEY,"");
         mRecipientName = mPrefs.getString(RECIPIENT_NAME_KEY,"");
         mRegistrationID = mPrefs.getString(REGISTRATION_KEY,"");
+
+        mBroadcastReceiver = new CareGiverBroadcastReceiver();
+        mIntentFilter = new IntentFilter("edu.cs65.caregiver.caregiver.CAREGIVER_BROADCAST");
 
         mDataController = DataController.getInstance(getApplicationContext());
         mDataController.initializeData(getApplicationContext());
@@ -96,6 +106,7 @@ public class CareGiverActivity extends AppCompatActivity {
         setAlertAdapter();
 
         updateUI();
+
     }
 
     @Override
@@ -123,11 +134,13 @@ public class CareGiverActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
+        registerReceiver(mBroadcastReceiver, mIntentFilter);
         //registerReceiver();
     }
 
     @Override
     protected void onPause() {
+        unregisterReceiver(mBroadcastReceiver);
         //LocalBroadcastManager.getInstance(this).unregisterReceiver(mRegistrationBroadcastReceiver);
         //isReceiverRegistered = false;
         super.onPause();
@@ -474,6 +487,120 @@ public class CareGiverActivity extends AppCompatActivity {
             return sb.toString();
 
     }
+
+    public class CareGiverBroadcastReceiver extends BroadcastReceiver {
+        private static final String TAG = "CareGiverNotification";
+
+        @Override
+        public void onReceive(Context c, Intent i) {
+            Log.d(TAG, "received notification broadcast");
+
+            Gson gson = new Gson();
+            RecipientToCareGiverMessage msg = gson.fromJson(i.getStringExtra("msg"),RecipientToCareGiverMessage.class);
+            switch(msg.messageType) {
+                case RecipientToCareGiverMessage.CHECKIN:
+                    mReceiver.mCheckedIn = true;
+                    mDataController.setRecipientData(mReceiver);
+                    mDataController.saveData();
+
+                    new UpdateCareGiverAsyncTask().execute();
+
+                    updateUI();
+                    break;
+
+                case RecipientToCareGiverMessage.MED_TAKEN:
+
+                    for (String alert : msg.medAlertNames) {
+                        Log.d(TAG, "Recipient has taken " + alert);
+                        // checkOffAlert()
+                        // TODO need to check off alerts that have been taken
+                    }
+
+                    break;
+
+                case RecipientToCareGiverMessage.MED_NOT_TAKEN:
+
+                    break;
+
+                case RecipientToCareGiverMessage.HELP:
+                    mReceiver.mRaisedAlert = true;
+                    mDataController.setRecipientData(mReceiver);
+                    mDataController.saveData();
+
+                    updateUI();
+                    break;
+            }
+        }
+    }
+
+//    // GCM registration ... called in Main Activity
+//    class GcmRegistrationAsyncTask extends AsyncTask<Void, Void, String> {
+//        private Registration regService = null;
+//        private GoogleCloudMessaging gcm;
+//        private Context context;
+//
+//        public GcmRegistrationAsyncTask(Context context) {
+//            this.context = context;
+//        }
+//
+//        @Override
+//        protected String doInBackground(Void... params) {
+//            if (regService == null) {
+//                Registration.Builder builder = new Registration.Builder(AndroidHttp.newCompatibleTransport(),
+//                        new AndroidJsonFactory(), null)
+//                        .setRootUrl(SERVER_ADDR + "/_ah/api/");
+//                // UNCOMMENT TO RUN LOCALLY
+////                        .setGoogleClientRequestInitializer(new GoogleClientRequestInitializer() {
+////                            @Override
+////                            public void initialize(AbstractGoogleClientRequest<?> abstractGoogleClientRequest)
+////                                    throws IOException {
+////                                abstractGoogleClientRequest.setDisableGZipContent(true);
+////                            }
+////                        });
+//                // end of optional local run code
+//
+//                regService = builder.build();
+//            }
+//
+//            String msg = "";
+//            try {
+//                if (gcm == null) {
+//                    gcm = GoogleCloudMessaging.getInstance(context);
+//                }
+//                mRegistrationID = gcm.register(SENDER_ID);
+//                msg = "Device registered, registration ID = " + mRegistrationID;
+//
+//                // Send registration ID to server over HTTP so it can use GCM/HTTP
+//                // to send messages to the app.
+//                regService.register(mRegistrationID).execute();
+//
+//            } catch (IOException ex) {
+//                ex.printStackTrace();
+//                Log.d(TAG, "Error: " + ex.getMessage());
+//                msg = null;
+//            }
+//            return msg;
+//        }
+//
+//        @Override
+//        protected void onPostExecute(String msg) {
+//
+//            //Toast.makeText(context, msg, Toast.LENGTH_LONG).show();
+//            if (msg != null) {
+//                Logger.getLogger("REGISTRATION").log(Level.INFO, msg);
+//                Toast.makeText(context, "Connected to Cloud!", Toast.LENGTH_SHORT).show();
+//                mReceiverRegistered = true;
+//
+//                // update info
+//                GetCareGiverInfoAsyncTask task = new GetCareGiverInfoAsyncTask();
+//                task.email = mEmail;
+//                task.execute();
+//
+//            } else {
+//                Toast.makeText(context, "Failed to Connect to Cloud", Toast.LENGTH_SHORT).show();
+//            }
+//        }
+//    }
 
     class GetCareGiverInfoAsyncTask extends AsyncTask<Void,String,String> {
         private static final String TAG = "Get Account Info AT";
