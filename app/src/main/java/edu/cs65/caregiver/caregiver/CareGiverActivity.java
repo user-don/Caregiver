@@ -149,22 +149,21 @@ public class CareGiverActivity extends AppCompatActivity {
     public void onClickAccount(MenuItem menuItem) {
         // TODO -- should have some account management activity
 
-        // dummy information below
-        Log.d(TAG, "executing account post");
+        Log.d(TAG, "test ");
         new AsyncTask<Void,Void,Void>() {
             @Override
             protected Void doInBackground(Void... params) {
                 Gson gson = new Gson();
 
-                HashMap<String, String> account_params = new HashMap<>();
-                account_params.put("email", mEmail);
-                account_params.put("password","dummy_pass");
-                account_params.put("registrationId", mRegistrationID);
-                account_params.put("caregiver", gson.toJson(mDataController.careGiver));
+                edu.cs65.caregiver.backend.messaging.Messaging.Builder builder =
+                        new edu.cs65.caregiver.backend.messaging.Messaging
+                                .Builder(AndroidHttp.newCompatibleTransport(), new AndroidJsonFactory(), null)
+                                .setRootUrl(SERVER_ADDR + "/_ah/api/");
 
+                edu.cs65.caregiver.backend.messaging.Messaging backend = builder.build();
                 try {
-                    String response = ServerUtilities.post(SERVER_ADDR + "/create_account.do", account_params);
-                    Log.d(TAG, "post response: " + response);
+                    Log.d(TAG, "send \'testing\' to test func");
+                    backend.helloTest("testing");
                 } catch (IOException e) {
                     Log.d(TAG, "failed to issue post - Error msg: " + e.getMessage());
                     e.printStackTrace();
@@ -173,6 +172,32 @@ public class CareGiverActivity extends AppCompatActivity {
             }
 
         }.execute();
+
+
+        // dummy information below
+//        Log.d(TAG, "executing account post");
+//        new AsyncTask<Void,Void,Void>() {
+//            @Override
+//            protected Void doInBackground(Void... params) {
+//                Gson gson = new Gson();
+//
+//                HashMap<String, String> account_params = new HashMap<>();
+//                account_params.put("email", mEmail);
+//                account_params.put("password","dummy_pass");
+//                account_params.put("registrationId", mRegistrationID);
+//                account_params.put("caregiver", gson.toJson(mDataController.careGiver));
+//
+//                try {
+//                    String response = ServerUtilities.post(SERVER_ADDR + "/create_account.do", account_params);
+//                    Log.d(TAG, "post response: " + response);
+//                } catch (IOException e) {
+//                    Log.d(TAG, "failed to issue post - Error msg: " + e.getMessage());
+//                    e.printStackTrace();
+//                }
+//                return null;
+//            }
+//
+//        }.execute();
 
 
     }
