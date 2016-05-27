@@ -364,6 +364,7 @@ public class MessagingEndpoint {
                 ofy().load().type(RegistrationRecord.class).filter("regId", regId).first().now();
         record.setRole("patient");
         account.addRegistration(record);
+        ofy().save().entity(record).now();
     }
 
 
