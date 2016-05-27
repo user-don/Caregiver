@@ -159,24 +159,30 @@ public class CareRecipientActivity extends ListActivity implements ServiceConnec
         }).setPositiveButton("OK", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int id) {
-                stopAlarm();
-                loadMedDialog = false;
+                if (loadMedDialog) {
+                    stopAlarm();
+                    loadMedDialog = false;
+                }
                 // notify CareGiver that medicine was taken
 
             }
         }).setNegativeButton("Back", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int id) {
-                stopAlarm();
-                loadMedDialog = false;
+                if (loadMedDialog) {
+                    stopAlarm();
+                    loadMedDialog = false;
+                }
                 // notify CareGiver medicine not taken
 
             }
         }).setOnDismissListener(new DialogInterface.OnDismissListener() {
             @Override
             public void onDismiss(DialogInterface dialog) {
-                stopAlarm();
-                loadMedDialog = false;
+                if (loadMedDialog) {
+                    stopAlarm();
+                    loadMedDialog = false;
+                }
             }
         }).show();
 
@@ -328,7 +334,7 @@ public class CareRecipientActivity extends ListActivity implements ServiceConnec
 
     public void loadData() {
         /* takes CareGiver object loaded from backend and parses data into locals */
-        mReceiver = cloudData.getRecipient("test recipient");
+        mReceiver = cloudData.getRecipient("test");
         if (mReceiver != null) {
             mMedicationAlerts = mReceiver.mAlerts;
             mCheckInTime = mReceiver.mCheckIntime;
@@ -631,7 +637,7 @@ public class CareRecipientActivity extends ListActivity implements ServiceConnec
                 Log.d(TAG,"Updating CareGiver Information");
                 Log.d(TAG, "got data: " + data);
                 cloudData = gson.fromJson(data, CareGiver.class);
-//                updateUI();
+                updateUI();
 
                 //mDataController.setData(cloudData);
                 // TODO -- updateUI();
