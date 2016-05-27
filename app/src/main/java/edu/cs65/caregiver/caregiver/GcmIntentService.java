@@ -40,9 +40,6 @@ public class GcmIntentService extends IntentService {
         if (extras != null && !extras.isEmpty()) {  // has effect of unparcelling Bundle
             if (GoogleCloudMessaging.MESSAGE_TYPE_MESSAGE.equals(messageType)) {
                 Logger.getLogger("GCM_RECEIVED").log(Level.INFO, extras.toString());
-                String key = extras.getString("message");
-                long index = Long.valueOf(key);
-
                 // TODO: switch on message type and act accordingly depending on which activity phone is in
                 String msg = "Message from Cloud: " + extras.getString("message");
                 showToast(msg);
