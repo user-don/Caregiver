@@ -4,10 +4,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Color;
-import android.graphics.PorterDuff;
 import android.os.AsyncTask;
-import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -27,23 +24,14 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.support.v7.widget.Toolbar;
 
-import com.google.android.gms.gcm.GoogleCloudMessaging;
 import com.google.api.client.extensions.android.http.AndroidHttp;
 import com.google.api.client.extensions.android.json.AndroidJsonFactory;
-import com.google.api.client.googleapis.services.AbstractGoogleClientRequest;
-import com.google.api.client.googleapis.services.GoogleClientRequestInitializer;
 import com.google.gson.Gson;
-
-import org.w3c.dom.Text;
 
 import java.io.IOException;
 import java.sql.Time;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
-import edu.cs65.caregiver.backend.registration.Registration;
 import edu.cs65.caregiver.caregiver.controllers.DataController;
 import edu.cs65.caregiver.caregiver.model.CareGiver;
 import edu.cs65.caregiver.caregiver.model.MedicationAlert;
@@ -326,8 +314,7 @@ public class CareGiverActivity extends AppCompatActivity {
         ((ArrayAdapter) alertList.getAdapter()).notifyDataSetChanged();
 
         TextView recipientText = (TextView) findViewById(R.id.caregiver_recipient);
-        recipientText.setText(mRecipientName);
-        System.out.println("name " + mRecipientName);
+        recipientText.setText(" " + mRecipientName);
 
 //        Button mAlertButton = (Button) findViewById(R.id.alert_status_button);
 //        if (mReceiver.mRaisedAlert) {
