@@ -236,7 +236,6 @@ public class CareRecipientActivity extends ListActivity implements ServiceConnec
             }
         }.execute();
 
-
     }
 
     public void onMenuClicked(View v) {
