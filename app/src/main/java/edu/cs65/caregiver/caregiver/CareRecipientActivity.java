@@ -116,23 +116,23 @@ public class CareRecipientActivity extends Activity implements ServiceConnection
         myReceiver = new ReceiveMessages();
         mIsBound = false;
         //automaticBind();
-
-
-        if (mCareGiver == null) {
-            mCareGiver = new CareGiver("test");
-            mReceiver = mCareGiver.addRecipient("test recipient");
-        } else {
-            mReceiver = mCareGiver.getRecipient("test recipient");
-        }
+//
+//
+//        if (mCareGiver == null) {
+//            mCareGiver = new CareGiver("test");
+//            mReceiver = mCareGiver.addRecipient("test recipient");
+//        } else {
+//            mReceiver = mCareGiver.getRecipient("test recipient");
+//        }
 
         getDayOfWeek();
-        createTestMeds();
+//        createTestMeds();
 
         // Get medication alerts and checkin time
-        mMedicationAlerts = mReceiver.mAlerts;
-        mCheckInTime = mReceiver.mCheckIntime;
+//        mMedicationAlerts = mReceiver.mAlerts;
+//        mCheckInTime = mReceiver.mCheckIntime;
 
-        setUpAdapter();
+//        setUpAdapter();
 
         if (loadMedDialog) {
             startAlarm();
@@ -142,10 +142,14 @@ public class CareRecipientActivity extends Activity implements ServiceConnection
         }
 
         // schedule alarms
-        PSMScheduler.setSchedule(this);
+//        PSMScheduler.setSchedule(this);
 
         Toolbar header = (Toolbar)findViewById(R.id.toolbar);
         header.setTitle(mRecipientName);
+
+        GetCareGiverInfoAsyncTask task = new GetCareGiverInfoAsyncTask();
+        task.email = mEmail;
+        task.execute();
     }
 
 
@@ -258,9 +262,16 @@ public class CareRecipientActivity extends Activity implements ServiceConnection
     }
 
     public void onMedClicked(View v){
-        DialogFragment fragment = CareGiverDialogFragment.newInstance(CareGiverDialogFragment.DISPLAY_MED_LIST);
-        fragment.show(getFragmentManager(),
-                getString(R.string.app_name));
+        // update sortedMeds
+
+
+        if (sortedMeds != null) {
+            DialogFragment fragment = CareGiverDialogFragment.newInstance(CareGiverDialogFragment.DISPLAY_MED_LIST);
+            fragment.show(getFragmentManager(),
+                    getString(R.string.app_name));
+        } else {
+            Toast.makeText(getApplicationContext(), "No medications scheduled for today", Toast.LENGTH_LONG).show();
+        }
     }
 
     public void onMenuClicked(View v) {
@@ -334,7 +345,7 @@ public class CareRecipientActivity extends Activity implements ServiceConnection
         return sortedMeds;
     }
 
-    public String convertTime(Time time) {
+    public static String convertTime(Time time) {
         String rawTime = time.toString();
         String convertedTime = null;
 
@@ -394,65 +405,65 @@ public class CareRecipientActivity extends Activity implements ServiceConnection
 
     /* –––––––––––––––– Testing ONLY –––––––––––––––– */
 
-    public void createTestMeds() {
-        Time time1 = new Time(10, 0, 0);
-        Time time2 = new Time(15, 15, 0);
-        Time time3 = new Time(8, 11, 0); //10
-        Time time4 = new Time(7, 15, 0); //20 / 8pm
-
-        String name1 = "Test1";
-        String name2 = "Test2";
-        String name3 = "Test3";
-        String name4 = "Test4";
-
-        int[] days1 = new int[7];
-        days1[0] = 0;
-        days1[1] = 0;
-        days1[2] = 1;
-        days1[3] = 0;
-        days1[4] = 0;
-        days1[5] = 0;
-        days1[6] = 1;
-
-        int[] days2 = new int[7];
-        days2[0] = 0;
-        days2[1] = 0;
-        days2[2] = 1;
-        days2[3] = 0;
-        days2[4] = 0;
-        days2[5] = 0;
-        days2[6] = 1;
-
-        int[] days3 = new int[7];
-        days3[0] = 1;
-        days3[1] = 1;
-        days3[2] = 1;
-        days3[3] = 1;
-        days3[4] = 1;
-        days3[5] = 1;
-        days3[6] = 1;
-
-        ArrayList<String> meds1 = new ArrayList<>();
-        meds1.add("Tylenol");
-        meds1.add("Motrin");
-
-        ArrayList<String> meds2 = new ArrayList<>();
-        meds2.add("Benedryl");
-        meds2.add("Mucinex");
-
-        ArrayList<String> meds3 = new ArrayList<>();
-        meds3.add("Valium");
-
-        MedicationAlert medAlert1 = new MedicationAlert(name1, time1, days1, meds1);
-        MedicationAlert medAlert2 = new MedicationAlert(name2, time2, days2, meds2);
-        MedicationAlert medAlert3 = new MedicationAlert(name3, time3, days3, meds3);
-        MedicationAlert medAlert4 = new MedicationAlert(name4, time4, days3, meds3);
-
-        mReceiver.addAlert(medAlert1);
-        mReceiver.addAlert(medAlert2);
-        mReceiver.addAlert(medAlert3);
-        mReceiver.addAlert(medAlert4);
-    }
+//    public void createTestMeds() {
+//        Time time1 = new Time(10, 0, 0);
+//        Time time2 = new Time(15, 15, 0);
+//        Time time3 = new Time(8, 11, 0); //10
+//        Time time4 = new Time(7, 15, 0); //20 / 8pm
+//
+//        String name1 = "Test1";
+//        String name2 = "Test2";
+//        String name3 = "Test3";
+//        String name4 = "Test4";
+//
+//        int[] days1 = new int[7];
+//        days1[0] = 0;
+//        days1[1] = 0;
+//        days1[2] = 1;
+//        days1[3] = 0;
+//        days1[4] = 0;
+//        days1[5] = 0;
+//        days1[6] = 1;
+//
+//        int[] days2 = new int[7];
+//        days2[0] = 0;
+//        days2[1] = 0;
+//        days2[2] = 1;
+//        days2[3] = 0;
+//        days2[4] = 0;
+//        days2[5] = 0;
+//        days2[6] = 1;
+//
+//        int[] days3 = new int[7];
+//        days3[0] = 1;
+//        days3[1] = 1;
+//        days3[2] = 1;
+//        days3[3] = 1;
+//        days3[4] = 1;
+//        days3[5] = 1;
+//        days3[6] = 1;
+//
+//        ArrayList<String> meds1 = new ArrayList<>();
+//        meds1.add("Tylenol");
+//        meds1.add("Motrin");
+//
+//        ArrayList<String> meds2 = new ArrayList<>();
+//        meds2.add("Benedryl");
+//        meds2.add("Mucinex");
+//
+//        ArrayList<String> meds3 = new ArrayList<>();
+//        meds3.add("Valium");
+//
+//        MedicationAlert medAlert1 = new MedicationAlert(name1, time1, days1, meds1);
+//        MedicationAlert medAlert2 = new MedicationAlert(name2, time2, days2, meds2);
+//        MedicationAlert medAlert3 = new MedicationAlert(name3, time3, days3, meds3);
+//        MedicationAlert medAlert4 = new MedicationAlert(name4, time4, days3, meds3);
+//
+//        mReceiver.addAlert(medAlert1);
+//        mReceiver.addAlert(medAlert2);
+//        mReceiver.addAlert(medAlert3);
+//        mReceiver.addAlert(medAlert4);
+//    }
 
 
     // ****************** life cycle methods ***************************//
@@ -643,6 +654,7 @@ public class CareRecipientActivity extends Activity implements ServiceConnection
     class GetCareGiverInfoAsyncTask extends AsyncTask<Void,String,String> {
 
         private static final String TAG = "Get Account Info AT";
+        public String email = "";
         Gson gson;
 
         @Override
