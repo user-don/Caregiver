@@ -96,6 +96,7 @@ public class CareRecipientActivity extends ListActivity implements ServiceConnec
         // connect service
         myReceiver = new ReceiveMessages();
         mIsBound = false;
+
 //        automaticBind();
 
         if (mCareGiver == null) {
@@ -162,8 +163,8 @@ public class CareRecipientActivity extends ListActivity implements ServiceConnec
                 if (loadMedDialog) {
                     stopAlarm();
                     loadMedDialog = false;
+                    // notify CareGiver that medicine was taken
                 }
-                // notify CareGiver that medicine was taken
 
             }
         }).setNegativeButton("Back", new DialogInterface.OnClickListener() {
@@ -172,8 +173,8 @@ public class CareRecipientActivity extends ListActivity implements ServiceConnec
                 if (loadMedDialog) {
                     stopAlarm();
                     loadMedDialog = false;
+                    // notify CareGiver medicine not taken
                 }
-                // notify CareGiver medicine not taken
 
             }
         }).setOnDismissListener(new DialogInterface.OnDismissListener() {
@@ -182,10 +183,10 @@ public class CareRecipientActivity extends ListActivity implements ServiceConnec
                 if (loadMedDialog) {
                     stopAlarm();
                     loadMedDialog = false;
+                    // notify CareGiver medicine not taken
                 }
             }
         }).show();
-
 
     }
 
@@ -276,6 +277,14 @@ public class CareRecipientActivity extends ListActivity implements ServiceConnec
 
     public ArrayList<MedEntry> getGroupedMeds(ArrayList<MedicationAlert> todaysMeds) {
         ArrayList<MedEntry> sortedMeds = new ArrayList<>();
+
+        if (todaysMeds.size() == 1) {
+            MedEntry newEntry = new MedEntry(todaysMeds.get(0).mTime.toString(),
+                    todaysMeds.get(0).mMedications, todaysMeds.get(0).mTime);
+            sortedMeds.add(newEntry);
+            return sortedMeds;
+        }
+
         for (int i = 0; i < todaysMeds.size()-1; i++) {
             int j = i+1;
             // automatically add first medication
@@ -428,7 +437,6 @@ public class CareRecipientActivity extends ListActivity implements ServiceConnec
     // ****************** service methods ***************************//
 
     private void automaticBind(){
-
         doBindService();
     }
 
