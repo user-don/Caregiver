@@ -43,7 +43,7 @@ public class GcmIntentService extends IntentService {
     public GcmIntentService() {
 
         super("GcmIntentService");
-        prefs = getSharedPreferences(getString(R.string.profile_preference), MODE_PRIVATE);
+        prefs = getSharedPreferences("caregiver_profile_preferences", MODE_PRIVATE);
         mRecipientName = prefs.getString("recipient name", "Recipient");
     }
 
