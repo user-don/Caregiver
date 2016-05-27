@@ -288,7 +288,7 @@ public class CareGiverActivity extends AppCompatActivity {
                     mReceiver.addAlert(newAlert);
                     mReceiver = mDataController.setRecipientData(mReceiver);
                     //mDataController.careGiver.setAlert(mRecipientName,newAlert);
-                    //mDataController.careGiver.getRecipient(mRecipientName).addAlert(newAlert);
+                    mDataController.careGiver.getRecipient(mRecipientName).addAlert(newAlert);
                 }
                 break;
 
@@ -499,7 +499,14 @@ public class CareGiverActivity extends AppCompatActivity {
             Log.d(TAG, "received notification broadcast");
 
             Gson gson = new Gson();
-            RecipientToCareGiverMessage msg = gson.fromJson(i.getStringExtra("msg"),RecipientToCareGiverMessage.class);
+            // TODO: java.lang.RuntimeException: Error receiving broadcast
+            // Intent { act=edu.cs65.caregiver.caregiver.CAREGIVER_BROADCAST flg=0x10 (has extras) }
+            // in edu.cs65.caregiver.caregiver.CareGiverActivity$CareGiverBroadcastReceiver@bb4f027
+
+            // GET STRING FROM INTENT
+            String message = i.getStringExtra(GcmIntentService.BROADCAST_MESSAGE);
+
+            RecipientToCareGiverMessage msg = gson.fromJson(message,RecipientToCareGiverMessage.class);
             switch(msg.messageType) {
                 case RecipientToCareGiverMessage.CHECKIN:
                     mReceiver.mCheckedIn = true;
@@ -657,20 +664,16 @@ public class CareGiverActivity extends AppCompatActivity {
 
             edu.cs65.caregiver.backend.messaging.Messaging backend = builder.build();
 
-            if (mReceiverRegistered) {
-                Log.d(TAG, "Executing update account with email " + mEmail);
-                try {
-                    Gson gson = new Gson();
-                    String data = gson.toJson(mDataController.careGiver);
+            Log.d(TAG, "Executing update account with email " + mEmail);
+            try {
+                Gson gson = new Gson();
+                String data = gson.toJson(mDataController.careGiver);
 
-                    Log.d(TAG,"Updating with information... " + data);
-                    backend.updateEntry(mRegistrationID, mEmail, data).execute();
-                } catch (IOException e) {
-                    Log.d(TAG, "updatedAccountInfo failed");
-                    e.printStackTrace();
-                }
-            } else {
-                Log.d(TAG, "Cannot update account because device is unregistered");
+                Log.d(TAG,"Updating with information... " + data);
+                backend.updateEntry(mRegistrationID, mEmail, data).execute();
+            } catch (IOException e) {
+                Log.d(TAG, "updatedAccountInfo failed");
+                e.printStackTrace();
             }
 
             return null;

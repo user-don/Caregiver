@@ -51,6 +51,7 @@ public class AccountSignOnActivity extends Activity {
     public void onCareGiverClick(View v){
         Intent signUpIntent = new Intent(getApplicationContext(), NewAccountSignUp.class);
         startActivity(signUpIntent);
+        finish();
     }
     // if the new user says that they are a care recipient
     public void onCareRecipientClick(View v){
