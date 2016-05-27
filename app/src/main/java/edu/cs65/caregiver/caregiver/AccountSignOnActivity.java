@@ -150,30 +150,30 @@ public class AccountSignOnActivity extends Activity {
                 account_params.put("password","default");
                 account_params.put("registrationId", registrationID);
 
+                edu.cs65.caregiver.backend.messaging.Messaging.Builder builder =
+                        new edu.cs65.caregiver.backend.messaging.Messaging
+                                .Builder(AndroidHttp.newCompatibleTransport(), new AndroidJsonFactory(), null)
+                                .setRootUrl(SERVER_ADDR + "/_ah/api/");
+
+                edu.cs65.caregiver.backend.messaging.Messaging backend = builder.build();
+                edu.cs65.caregiver.backend.messaging.model.CaregiverEndpointsObject response = null;
+
                 try {
-                    String response = ServerUtilities.post(SERVER_ADDR + "/login_caregiver.do", account_params);
-                    Log.d(TAG, "post response: " + response);
-                    if (response.equals("")){
-                        runOnUiThread(new Runnable() {
-                          public void run() {
-                            Toast.makeText(mContext, "Email does not exist in our system", Toast.LENGTH_SHORT).show();
-                          }
-                        });
-                    } else{
-                        CareGiver loaded_data = gson.fromJson(response, CareGiver.class);
+                    response = backend.getAccountInfo(careGiver).execute();
+                    String storedData = response.getData();
+                    CareGiver loaded_data = gson.fromJson(storedData, CareGiver.class);
 
-                        // search the database for the name that matches input caregiver
-                        careRecipient = loaded_data.mRecipients.get(0).mName;
-                        runOnUiThread(new Runnable() {
-                            public void run() {
-                                setContentView(R.layout.activity_new_carerecipient_search);
-                                TextView nameSearch = (TextView) findViewById(R.id.carerecipient_name_search);
-                                nameSearch.setText(careRecipient);
-                            }
-                        });
+                    // search the database for the name that matches input caregiver
+                    careRecipient = loaded_data.mRecipients.get(0).mName;
+                    runOnUiThread(new Runnable() {
+                        public void run() {
+                            setContentView(R.layout.activity_new_carerecipient_search);
+                            TextView nameSearch = (TextView) findViewById(R.id.carerecipient_name_search);
+                            nameSearch.setText(careRecipient);
+                        }
+                    });
 
-                        history = 2;
-                    }
+                    history = 2;
                 } catch (IOException e) {
                     Log.d(TAG, "failed to issue post - Error msg: " + e.getMessage());
                     e.printStackTrace();
