@@ -99,7 +99,6 @@ public class NewMedicationActivity extends AppCompatActivity {
 //            }
 //        });
 
-
         Intent i = getIntent();
 
         // if saved instance state is not null, load that information

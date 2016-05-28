@@ -6,10 +6,8 @@
     <uses-permission android:name="android.permission.GET_ACCOUNTS" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-
     <uses-permission android:name="android.permission.VIBRATE"/>
     <uses-permission android:name="android.permission.WAKE_LOCK" />
-
 
     <permission
         android:name="edu.cs65.caregiver.caregiver.permission.C2D_MESSAGE"
@@ -41,6 +39,7 @@
 
         <activity android:name=".CareGiverActivity"
             android:uiOptions="splitActionBarWhenNarrow"
+            android:launchMode="singleInstance"
             android:screenOrientation="portrait">
             <receiver android:name=".CareGiverBroadcastReceiver" >
                 <intent-filter>

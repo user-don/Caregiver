@@ -46,6 +46,7 @@ import java.util.Date;
 import edu.cs65.caregiver.caregiver.controllers.DataController;
 import edu.cs65.caregiver.caregiver.model.CareGiver;
 import edu.cs65.caregiver.caregiver.model.MedicationAlert;
+import edu.cs65.caregiver.caregiver.model.MyAlert;
 import edu.cs65.caregiver.caregiver.model.Recipient;
 import edu.cs65.caregiver.backend.messaging.Messaging;
 import edu.cs65.caregiver.caregiver.model.RecipientToCareGiverMessage;
@@ -74,6 +75,8 @@ public class CareGiverActivity extends AppCompatActivity {
     private static final String RECIPIENT_NAME_KEY = "recipient name";
     private SharedPreferences mPrefs;
 
+    public static MyAlert mAlert;
+
     /* --- cloud stuff --- */
     private String mRegistrationID;
     private CareGiverBroadcastReceiver mBroadcastReceiver;
@@ -84,6 +87,7 @@ public class CareGiverActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_care_giver);
 
+        mAlert = new MyAlert(this);
         mPrefs = getSharedPreferences(getString(R.string.profile_preference), 0);
         mEmail = mPrefs.getString(EMAIL_KEY,"");
         mRecipientName = mPrefs.getString(RECIPIENT_NAME_KEY,"");
@@ -245,7 +249,9 @@ public class CareGiverActivity extends AppCompatActivity {
             builder.setPositiveButton("CLEAR", new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface arg0, int arg1) {
+                    mAlert.stopAlarms();
                     mReceiver.mRaisedAlert = false;
+                    new UpdateCareGiverAsyncTask().execute();
                     updateUI();
                 }
             });
@@ -407,7 +413,6 @@ public class CareGiverActivity extends AppCompatActivity {
 
                 mDataController.setRecipientData(mReceiver);
                 mDataController.saveData();
-                new UpdateCareGiverAsyncTask().execute();
                 updateUI();
             }
         });
@@ -553,7 +558,7 @@ public class CareGiverActivity extends AppCompatActivity {
 
         @Override
         public void onReceive(Context c, Intent i) {
-            Log.d(TAG, "received notification broadcast");
+            Log.d(TAG, "received notification broadcast2");
 
             Gson gson = new Gson();
             // TODO: java.lang.RuntimeException: Error receiving broadcast
@@ -566,6 +571,7 @@ public class CareGiverActivity extends AppCompatActivity {
             RecipientToCareGiverMessage msg = gson.fromJson(message,RecipientToCareGiverMessage.class);
             switch(msg.messageType) {
                 case RecipientToCareGiverMessage.CHECKIN:
+                    Log.d(TAG, "checkin!");
                     mReceiver.mCheckedIn = true;
                     mDataController.setRecipientData(mReceiver);
                     mDataController.saveData();
@@ -576,6 +582,7 @@ public class CareGiverActivity extends AppCompatActivity {
                     break;
 
                 case RecipientToCareGiverMessage.MED_TAKEN:
+                    Log.d(TAG, "med taken:");
 
                     for (String alert : msg.medAlertNames) {
                         Log.d(TAG, "Recipient has taken " + alert);
@@ -586,15 +593,23 @@ public class CareGiverActivity extends AppCompatActivity {
                     break;
 
                 case RecipientToCareGiverMessage.MED_NOT_TAKEN:
+                    Log.d(TAG, "Med not taken");
 
                     break;
 
                 case RecipientToCareGiverMessage.HELP:
+                    Log.d(TAG, "Help!");
+                    onClickAlertStatus(null);
+
                     mReceiver.mRaisedAlert = true;
                     mDataController.setRecipientData(mReceiver);
                     mDataController.saveData();
 
                     updateUI();
+                    break;
+
+                default:
+                    Log.d(TAG, "Unrecognized message type: " + msg.messageType);
                     break;
             }
         }
