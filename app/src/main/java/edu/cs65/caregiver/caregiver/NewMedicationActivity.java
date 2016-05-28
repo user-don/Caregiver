@@ -43,12 +43,10 @@ public class NewMedicationActivity extends AppCompatActivity {
 
     private String mAlertName;
     private Time mAlertTime;
+    private boolean mMedsTaken;
     private int mRecurrenceType = 0;
     private int[] mDaysOfWeek = new int[7];
     private ArrayList<String> mMedications;
-
-    private String mCareGiver;
-    private String mRegistrationId;
 
     public static String SERVER_ADDR = "https://handy-empire-131521.appspot.com";
 
@@ -57,6 +55,7 @@ public class NewMedicationActivity extends AppCompatActivity {
     public final static String ALERT_RECURRENCE_TYPE = "recurrence_type";
     public final static String ALERT_DAYS_OF_WEEK = "days_of_week";
     public final static String ALERT_MEDICATION = "medications";
+    public final static String ALERT_MEDS_TAKEN = "medsTaken";
 
     private static DataController mDC;
 
@@ -67,9 +66,6 @@ public class NewMedicationActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_new_medication);
         mDC = DataController.getInstance(getApplicationContext());
-
-        mCareGiver = CareGiverActivity.mEmail;
-        mRegistrationId = CareGiverActivity.mRegistrationID;
 
         Intent i = getIntent();
 
@@ -86,6 +82,7 @@ public class NewMedicationActivity extends AppCompatActivity {
 
             mDaysOfWeek = i.getIntArrayExtra(ALERT_DAYS_OF_WEEK);
             mMedications = i.getStringArrayListExtra(ALERT_MEDICATION);
+            mMedsTaken = false;
 
             // else initialize data
         } else if (savedInstanceState != null) {
@@ -101,6 +98,7 @@ public class NewMedicationActivity extends AppCompatActivity {
             mRecurrenceType = savedInstanceState.getInt(ALERT_RECURRENCE_TYPE, 0);
             mDaysOfWeek = savedInstanceState.getIntArray(ALERT_DAYS_OF_WEEK);
             mMedications = savedInstanceState.getStringArrayList(ALERT_MEDICATION);
+            mMedsTaken = savedInstanceState.getBoolean(ALERT_MEDS_TAKEN);
 
         // else if the intent has existing information, pull that up
         } else {
@@ -126,6 +124,7 @@ public class NewMedicationActivity extends AppCompatActivity {
 
         outstate.putInt(ALERT_RECURRENCE_TYPE, mRecurrenceType);
         outstate.putIntArray(ALERT_DAYS_OF_WEEK, mDaysOfWeek);
+        outstate.putBoolean(ALERT_MEDS_TAKEN, mMedsTaken);
         outstate.putStringArrayList(ALERT_MEDICATION, mMedications);
     }
 
@@ -240,8 +239,8 @@ public class NewMedicationActivity extends AppCompatActivity {
         }
         //resultIntent.putExtra(ALERT_RECURRENCE_TYPE, mRecurrenceType);
         resultIntent.putExtra(ALERT_DAYS_OF_WEEK, mDaysOfWeek);
+        resultIntent.putExtra(ALERT_MEDS_TAKEN, mMedsTaken);
         resultIntent.putStringArrayListExtra(ALERT_MEDICATION, mMedications);
-        
 
         Toast.makeText(this, "Saved Medication Alert", Toast.LENGTH_SHORT).show();
         finish();
@@ -468,31 +467,4 @@ public class NewMedicationActivity extends AppCompatActivity {
         mMedications.add(medication);
     }
 
-    public void updateAccount() {
-
-        // dummy information below
-        Log.d(TAG, "executing recipient creation");
-        new AsyncTask<Void,Void,Void>() {
-            Gson gson = new Gson();
-            @Override
-            protected Void doInBackground(Void... params) {
-                edu.cs65.caregiver.backend.messaging.Messaging.Builder builder =
-                        new edu.cs65.caregiver.backend.messaging.Messaging
-                                .Builder(AndroidHttp.newCompatibleTransport(), new AndroidJsonFactory(), null)
-                                .setRootUrl(SERVER_ADDR + "/_ah/api/");
-
-                edu.cs65.caregiver.backend.messaging.Messaging backend = builder.build();
-
-                try {
-                    String data = gson.toJson(mDC.careGiver, CareGiver.class);
-                    backend.updateEntry(mRegistrationId, mCareGiver, data).execute();
-                } catch (IOException e) {
-                    Log.d(TAG, "failed to register recipient account - Error msg: " + e.getMessage());
-                    e.printStackTrace();
-                }
-                return null;
-            }
-
-        }.execute();
-    }
 }

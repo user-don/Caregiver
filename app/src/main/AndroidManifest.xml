@@ -24,7 +24,8 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
 
-        <activity android:name=".MainActivity">
+        <activity android:name=".MainActivity"
+            android:screenOrientation="portrait">
             <intent-filter>
             <action android:name="android.intent.action.MAIN" />
 
@@ -33,12 +34,15 @@
         </activity>
 
         <activity android:name=".AccountSignOnActivity"
-            android:windowSoftInputMode="adjustPan">
+            android:windowSoftInputMode="adjustPan"
+            android:screenOrientation="portrait">
         </activity>
 
         <activity android:name=".CareGiverActivity"
             android:uiOptions="splitActionBarWhenNarrow"
-            android:launchMode="singleInstance">
+            android:launchMode="singleInstance"
+            android:screenOrientation="portrait">
+
             <receiver android:name=".CareGiverBroadcastReceiver" >
                 <intent-filter>
                     <action android:name=".CAREGIVER_BROADCAST" />
@@ -51,9 +55,11 @@
             android:screenOrientation="portrait">
         </activity>
 
-        <activity android:name=".NewAccountSignUp"/>
+        <activity android:name=".NewAccountSignUp"
+            android:screenOrientation="portrait"/>
 
-        <activity android:name=".CareRecipientActivity">
+        <activity android:name=".CareRecipientActivity"
+            android:screenOrientation="portrait">
             <receiver android:name=".EMAAlarmReceiver" />
             <receiver android:name=".CareRecipientBroadcastReceiver" >
                 <intent-filter>
@@ -62,9 +68,11 @@
             </receiver>
         </activity>
 
-        <activity android:name=".FallActivity"></activity>
+        <activity android:name=".FallActivity"
+            android:screenOrientation="portrait"></activity>
 
-        <activity android:name=".Checkin"></activity>
+        <activity android:name=".Checkin"
+            android:screenOrientation="portrait"></activity>
 
         <service android:name=".SensorService" />
 

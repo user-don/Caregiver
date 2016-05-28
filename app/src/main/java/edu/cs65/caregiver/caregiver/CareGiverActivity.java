@@ -6,11 +6,13 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.os.AsyncTask;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -21,6 +23,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -34,7 +37,11 @@ import com.google.gson.Gson;
 
 import java.io.IOException;
 import java.sql.Time;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 
 import edu.cs65.caregiver.caregiver.controllers.DataController;
 import edu.cs65.caregiver.caregiver.model.CareGiver;
@@ -59,8 +66,8 @@ public class CareGiverActivity extends AppCompatActivity {
     DataController mDataController;
 
     //private CareGiver mCareGiver;
-    public static String mEmail = "dummy";
-    public static String mRecipientName = "test";
+    private String mEmail = "dummy";
+    private String mRecipientName = "test";
     private Recipient mReceiver;
 
     private static final String EMAIL_KEY = "email key";
@@ -71,8 +78,7 @@ public class CareGiverActivity extends AppCompatActivity {
     public static MyAlert mAlert;
 
     /* --- cloud stuff --- */
-    private boolean mReceiverRegistered = false;
-    public static String mRegistrationID;
+    private String mRegistrationID;
     private CareGiverBroadcastReceiver mBroadcastReceiver;
     private IntentFilter mIntentFilter;
 
@@ -93,12 +99,6 @@ public class CareGiverActivity extends AppCompatActivity {
         mDataController = DataController.getInstance(getApplicationContext());
         mDataController.initializeData(getApplicationContext());
         mDataController.loadData();
-
-//        mReceiver = mDataController.careGiver.getRecipient(mRecipientName);
-//        if (mDataController.careGiver.getRecipient(mRecipientName) == null) {
-//            mDataController.careGiver.addRecipient(mRecipientName);
-//            mDataController.saveData();
-//        }
 
         mReceiver = mDataController.careGiver.getRecipient(mRecipientName);
         if (mReceiver == null) {
@@ -288,6 +288,7 @@ public class CareGiverActivity extends AppCompatActivity {
                             new MedicationAlert(data.getStringExtra(NewMedicationActivity.ALERT_NAME),
                                     time,
                                     data.getIntArrayExtra(NewMedicationActivity.ALERT_DAYS_OF_WEEK),
+                                    data.getBooleanExtra(NewMedicationActivity.ALERT_MEDS_TAKEN, false),
                                     data.getStringArrayListExtra(NewMedicationActivity.ALERT_MEDICATION));
 
                     Log.d(TAG, "adding alert name " + newAlert.mName);
@@ -309,6 +310,7 @@ public class CareGiverActivity extends AppCompatActivity {
                             new MedicationAlert(data.getStringExtra(NewMedicationActivity.ALERT_NAME),
                                     time,
                                     data.getIntArrayExtra(NewMedicationActivity.ALERT_DAYS_OF_WEEK),
+                                    data.getBooleanExtra(NewMedicationActivity.ALERT_MEDS_TAKEN,false),
                                     data.getStringArrayListExtra(NewMedicationActivity.ALERT_MEDICATION));
 
                     mReceiver.addAlert(newAlert);
@@ -394,6 +396,7 @@ public class CareGiverActivity extends AppCompatActivity {
                 }
                 i.putExtra(NewMedicationActivity.ALERT_RECURRENCE_TYPE, recurrenceType);
                 i.putExtra(NewMedicationActivity.ALERT_DAYS_OF_WEEK, alert.mAlertDays);
+                i.putExtra(NewMedicationActivity.ALERT_MEDS_TAKEN, alert.mMedsTaken);
                 i.putExtra(NewMedicationActivity.ALERT_MEDICATION, alert.mMedications);
 
                 long time = alert.mTime.getTime();
@@ -444,16 +447,70 @@ public class CareGiverActivity extends AppCompatActivity {
             View rowView = inflater.inflate(R.layout.medication_alert, parent, false);
 
             TextView title = (TextView) rowView.findViewById(R.id.med_alert_title);
-            title.setText(alert.mName + ": " + alert.mTime.toString());
+            String standardTime = "";
+            try {
+                final SimpleDateFormat sdf = new SimpleDateFormat("H:mm");
+                final Date dateObj = sdf.parse(alert.mTime.toString());
+                standardTime = new SimpleDateFormat("K:mm a").format(dateObj);
+            } catch (final ParseException e) {
+                e.printStackTrace();
+            }
+            title.setText(alert.mName + " - " + standardTime);
 
             TextView details = (TextView) rowView.findViewById(R.id.med_alert_detail);
-            details.setText(getDayString(alert.mAlertDays));
+            details.setText("Repeat: " + getDayString(alert.mAlertDays));
 
             ImageView image = (ImageView) rowView.findViewById(R.id.med_alert_image);
-            image.setImageResource(R.drawable.ic_done_black_24dp);
+            if (alert.mMedsTaken){
+                image.setImageResource(R.drawable.checkbox_checked);
+            } else {
+                image.setImageResource(R.drawable.checkbox);
+            }
+
+            if (!isToday(alert.mAlertDays)){
+                title.setTextColor(Color.LTGRAY);
+                details.setTextColor(Color.LTGRAY);
+            }
 
             return rowView;
         }
+    }
+
+    public boolean isToday(int[] arr){
+        Calendar rightNow = Calendar.getInstance();
+        int day = rightNow.get(Calendar.DAY_OF_WEEK);
+        System.out.print(day + " " + Calendar.SATURDAY);
+        switch(day){
+            case 1:
+                if (arr[6] == 1)
+                    return true;
+                break;
+            case 2:
+                if (arr[0] == 1)
+                    return true;
+                break;
+            case 3:
+                if (arr[1] == 1)
+                    return true;
+                break;
+            case 4:
+                if (arr[2] == 1)
+                    return true;
+                break;
+            case 5:
+                if (arr[3] == 1)
+                    return true;
+                break;
+            case 6:
+                if (arr[4] == 1)
+                    return true;
+                break;
+            case 7:
+                if (arr[5] == 1)
+                    return true;
+                break;
+        }
+        return false;
     }
 
     public String getDayString(int[] arr) {
@@ -504,7 +561,14 @@ public class CareGiverActivity extends AppCompatActivity {
             Log.d(TAG, "received notification broadcast2");
 
             Gson gson = new Gson();
-            RecipientToCareGiverMessage msg = gson.fromJson(i.getStringExtra("msg"),RecipientToCareGiverMessage.class);
+            // TODO: java.lang.RuntimeException: Error receiving broadcast
+            // Intent { act=edu.cs65.caregiver.caregiver.CAREGIVER_BROADCAST flg=0x10 (has extras) }
+            // in edu.cs65.caregiver.caregiver.CareGiverActivity$CareGiverBroadcastReceiver@bb4f027
+
+            // GET STRING FROM INTENT
+            String message = i.getStringExtra(GcmIntentService.BROADCAST_MESSAGE);
+
+            RecipientToCareGiverMessage msg = gson.fromJson(message,RecipientToCareGiverMessage.class);
             switch(msg.messageType) {
                 case RecipientToCareGiverMessage.CHECKIN:
                     Log.d(TAG, "checkin!");
@@ -672,22 +736,17 @@ public class CareGiverActivity extends AppCompatActivity {
 
             edu.cs65.caregiver.backend.messaging.Messaging backend = builder.build();
 
-            if (mReceiverRegistered) {
-                Log.d(TAG, "Executing update account with email " + mEmail);
-                try {
-                    Gson gson = new Gson();
-                    String data = gson.toJson(mDataController.careGiver);
+            Log.d(TAG, "Executing update account with email " + mEmail);
+            try {
+                Gson gson = new Gson();
+                String data = gson.toJson(mDataController.careGiver);
 
-                    Log.d(TAG,"Updating with information... " + data);
-                    backend.updateEntry(mRegistrationID, mEmail, data).execute();
-                } catch (IOException e) {
-                    Log.d(TAG, "updatedAccountInfo failed");
-                    e.printStackTrace();
-                }
-            } else {
-                Log.d(TAG, "Cannot update account because device is unregistered");
+                Log.d(TAG,"Updating with information... " + data);
+                backend.updateEntry(mRegistrationID, mEmail, data).execute();
+            } catch (IOException e) {
+                Log.d(TAG, "updatedAccountInfo failed");
+                e.printStackTrace();
             }
-
             return null;
         }
 
@@ -711,17 +770,13 @@ public class CareGiverActivity extends AppCompatActivity {
 
             edu.cs65.caregiver.backend.messaging.Messaging backend = builder.build();
 
-            if (mReceiverRegistered) {
-                Log.d(TAG, "Sending message to recipient registered with email " + mEmail);
+            Log.d(TAG, "Sending message to recipient registered with email " + mEmail);
 //                try {
 //                    backend.sendNotificationToPatient(mRegistrationID, mEmail, msg).execute();
 //                } catch (IOException e) {
 //                    Log.d(TAG, "sendNotificationToPatient failed");
 //                    e.printStackTrace();
 //                }
-            } else {
-                Log.d(TAG, "Cannot sendNotificationToPatient because device is unregistered");
-            }
 
             return null;
         }

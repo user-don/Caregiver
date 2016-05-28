@@ -130,8 +130,57 @@ public class GcmIntentService extends IntentService {
 
                         sendBroadcast(i5);
                         break;
-                }
 
+                // String msg = extras.getString("message");
+                // RecipientToCareGiverMessage data = gson.fromJson(msg, RecipientToCareGiverMessage.class);
+                // if (extras.getString("message") != null) {
+
+                //     switch (data.messageType) {
+                //         case RecipientToCareGiverMessage.CHECKIN:
+                //             //showToast("Recipient Checked In!");
+                //             sendCareGiverNotification(mRecipientName + " Checked In!");
+
+                //             sendBroadcast("edu.cs65.caregiver.caregiver.CAREGIVER_BROADCAST",
+                //                     gson.toJson(data, RecipientToCareGiverMessage.class));
+                //             break;
+
+                //         case RecipientToCareGiverMessage.HELP:
+                //             //showToast("Recipient Needs Help!");
+                //             sendCareGiverNotification(mRecipientName + " Needs Help!");
+                //             sendBroadcast("edu.cs65.caregiver.caregiver.CAREGIVER_BROADCAST",
+                //                     gson.toJson(data, RecipientToCareGiverMessage.class));
+                //             break;
+
+                //         case RecipientToCareGiverMessage.MED_TAKEN:
+                //             //showToast(msg);
+                //             StringBuilder sb = new StringBuilder(100);
+                //             for (String alert : data.medAlertNames) {
+                //                 sb.append(alert + ", ");
+                //             }
+                //             sendCareGiverNotification(mRecipientName + " Took Meds: " + sb.toString());
+                //             sendBroadcast("edu.cs65.caregiver.caregiver.CAREGIVER_BROADCAST",
+                //                     gson.toJson(data, RecipientToCareGiverMessage.class));
+                //             break;
+
+                //         case RecipientToCareGiverMessage.MED_NOT_TAKEN:
+                //             StringBuilder sb2 = new StringBuilder(100);
+                //             for (String alert : data.medAlertNames) {
+                //                 sb2.append(alert + ", ");
+                //             }
+                //             sendCareGiverNotification(mRecipientName + " Hasn't Taken: " + sb2.toString());
+                //             sendBroadcast("edu.cs65.caregiver.caregiver.CAREGIVER_BROADCAST",
+                //                     gson.toJson(data, RecipientToCareGiverMessage.class));
+                //             break;
+
+                //         case RecipientToCareGiverMessage.UPDATE_INFO:
+
+                //             // launch intent to send information to CareRecipient activity
+                //             sendBroadcast("edu.cs65.caregiver.caregiver.CAREGIVER_BROADCAST",
+                //                     gson.toJson(data, RecipientToCareGiverMessage.class));
+                //             break;
+                //     }
+
+                }
             }
         }
         GcmBroadcastReceiver.completeWakefulIntent(intent);

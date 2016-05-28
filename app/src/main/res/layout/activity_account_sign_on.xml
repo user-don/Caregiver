@@ -61,6 +61,7 @@
                     android:textColor="@color/grey"
                     android:hint="@string/account_sign_username_default"
                     android:fontFamily="serif"
+                    android:singleLine = "true"
                     android:inputType="text" />
 
             </LinearLayout>
@@ -95,6 +96,7 @@
                     android:hint="@string/account_sign_password_default"
                     android:inputType="text"
                     android:fontFamily="serif"
+                    android:singleLine = "true"
                     android:password="true"/>
 
             </LinearLayout>
