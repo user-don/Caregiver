@@ -40,6 +40,7 @@ import edu.cs65.caregiver.caregiver.controllers.DataController;
 public class NewMedicationActivity extends AppCompatActivity {
     @BindView(R.id.alert_time) TextView alert_time;
     @BindView(R.id.alert_name) EditText alert_name_et;
+    @BindView(R.id.new_medication) EditText new_medication;
 
     private static final String TAG = "new medication activity";
 
@@ -82,6 +83,19 @@ public class NewMedicationActivity extends AppCompatActivity {
                 return false;
             }
         });
+
+//        new_medication.setOnClickListener(alertNameClickListener);
+//        new_medication.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+//            @Override
+//            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+//                alert_name_et.setCursorVisible(false);
+//                if (event != null && event.getKeyCode() == KeyEvent.KEYCODE_ENTER) {
+//                    InputMethodManager in = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+//                    in.hideSoftInputFromWindow(alert_name_et.getApplicationWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
+//                }
+//                return false;
+//            }
+//        });
 
 
         Intent i = getIntent();
@@ -214,38 +228,11 @@ public class NewMedicationActivity extends AppCompatActivity {
     }
 
     public void onClickAddMedication(View v) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
 
-        final EditText input = new EditText(this);
-        input.setInputType(InputType.TYPE_CLASS_TEXT);
-        input.setText("", TextView.BufferType.EDITABLE);
-        input.setHint("Enter Medication Name");
-
-        builder.setView(input);
-        builder.setTitle("Add Medication to Group");
-        builder.setPositiveButton("ADD", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface arg0, int arg1) {
-
-                if (!input.getText().toString().equals("")) {
-                    addMedication(input.getText().toString());
-                } else {
-                    Toast.makeText(NewMedicationActivity.this, "Entry Failed -- Please enter a name",
-                            Toast.LENGTH_SHORT).show();
-                }
-
-            }
-        });
-
-        builder.setNegativeButton("CANCEL", new DialogInterface.OnClickListener() {
-
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                dialog.cancel();
-            }
-        });
-
-        builder.create().show();
+        String medication = new_medication.getText().toString();
+        if (!"".equals(medication)) {
+            addMedication(medication);
+        }
     }
 
     /**
@@ -259,6 +246,19 @@ public class NewMedicationActivity extends AppCompatActivity {
             }
         }
     };
+
+
+//    /**
+//     * Remove cursor from medication name EditText when not selected
+//     */
+//    View.OnClickListener alertNameClickListener = new View.OnClickListener() {
+//        @Override
+//        public void onClick(View v) {
+//            if (v.getId() == alert_name_et.getId()) {
+//                alert_name_et.setCursorVisible(true);
+//            }
+//        }
+//    };
 
     public void save (MenuItem v) {
 

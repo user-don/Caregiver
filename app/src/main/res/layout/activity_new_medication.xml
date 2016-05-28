@@ -206,23 +206,25 @@
         android:layout_below="@+id/space5"
         android:layout_centerHorizontal="true"
         android:gravity="center_vertical"
-        android:id="@+id/linearLayout8">
+        android:id="@+id/linearLayout8"
+        android:weightSum="1">
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textAppearance="?android:attr/textAppearanceLarge"
             android:text="Medications: "
-            android:id="@+id/textView10"
-            android:layout_weight="1" />
+            android:id="@+id/textView10" />
 
-        <Button
+        <EditText
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Add Medication"
-            android:id="@+id/button4"
-            android:layout_weight="1"
-            android:onClick="onClickAddMedication" />
+            android:layout_weight="0.74"
+            android:maxLines="1"
+            android:inputType="textCapWords"
+
+            android:id="@+id/new_medication"/>
+
     </LinearLayout>
 
     <ListView
@@ -252,5 +254,15 @@
         android:id="@+id/textView3"
         android:layout_above="@+id/linearLayout4"
         android:layout_centerHorizontal="true" />
+
+    <Button
+        android:layout_width="51dp"
+        android:layout_height="wrap_content"
+        android:text="+"
+        android:id="@+id/button4"
+        android:onClick="onClickAddMedication"
+        android:layout_gravity="right"
+        android:layout_above="@+id/medication_list"
+        android:layout_alignParentEnd="true" />
 
 </RelativeLayout>
