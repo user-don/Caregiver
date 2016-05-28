@@ -2,13 +2,20 @@ package edu.cs65.caregiver.caregiver;
 
 import android.app.Activity;
 import android.app.TimePickerDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
 import android.text.InputType;
 import android.util.Log;
+import android.view.KeyEvent;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
@@ -61,6 +68,22 @@ public class NewMedicationActivity extends AppCompatActivity {
         ButterKnife.bind(this);
         mDC = DataController.getInstance(getApplicationContext());
 
+        // Set desired EditText blinking cursor behavior for alert name
+        // See SO Post: http://bit.ly/1Z6bcIo
+        alert_name_et.setOnClickListener(alertNameClickListener);
+        alert_name_et.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                alert_name_et.setCursorVisible(false);
+                if (event != null && event.getKeyCode() == KeyEvent.KEYCODE_ENTER) {
+                    InputMethodManager in = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                    in.hideSoftInputFromWindow(alert_name_et.getApplicationWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
+                }
+                return false;
+            }
+        });
+
+
         Intent i = getIntent();
 
         // if saved instance state is not null, load that information
@@ -103,6 +126,14 @@ public class NewMedicationActivity extends AppCompatActivity {
         setSpinnerAdapter();
         setMedicationAdapter();
         updateUI();
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.new_medication_menu, menu);
+
+        return true;
     }
 
     @Override
@@ -214,7 +245,19 @@ public class NewMedicationActivity extends AppCompatActivity {
         builder.create().show();
     }
 
-    @OnClick(R.id.save_button) void save() {
+    /**
+     * Remove cursor from alert name EditText when not selected
+     */
+    View.OnClickListener alertNameClickListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            if (v.getId() == alert_name_et.getId()) {
+                alert_name_et.setCursorVisible(true);
+            }
+        }
+    };
+
+    public void save (MenuItem v) {
 
         // save all information to and update account
         if (!checkFields()) {
@@ -256,10 +299,6 @@ public class NewMedicationActivity extends AppCompatActivity {
         }
 
         return true;
-    }
-
-    @OnClick(R.id.cancel_button) void cancel() {
-        finish();
     }
 
     public void updateUI() {

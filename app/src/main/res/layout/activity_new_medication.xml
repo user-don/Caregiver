@@ -43,6 +43,9 @@
         <EditText
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:maxLines="1"
+            android:inputType="textCapWords"
+            android:cursorVisible="false"
             android:id="@+id/alert_name"/>
 
     </LinearLayout>
@@ -230,6 +233,8 @@
         android:layout_above="@+id/textView3"
         android:layout_alignEnd="@+id/linearLayout4" />
 
+    <!-- This LinearLayout has no reason to exist, but
+         removing it is causing issues. Keeping in for now. -->
     <LinearLayout
         android:orientation="horizontal"
         android:layout_width="match_parent"
@@ -238,19 +243,6 @@
         android:id="@+id/linearLayout4"
         android:layout_alignParentBottom="true">
 
-        <Button
-            android:layout_width="wrap_content"
-            android:layout_height="@dimen/caregiver_button_height"
-            android:text="@string/save"
-            android:id="@+id/save_button"
-            android:layout_weight="1" />
-
-        <Button
-            android:layout_width="wrap_content"
-            android:layout_height="@dimen/caregiver_button_height"
-            android:text="@string/cancel_string"
-            android:id="@+id/cancel_button"
-            android:layout_weight="1" />
     </LinearLayout>
 
     <TextView
