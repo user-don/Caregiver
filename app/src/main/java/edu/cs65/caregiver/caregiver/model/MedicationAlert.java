@@ -13,12 +13,14 @@ public class MedicationAlert implements Comparable<MedicationAlert> {
     public String mName;
     public Time mTime;
     public int[] mAlertDays;
+    public boolean mMedsTaken;
     public ArrayList<String> mMedications;
 
-    public MedicationAlert(String _name, Time _time, int[] _days, ArrayList<String> _medications) {
+    public MedicationAlert(String _name, Time _time, int[] _days, boolean _medsTaken, ArrayList<String> _medications) {
         mName = _name;
         mTime = _time;
         mAlertDays = _days;
+        mMedsTaken = _medsTaken;
         mMedications = _medications;
     }
 

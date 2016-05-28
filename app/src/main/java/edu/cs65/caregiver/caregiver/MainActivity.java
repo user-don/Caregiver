@@ -45,13 +45,13 @@ public class MainActivity extends Activity {
         super.onCreate(savedInstanceState);
         new GcmRegistrationAsyncTask(this).execute();
 
-        SharedPreferences.Editor editor = getSharedPreferences(getString(R.string.profile_preference), MODE_PRIVATE).edit();
-        editor.clear();
-        editor.apply();
+//        SharedPreferences.Editor editor = getSharedPreferences(getString(R.string.profile_preference), MODE_PRIVATE).edit();
+//        editor.clear();
+//        editor.apply();
 
         SharedPreferences preferences = getSharedPreferences(getString(R.string.profile_preference), 0);
 
-        if (!preferences.getString(EMAIL_KEY,"").equals("") && mRegistrationID == preferences.getString(REGISTRATION_KEY,"")){
+        if (!preferences.getString(EMAIL_KEY,"").equals("")){
             if (preferences.getString(ACCNT_KEY,"").equals("care recipient")){
                 Intent newMedication = new Intent(getApplicationContext(), CareRecipientActivity.class);
                 startActivity(newMedication);
