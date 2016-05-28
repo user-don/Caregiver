@@ -35,6 +35,7 @@
                 android:hint="@string/new_careGiver_default"
                 android:textColorHint="@color/middlegrey"
                 android:fontFamily="serif"
+                android:singleLine = "true"
                 android:layout_weight="3"/>
 
             <Button

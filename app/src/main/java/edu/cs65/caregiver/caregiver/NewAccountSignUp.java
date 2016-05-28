@@ -110,6 +110,7 @@ public class NewAccountSignUp extends Activity {
         } else {
             checkAccount(true);
         }
+        UIswitch = true;
     }
 
     public void displayToast(String message){
@@ -213,6 +214,7 @@ public class NewAccountSignUp extends Activity {
                             editor.apply();
 
                             startActivity(signUpIntent);
+                            finish();
                         }
                     }
                 } catch (IOException e) {

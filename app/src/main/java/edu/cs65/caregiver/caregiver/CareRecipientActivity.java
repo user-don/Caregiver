@@ -141,7 +141,7 @@ public class CareRecipientActivity extends Activity implements ServiceConnection
         mDay = calendar.get(Calendar.DAY_OF_WEEK);
         dayIndex = mDay - 1; // convert to match MedicationAlert int values
     }
-    
+
 
     public void displayMedDialog(MedEntry entry) {
         final ArrayList selectedItems = new ArrayList();
