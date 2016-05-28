@@ -288,7 +288,7 @@ public class CareGiverActivity extends AppCompatActivity {
                     mReceiver.addAlert(newAlert);
                     mReceiver = mDataController.setRecipientData(mReceiver);
                     //mDataController.careGiver.setAlert(mRecipientName,newAlert);
-                    mDataController.careGiver.getRecipient(mRecipientName).addAlert(newAlert);
+                    //mDataController.careGiver.getRecipient(mRecipientName).addAlert(newAlert);
                 }
                 break;
 
