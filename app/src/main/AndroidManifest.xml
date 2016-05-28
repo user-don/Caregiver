@@ -40,9 +40,10 @@
 
         <activity android:name=".CareGiverActivity"
             android:uiOptions="splitActionBarWhenNarrow"
+<<<<<<< HEAD
             android:launchMode="singleInstance"
+            android:screenOrientation="portrait"
             android:screenOrientation="portrait">
-
             <receiver android:name=".CareGiverBroadcastReceiver" >
                 <intent-filter>
                     <action android:name=".CAREGIVER_BROADCAST" />
