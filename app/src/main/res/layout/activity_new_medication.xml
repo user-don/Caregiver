@@ -38,22 +38,16 @@
             android:layout_height="wrap_content"
             android:textAppearance="?android:attr/textAppearanceLarge"
             android:text="@string/alert_name"
-            android:id="@+id/textView6" />
+            android:id="@+id/alert_name_title" />
 
-        <TextView
-            android:layout_width="wrap_content"
+        <EditText
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceLarge"
-            android:id="@+id/alert_name"
-            android:layout_weight="1" />
+            android:maxLines="1"
+            android:inputType="textCapWords"
+            android:cursorVisible="false"
+            android:id="@+id/alert_name"/>
 
-        <Button
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Set Name"
-            android:id="@+id/button3"
-            android:nestedScrollingEnabled="true"
-            android:onClick="onClickSetName" />
     </LinearLayout>
 
     <Space
@@ -212,23 +206,25 @@
         android:layout_below="@+id/space5"
         android:layout_centerHorizontal="true"
         android:gravity="center_vertical"
-        android:id="@+id/linearLayout8">
+        android:id="@+id/linearLayout8"
+        android:weightSum="1">
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textAppearance="?android:attr/textAppearanceLarge"
             android:text="Medications: "
-            android:id="@+id/textView10"
-            android:layout_weight="1" />
+            android:id="@+id/textView10" />
 
-        <Button
+        <EditText
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Add Medication"
-            android:id="@+id/button4"
-            android:layout_weight="1"
-            android:onClick="onClickAddMedication" />
+            android:layout_weight="0.74"
+            android:maxLines="1"
+            android:inputType="textCapWords"
+
+            android:id="@+id/new_medication"/>
+
     </LinearLayout>
 
     <ListView
@@ -239,6 +235,8 @@
         android:layout_above="@+id/textView3"
         android:layout_alignEnd="@+id/linearLayout4" />
 
+    <!-- This LinearLayout has no reason to exist, but
+         removing it is causing issues. Keeping in for now. -->
     <LinearLayout
         android:orientation="horizontal"
         android:layout_width="match_parent"
@@ -247,21 +245,6 @@
         android:id="@+id/linearLayout4"
         android:layout_alignParentBottom="true">
 
-        <Button
-            android:layout_width="wrap_content"
-            android:layout_height="@dimen/caregiver_button_height"
-            android:text="@string/save"
-            android:id="@+id/button"
-            android:layout_weight="1"
-            android:onClick="onClickSave" />
-
-        <Button
-            android:layout_width="wrap_content"
-            android:layout_height="@dimen/caregiver_button_height"
-            android:text="@string/cancel_string"
-            android:id="@+id/button2"
-            android:layout_weight="1"
-            android:onClick="onClickCancel" />
     </LinearLayout>
 
     <TextView
@@ -271,5 +254,15 @@
         android:id="@+id/textView3"
         android:layout_above="@+id/linearLayout4"
         android:layout_centerHorizontal="true" />
+
+    <Button
+        android:layout_width="51dp"
+        android:layout_height="wrap_content"
+        android:text="+"
+        android:id="@+id/button4"
+        android:onClick="onClickAddMedication"
+        android:layout_gravity="right"
+        android:layout_above="@+id/medication_list"
+        android:layout_alignParentEnd="true" />
 
 </RelativeLayout>

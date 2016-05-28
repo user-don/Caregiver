@@ -2,16 +2,20 @@ package edu.cs65.caregiver.caregiver;
 
 import android.app.Activity;
 import android.app.TimePickerDialog;
+import android.content.Context;
 import android.content.Intent;
-import android.os.AsyncTask;
-import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
 import android.text.InputType;
 import android.util.Log;
+import android.view.KeyEvent;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
@@ -24,20 +28,19 @@ import android.widget.TimePicker;
 import android.widget.Toast;
 import android.content.DialogInterface;
 
-import com.google.api.client.extensions.android.http.AndroidHttp;
-import com.google.api.client.extensions.android.json.AndroidJsonFactory;
-import com.google.gson.Gson;
-
-import java.io.IOException;
 import java.sql.Time;
 import java.util.ArrayList;
 import java.util.Calendar;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.OnClick;
 import edu.cs65.caregiver.caregiver.controllers.DataController;
-import edu.cs65.caregiver.caregiver.model.CareGiver;
-import edu.cs65.caregiver.caregiver.model.MedicationAlert;
 
 public class NewMedicationActivity extends AppCompatActivity {
+    @BindView(R.id.alert_time) TextView alert_time;
+    @BindView(R.id.alert_name) EditText alert_name_et;
+    @BindView(R.id.new_medication) EditText new_medication;
 
     private static final String TAG = "new medication activity";
 
@@ -65,7 +68,37 @@ public class NewMedicationActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_new_medication);
+        ButterKnife.bind(this);
         mDC = DataController.getInstance(getApplicationContext());
+
+        // Set desired EditText blinking cursor behavior for alert name
+        // See SO Post: http://bit.ly/1Z6bcIo
+        alert_name_et.setOnClickListener(alertNameClickListener);
+        alert_name_et.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                alert_name_et.setCursorVisible(false);
+                if (event != null && event.getKeyCode() == KeyEvent.KEYCODE_ENTER) {
+                    InputMethodManager in = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                    in.hideSoftInputFromWindow(alert_name_et.getApplicationWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
+                }
+                return false;
+            }
+        });
+
+//        new_medication.setOnClickListener(alertNameClickListener);
+//        new_medication.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+//            @Override
+//            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+//                alert_name_et.setCursorVisible(false);
+//                if (event != null && event.getKeyCode() == KeyEvent.KEYCODE_ENTER) {
+//                    InputMethodManager in = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+//                    in.hideSoftInputFromWindow(alert_name_et.getApplicationWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
+//                }
+//                return false;
+//            }
+//        });
+
 
         Intent i = getIntent();
 
@@ -74,6 +107,7 @@ public class NewMedicationActivity extends AppCompatActivity {
             Log.d(TAG, "loading edit entry");
 
             mAlertName = i.getStringExtra(ALERT_NAME);
+            alert_name_et.setText(mAlertName);
             long time = i.getLongExtra(ALERT_TIME, 0);
             mAlertTime = new Time(time);
             mRecurrenceType = i.getIntExtra(ALERT_RECURRENCE_TYPE, 0);
@@ -89,6 +123,7 @@ public class NewMedicationActivity extends AppCompatActivity {
             Log.d(TAG, "loading saved instance");
 
             mAlertName = savedInstanceState.getString(ALERT_NAME, null);
+            alert_name_et.setText(mAlertName);
 
             long time = savedInstanceState.getLong(ALERT_TIME, -1);
             if (time > 0) {
@@ -104,11 +139,22 @@ public class NewMedicationActivity extends AppCompatActivity {
         } else {
             Log.d(TAG, "loading new instance");
             mMedications = new ArrayList<>();
+            // Add example medication.
+            mMedications.add("Example medication");
         }
 
         setSpinnerAdapter();
         setMedicationAdapter();
+
         updateUI();
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.new_medication_menu, menu);
+
+        return true;
     }
 
     @Override
@@ -187,44 +233,42 @@ public class NewMedicationActivity extends AppCompatActivity {
     }
 
     public void onClickAddMedication(View v) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
 
-        final EditText input = new EditText(this);
-        input.setInputType(InputType.TYPE_CLASS_TEXT);
-        input.setText("", TextView.BufferType.EDITABLE);
-        input.setHint("Enter Medication Name");
-
-        builder.setView(input);
-        builder.setTitle("Add Medication to Group");
-        builder.setPositiveButton("ADD", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface arg0, int arg1) {
-
-                if (!input.getText().toString().equals("")) {
-                    addMedication(input.getText().toString());
-                } else {
-                    Toast.makeText(NewMedicationActivity.this, "Entry Failed -- Please enter a name",
-                            Toast.LENGTH_SHORT).show();
-                }
-
-            }
-        });
-
-        builder.setNegativeButton("CANCEL", new DialogInterface.OnClickListener() {
-
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                dialog.cancel();
-            }
-        });
-
-        builder.create().show();
+        String medication = new_medication.getText().toString();
+        if (!"".equals(medication)) {
+            addMedication(medication);
+        }
     }
 
-    public void onClickSave(View v) {
+    /**
+     * Remove cursor from alert name EditText when not selected
+     */
+    View.OnClickListener alertNameClickListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            if (v.getId() == alert_name_et.getId()) {
+                alert_name_et.setCursorVisible(true);
+            }
+        }
+    };
+
+
+//    /**
+//     * Remove cursor from medication name EditText when not selected
+//     */
+//    View.OnClickListener alertNameClickListener = new View.OnClickListener() {
+//        @Override
+//        public void onClick(View v) {
+//            if (v.getId() == alert_name_et.getId()) {
+//                alert_name_et.setCursorVisible(true);
+//            }
+//        }
+//    };
+
+    public void save (MenuItem v) {
 
         // save all information to and update account
-        if (checkFields() == false) {
+        if (!checkFields()) {
             return;
         }
 
@@ -247,7 +291,8 @@ public class NewMedicationActivity extends AppCompatActivity {
     }
 
     public boolean checkFields() {
-
+        // get alert name
+        mAlertName = alert_name_et.getText().toString();
         if (mAlertName == null || mAlertName.equals("")) {
             Toast.makeText(this,"Please Enter Alert Name", Toast.LENGTH_SHORT).show();
             return false;
@@ -265,18 +310,14 @@ public class NewMedicationActivity extends AppCompatActivity {
         return true;
     }
 
-    public void onClickCancel(View v) {
-        finish();
-    }
-
     public void updateUI() {
 
-        TextView alert_name = (TextView) findViewById(R.id.alert_name);
-        alert_name.setText(mAlertName);
+//        TextView alert_name = (TextView) findViewById(R.id.alert_name);
+//        alert_name.setText(mAlertName);
 
-        if (mAlertName == null) {
-            alert_name.setText(mAlertName);
-        }
+//        if (mAlertName == null) {
+//            alert_name.setText(mAlertName);
+//        }
 
         TextView alert_time = (TextView) findViewById(R.id.alert_time);
         if (mAlertTime != null) {
