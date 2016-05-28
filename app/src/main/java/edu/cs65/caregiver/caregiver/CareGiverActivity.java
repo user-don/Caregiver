@@ -40,6 +40,7 @@ import java.sql.Time;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 
 import edu.cs65.caregiver.caregiver.controllers.DataController;
@@ -455,14 +456,56 @@ public class CareGiverActivity extends AppCompatActivity {
             details.setText("Repeat: " + getDayString(alert.mAlertDays));
 
             ImageView image = (ImageView) rowView.findViewById(R.id.med_alert_image);
-            if (alert.mMedsTaken || alert.mName.equals("morning")){
+            if (alert.mMedsTaken){
                 image.setImageResource(R.drawable.checkbox_checked);
             } else {
                 image.setImageResource(R.drawable.checkbox);
             }
-            
+
+            if (!isToday(alert.mAlertDays)){
+                title.setTextColor(Color.LTGRAY);
+                details.setTextColor(Color.LTGRAY);
+            }
+
             return rowView;
         }
+    }
+
+    public boolean isToday(int[] arr){
+        Calendar rightNow = Calendar.getInstance();
+        int day = rightNow.get(Calendar.DAY_OF_WEEK);
+        System.out.print(day + " " + Calendar.SATURDAY);
+        switch(day){
+            case 1:
+                if (arr[6] == 1)
+                    return true;
+                break;
+            case 2:
+                if (arr[0] == 1)
+                    return true;
+                break;
+            case 3:
+                if (arr[1] == 1)
+                    return true;
+                break;
+            case 4:
+                if (arr[2] == 1)
+                    return true;
+                break;
+            case 5:
+                if (arr[3] == 1)
+                    return true;
+                break;
+            case 6:
+                if (arr[4] == 1)
+                    return true;
+                break;
+            case 7:
+                if (arr[5] == 1)
+                    return true;
+                break;
+        }
+        return false;
     }
 
     public String getDayString(int[] arr) {
