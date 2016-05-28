@@ -32,7 +32,9 @@ public class Checkin extends AppCompatActivity {
 
         Intent i = getIntent();
         mRegistration = i.getStringExtra("registration");
+        System.out.println("registration: " + mRegistration);
         mEmail = i.getStringExtra("email");
+        System.out.println("email: " + mEmail);
 
         setContentView(R.layout.activity_checkin);
         startVibration();
@@ -54,19 +56,19 @@ public class Checkin extends AppCompatActivity {
 
                 edu.cs65.caregiver.backend.messaging.Messaging backend = builder.build();
 
-                Log.d(TAG, "Notifying caregiver of help: " + mEmail);
+                Log.d(TAG, "Notifying caregiver of checkin: " + mEmail);
                 try {
 
                     // make help message
                     RecipientToCareGiverMessage msg =
-                            new RecipientToCareGiverMessage(RecipientToCareGiverMessage.HELP,
+                            new RecipientToCareGiverMessage(RecipientToCareGiverMessage.CHECKIN,
                                     null,
                                     Calendar.getInstance().getTime().getTime());
 
                     backend.sendNotificationToCaregiver(mRegistration, mEmail, msg.selfToString());
                     backend.getAccountInfo(mEmail).execute();
                 } catch (IOException e) {
-                    Log.d(TAG, "send help failed");
+                    Log.d(TAG, "send checkin failed");
                     e.printStackTrace();
                 }
 
@@ -75,8 +77,8 @@ public class Checkin extends AppCompatActivity {
 
             @Override
             protected void onPostExecute(Void result) {
-                Log.d(TAG,"sent help message\n");
-                Toast.makeText(getApplicationContext(), "CAREGIVER HAS BEEN ALERTED",
+                Log.d(TAG,"sent checkin message\n");
+                Toast.makeText(getApplicationContext(), "Checked In!",
                         Toast.LENGTH_LONG).show();
             }
         }.execute();

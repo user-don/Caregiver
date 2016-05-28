@@ -25,19 +25,17 @@ public class PSMScheduler {
             setSchedule(context, hr, min, sec, i);
         }
 
-        // get checkin time and set alarm
-        setSchedule(context, 7, 3, 0, -1);
-
     }
 
+    public static void setCheckinAlarm(Context context) {
+        setSchedule(context, 17, 25, 0, -1);
+    }
+
+
     private static void setSchedule(Context context, int hour, int min, int sec, int index) {
-
         int requestCode = hour * 10000 + min * 100 + sec;
-        Intent intent = new Intent(context, CareRecipientActivity.EMAAlarmReceiver.class);
+        Intent intent = new Intent(context, EMAAlarmReceiver.class);
         intent.putExtra("index", index);
-
-        PendingIntent pi = PendingIntent.getBroadcast(context, requestCode, intent,
-        PendingIntent.FLAG_CANCEL_CURRENT); //set pending intent to call EMAAlarmReceiver.
 
         Calendar calendar = Calendar.getInstance();
         calendar.setTimeInMillis(System.currentTimeMillis());
@@ -51,13 +49,18 @@ public class PSMScheduler {
 
         //set repeating alarm for checkin, otherwise set one-time alarm for meds
         if (index != -1) {
+            PendingIntent piMeds = PendingIntent.getBroadcast(context, requestCode, intent,
+                    PendingIntent.FLAG_CANCEL_CURRENT); //set pending intent for EMAAlarmReceiver.
             AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
-            alarmManager.set(AlarmManager.RTC_WAKEUP,calendar.getTimeInMillis(), pi);
+            alarmManager.set(AlarmManager.RTC_WAKEUP,calendar.getTimeInMillis(), piMeds);
         }
+
         else {
+            PendingIntent piCheckIn = PendingIntent.getBroadcast(context, requestCode, intent,
+                    PendingIntent.FLAG_CANCEL_CURRENT); //set pending intent for EMAAlarmReceiver.
             AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
             alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(),
-                    AlarmManager.INTERVAL_DAY, pi);
+                    AlarmManager.INTERVAL_DAY, piCheckIn);
         }
     }
 }

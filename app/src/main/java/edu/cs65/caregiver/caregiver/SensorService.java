@@ -35,6 +35,7 @@ public class SensorService extends Service implements SensorEventListener {
     private Thread mDataThread;
 
     private Context mContext = this;
+    public static boolean fallDetected = false;
 
     public static final int ACCELEROMETER_BUFFER_CAPACITY = 2048;
     public static final int ACCELEROMETER_BLOCK_CAPACITY = 64;
@@ -115,9 +116,16 @@ public class SensorService extends Service implements SensorEventListener {
                                         // nothing wrong
                                         break;
                                     case 1:
-                                        Intent fallIntent = new Intent(mContext, FallActivity.class);
-                                        fallIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                                        mContext.startActivity(fallIntent);
+                                        if (!fallDetected) {
+                                            fallDetected = true;
+                                            Intent fallIntent = new Intent(mContext, FallActivity.class);
+                                            fallIntent.putExtra("registration", CareRecipientActivity.mRegistrationID);
+                                            fallIntent.putExtra("email", CareRecipientActivity.mEmail);
+
+                                            fallIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                                            mContext.startActivity(fallIntent);
+                                        }
+
                                         break;
                                 }
 
@@ -205,59 +213,6 @@ public class SensorService extends Service implements SensorEventListener {
 
             double max = Double.MIN_VALUE;
 
-//            while (true) {
-//                try {
-//                    // need to check if the AsyncTask is cancelled or not in the while loop
-//                    if (isCancelled() == true) {
-//                        return null;
-//                    }
-//
-//                    // Dumping buffer
-//                    accBlock[blockSize++] = mAccBuffer.take().doubleValue();
-//
-//                    // once app has 64 readings
-//                    if (blockSize == ACCELEROMETER_BLOCK_CAPACITY) {
-//                        blockSize = 0;
-//                        max = .0;
-//
-//                        for (double val : accBlock) {
-//                            if (max < val) {
-//                                max = val;
-//                            }
-//                        }
-//
-//                        fft.fft(re, im);
-//
-//                        for (int i = 0; i < re.length; i++) {
-//                            // Compute each coefficient
-//                            double mag = Math.sqrt(re[i] * re[i] + im[i]* im[i]);
-//                            toClassify[i] = mag;
-//                            im[i] = .0; // Clear the field
-//                        }
-//
-//                        // Finally, append max after frequency components
-//                        toClassify[ACCELEROMETER_BLOCK_CAPACITY] = max;
-//                        int label = (int) WekaClassifier.classify(toClassify);
-//
-//                        switch ((int) label) {
-//                            case 0:
-//                                // nothing wrong
-//                                break;
-//                            case 1:
-//                                Intent fallIntent = new Intent(mContext, FallActivity.class);
-//                                fallIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-//                                mContext.startActivity(fallIntent);
-//                                break;
-//                        }
-//
-//                        Intent i = new Intent(BROADCAST_LABEL_CHANGE);
-//                        sendBroadcast(i);
-//                        featVect.clear();
-//                    }
-//                } catch (Exception e) {
-//                    e.printStackTrace();
-//                }
-//            }
             return null;
         }
     }
