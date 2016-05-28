@@ -7,7 +7,9 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:layout_weight="1">
+        android:layout_weight="1"
+        android:layout_marginTop="3dp"
+        android:layout_marginBottom="3dp">
 
         <TextView
             android:layout_width="wrap_content"
@@ -28,6 +30,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/med_alert_image"
-        android:scaleType="fitCenter"/>
+        android:scaleType="fitCenter"
+        android:layout_gravity="center"/>
     
 </LinearLayout>

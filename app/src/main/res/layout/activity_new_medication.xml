@@ -267,7 +267,7 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Tap Entry To Delete"
+        android:text="Tap Medication To Delete"
         android:id="@+id/textView3"
         android:layout_above="@+id/linearLayout4"
         android:layout_centerHorizontal="true" />
