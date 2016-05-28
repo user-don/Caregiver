@@ -85,8 +85,8 @@ public class GcmIntentService extends IntentService {
                         if (CareGiverActivity.mAlert != null) {
                             CareGiverActivity.mAlert.startAlarms();
                         }
-                        
-                        Intent CGi = new Intent(getApplicationContext(),CareGiverActivity.class); //The activity you  want to start
+
+                        Intent CGi = new Intent(getApplicationContext(), CareGiverActivity.class); //The activity you  want to start
                         //CGi.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                         CGi.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                         startActivity(CGi);
@@ -95,7 +95,7 @@ public class GcmIntentService extends IntentService {
                         i2.putExtra("msg", extras.getString("message"));
                         sendBroadcast(i2);
 
-                        PowerManager.WakeLock screenOn = ((PowerManager)getSystemService(POWER_SERVICE)).newWakeLock(PowerManager.SCREEN_BRIGHT_WAKE_LOCK | PowerManager.ACQUIRE_CAUSES_WAKEUP, "ALERT");
+                        PowerManager.WakeLock screenOn = ((PowerManager) getSystemService(POWER_SERVICE)).newWakeLock(PowerManager.SCREEN_BRIGHT_WAKE_LOCK | PowerManager.ACQUIRE_CAUSES_WAKEUP, "ALERT");
                         screenOn.acquire();
                         break;
 
@@ -107,7 +107,7 @@ public class GcmIntentService extends IntentService {
                         sendCareGiverNotification(mRecipientName + " Took Meds: " + sb.toString());
 
                         Intent i3 = new Intent("edu.cs65.caregiver.caregiver.CAREGIVER_BROADCAST");
-                        i3.putExtra("msg",extras.getString("message"));
+                        i3.putExtra("msg", extras.getString("message"));
                         sendBroadcast(i3);
                         break;
 
@@ -119,7 +119,7 @@ public class GcmIntentService extends IntentService {
                         sendCareGiverNotification(mRecipientName + " Hasn't Taken: " + sb2.toString());
 
                         Intent i4 = new Intent("edu.cs65.caregiver.caregiver.CAREGIVER_BROADCAST");
-                        i4.putExtra("msg",extras.getString("message"));
+                        i4.putExtra("msg", extras.getString("message"));
                         sendBroadcast(i4);
                         break;
 
@@ -130,55 +130,6 @@ public class GcmIntentService extends IntentService {
 
                         sendBroadcast(i5);
                         break;
-
-                // String msg = extras.getString("message");
-                // RecipientToCareGiverMessage data = gson.fromJson(msg, RecipientToCareGiverMessage.class);
-                // if (extras.getString("message") != null) {
-
-                //     switch (data.messageType) {
-                //         case RecipientToCareGiverMessage.CHECKIN:
-                //             //showToast("Recipient Checked In!");
-                //             sendCareGiverNotification(mRecipientName + " Checked In!");
-
-                //             sendBroadcast("edu.cs65.caregiver.caregiver.CAREGIVER_BROADCAST",
-                //                     gson.toJson(data, RecipientToCareGiverMessage.class));
-                //             break;
-
-                //         case RecipientToCareGiverMessage.HELP:
-                //             //showToast("Recipient Needs Help!");
-                //             sendCareGiverNotification(mRecipientName + " Needs Help!");
-                //             sendBroadcast("edu.cs65.caregiver.caregiver.CAREGIVER_BROADCAST",
-                //                     gson.toJson(data, RecipientToCareGiverMessage.class));
-                //             break;
-
-                //         case RecipientToCareGiverMessage.MED_TAKEN:
-                //             //showToast(msg);
-                //             StringBuilder sb = new StringBuilder(100);
-                //             for (String alert : data.medAlertNames) {
-                //                 sb.append(alert + ", ");
-                //             }
-                //             sendCareGiverNotification(mRecipientName + " Took Meds: " + sb.toString());
-                //             sendBroadcast("edu.cs65.caregiver.caregiver.CAREGIVER_BROADCAST",
-                //                     gson.toJson(data, RecipientToCareGiverMessage.class));
-                //             break;
-
-                //         case RecipientToCareGiverMessage.MED_NOT_TAKEN:
-                //             StringBuilder sb2 = new StringBuilder(100);
-                //             for (String alert : data.medAlertNames) {
-                //                 sb2.append(alert + ", ");
-                //             }
-                //             sendCareGiverNotification(mRecipientName + " Hasn't Taken: " + sb2.toString());
-                //             sendBroadcast("edu.cs65.caregiver.caregiver.CAREGIVER_BROADCAST",
-                //                     gson.toJson(data, RecipientToCareGiverMessage.class));
-                //             break;
-
-                //         case RecipientToCareGiverMessage.UPDATE_INFO:
-
-                //             // launch intent to send information to CareRecipient activity
-                //             sendBroadcast("edu.cs65.caregiver.caregiver.CAREGIVER_BROADCAST",
-                //                     gson.toJson(data, RecipientToCareGiverMessage.class));
-                //             break;
-                //     }
 
                 }
             }
