@@ -121,10 +121,13 @@ public class NewMedicationActivity extends AppCompatActivity {
         } else {
             Log.d(TAG, "loading new instance");
             mMedications = new ArrayList<>();
+            // Add example medication.
+            mMedications.add("Example medication");
         }
 
         setSpinnerAdapter();
         setMedicationAdapter();
+
         updateUI();
     }
 
