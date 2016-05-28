@@ -3,15 +3,12 @@ package edu.cs65.caregiver.caregiver;
 import android.app.Activity;
 import android.app.TimePickerDialog;
 import android.content.Intent;
-import android.os.AsyncTask;
-import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.InputType;
 import android.util.Log;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
@@ -24,20 +21,18 @@ import android.widget.TimePicker;
 import android.widget.Toast;
 import android.content.DialogInterface;
 
-import com.google.api.client.extensions.android.http.AndroidHttp;
-import com.google.api.client.extensions.android.json.AndroidJsonFactory;
-import com.google.gson.Gson;
-
-import java.io.IOException;
 import java.sql.Time;
 import java.util.ArrayList;
 import java.util.Calendar;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.OnClick;
 import edu.cs65.caregiver.caregiver.controllers.DataController;
-import edu.cs65.caregiver.caregiver.model.CareGiver;
-import edu.cs65.caregiver.caregiver.model.MedicationAlert;
 
 public class NewMedicationActivity extends AppCompatActivity {
+    @BindView(R.id.alert_time) TextView alert_time;
+    @BindView(R.id.alert_name) EditText alert_name_et;
 
     private static final String TAG = "new medication activity";
 
@@ -63,6 +58,7 @@ public class NewMedicationActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_new_medication);
+        ButterKnife.bind(this);
         mDC = DataController.getInstance(getApplicationContext());
 
         Intent i = getIntent();
@@ -72,6 +68,7 @@ public class NewMedicationActivity extends AppCompatActivity {
             Log.d(TAG, "loading edit entry");
 
             mAlertName = i.getStringExtra(ALERT_NAME);
+            alert_name_et.setText(mAlertName);
             long time = i.getLongExtra(ALERT_TIME, 0);
             mAlertTime = new Time(time);
             mRecurrenceType = i.getIntExtra(ALERT_RECURRENCE_TYPE, 0);
@@ -86,6 +83,7 @@ public class NewMedicationActivity extends AppCompatActivity {
             Log.d(TAG, "loading saved instance");
 
             mAlertName = savedInstanceState.getString(ALERT_NAME, null);
+            alert_name_et.setText(mAlertName);
 
             long time = savedInstanceState.getLong(ALERT_TIME, -1);
             if (time > 0) {
@@ -216,10 +214,10 @@ public class NewMedicationActivity extends AppCompatActivity {
         builder.create().show();
     }
 
-    public void onClickSave(View v) {
+    @OnClick(R.id.save_button) void save() {
 
         // save all information to and update account
-        if (checkFields() == false) {
+        if (!checkFields()) {
             return;
         }
 
@@ -241,7 +239,8 @@ public class NewMedicationActivity extends AppCompatActivity {
     }
 
     public boolean checkFields() {
-
+        // get alert name
+        mAlertName = alert_name_et.getText().toString();
         if (mAlertName == null || mAlertName.equals("")) {
             Toast.makeText(this,"Please Enter Alert Name", Toast.LENGTH_SHORT).show();
             return false;
@@ -259,18 +258,18 @@ public class NewMedicationActivity extends AppCompatActivity {
         return true;
     }
 
-    public void onClickCancel(View v) {
+    @OnClick(R.id.cancel_button) void cancel() {
         finish();
     }
 
     public void updateUI() {
 
-        TextView alert_name = (TextView) findViewById(R.id.alert_name);
-        alert_name.setText(mAlertName);
+//        TextView alert_name = (TextView) findViewById(R.id.alert_name);
+//        alert_name.setText(mAlertName);
 
-        if (mAlertName == null) {
-            alert_name.setText(mAlertName);
-        }
+//        if (mAlertName == null) {
+//            alert_name.setText(mAlertName);
+//        }
 
         TextView alert_time = (TextView) findViewById(R.id.alert_time);
         if (mAlertTime != null) {

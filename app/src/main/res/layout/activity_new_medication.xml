@@ -38,22 +38,13 @@
             android:layout_height="wrap_content"
             android:textAppearance="?android:attr/textAppearanceLarge"
             android:text="@string/alert_name"
-            android:id="@+id/textView6" />
+            android:id="@+id/alert_name_title" />
 
-        <TextView
-            android:layout_width="wrap_content"
+        <EditText
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceLarge"
-            android:id="@+id/alert_name"
-            android:layout_weight="1" />
+            android:id="@+id/alert_name"/>
 
-        <Button
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Set Name"
-            android:id="@+id/button3"
-            android:nestedScrollingEnabled="true"
-            android:onClick="onClickSetName" />
     </LinearLayout>
 
     <Space
@@ -251,17 +242,15 @@
             android:layout_width="wrap_content"
             android:layout_height="@dimen/caregiver_button_height"
             android:text="@string/save"
-            android:id="@+id/button"
-            android:layout_weight="1"
-            android:onClick="onClickSave" />
+            android:id="@+id/save_button"
+            android:layout_weight="1" />
 
         <Button
             android:layout_width="wrap_content"
             android:layout_height="@dimen/caregiver_button_height"
             android:text="@string/cancel_string"
-            android:id="@+id/button2"
-            android:layout_weight="1"
-            android:onClick="onClickCancel" />
+            android:id="@+id/cancel_button"
+            android:layout_weight="1" />
     </LinearLayout>
 
     <TextView
