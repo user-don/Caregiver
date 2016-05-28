@@ -11,6 +11,7 @@ import android.os.AsyncTask;
 import android.os.Binder;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
+import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.concurrent.ArrayBlockingQueue;
@@ -56,6 +57,8 @@ public class SensorService extends Service implements SensorEventListener {
         mAsyncTask = new OnSensorChangedTask();
 
         mReadData = new Runnable() {
+            private static final String TAG = "Sensor Thread";
+
             @Override
             public void run() {
                 {
@@ -70,8 +73,15 @@ public class SensorService extends Service implements SensorEventListener {
 
                     double max = Double.MIN_VALUE;
 
-                    while (true) {
+                    boolean running = true;
+                    while (running) {
                         try {
+
+                            if (Thread.interrupted()) {
+                                Log.d(TAG, "ending sensor thread");
+                                running = false;
+                                break;
+                            }
 
                             // Dumping buffer
                             accBlock[blockSize++] = mAccBuffer.take().doubleValue();
@@ -169,7 +179,7 @@ public class SensorService extends Service implements SensorEventListener {
     }
 
     public void onDestroy() {
-        mDataThread.stop();
+        mDataThread.interrupt();
 //        mAsyncTask.cancel(true);
         try {
             Thread.sleep(100);

@@ -10,7 +10,6 @@
     <uses-permission android:name="android.permission.VIBRATE"/>
     <uses-permission android:name="android.permission.WAKE_LOCK" />
 
-
     <permission
         android:name="edu.cs65.caregiver.caregiver.permission.C2D_MESSAGE"
         android:protectionLevel="signature" />
@@ -38,7 +37,8 @@
         </activity>
 
         <activity android:name=".CareGiverActivity"
-            android:uiOptions="splitActionBarWhenNarrow">
+            android:uiOptions="splitActionBarWhenNarrow"
+            android:launchMode="singleInstance">
             <receiver android:name=".CareGiverBroadcastReceiver" >
                 <intent-filter>
                     <action android:name=".CAREGIVER_BROADCAST" />
