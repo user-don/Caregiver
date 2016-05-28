@@ -54,7 +54,7 @@
         <activity android:name=".NewAccountSignUp"/>
 
         <activity android:name=".CareRecipientActivity">
-            <receiver android:name=".EMAAlarmReceiver" />
+            <!--<receiver android:name=".EMAAlarmReceiver" />-->
             <receiver android:name=".CareRecipientBroadcastReceiver" >
                 <intent-filter>
                     <action android:name=".CARERECIPIENT_BROADCAST" />
@@ -85,6 +85,9 @@
             </intent-filter>
         </receiver>
         <service android:name=".GcmIntentService" />
+
+        <receiver android:name=".EMAAlarmReceiver" />
+
 
     </application>
 

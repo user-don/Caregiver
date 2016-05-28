@@ -75,7 +75,7 @@ public class CareRecipientActivity extends Activity implements ServiceConnection
     /* --- cloud stuff --- */
     CareGiver cloudData;
     private boolean mReceiverRegistered = false;
-    private String mRegistrationID;
+    public static String mRegistrationID;
 
     /* --- service stuff --- */
     SensorService mySensorService;
@@ -88,7 +88,7 @@ public class CareRecipientActivity extends Activity implements ServiceConnection
     private CareRecipientBroadcastReceiver mBroadcastReceiver;
     private IntentFilter mIntentFilter;
 
-    private String mEmail = "dummy";
+    public static String mEmail = "dummy";
     public static String mRecipientName = "test";
     private static final String EMAIL_KEY = "email key";
     private static final String REGISTRATION_KEY = "registration key";
@@ -97,7 +97,6 @@ public class CareRecipientActivity extends Activity implements ServiceConnection
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_care_recipient);
         mContext = getApplicationContext();
@@ -106,6 +105,8 @@ public class CareRecipientActivity extends Activity implements ServiceConnection
         mEmail = preferences.getString(EMAIL_KEY, "");
         mRecipientName = preferences.getString(RECIPIENT_NAME_KEY, "");
         mRegistrationID = preferences.getString(REGISTRATION_KEY,"");
+
+        PSMScheduler.setCheckinAlarm(this);
 
         // register receiver for gcm message broadcasts
         mBroadcastReceiver = new CareRecipientBroadcastReceiver();
@@ -117,21 +118,7 @@ public class CareRecipientActivity extends Activity implements ServiceConnection
         mIsBound = false;
         automaticBind();
 
-//        if (mCareGiver == null) {
-//            mCareGiver = new CareGiver("test");
-//            mReceiver = mCareGiver.addRecipient("test recipient");
-//        } else {
-//            mReceiver = mCareGiver.getRecipient("test recipient");
-//        }
-
         getDayOfWeek();
-//        createTestMeds();
-
-        // Get medication alerts and checkin time
-//        mMedicationAlerts = mReceiver.mAlerts;
-//        mCheckInTime = mReceiver.mCheckIntime;
-
-//        setUpAdapter();
 
         if (loadMedDialog) {
             startAlarm();
@@ -139,9 +126,6 @@ public class CareRecipientActivity extends Activity implements ServiceConnection
             MedEntry entry = sortedMeds.get(index);
             displayMedDialog(entry);
         }
-
-        // schedule alarms
-//        PSMScheduler.setSchedule(this);
 
         Toolbar header = (Toolbar)findViewById(R.id.toolbar);
         header.setTitle(mRecipientName);
@@ -157,12 +141,7 @@ public class CareRecipientActivity extends Activity implements ServiceConnection
         mDay = calendar.get(Calendar.DAY_OF_WEEK);
         dayIndex = mDay - 1; // convert to match MedicationAlert int values
     }
-
-//    @Override
-//    protected void onListItemClick(ListView list, View view, int position, long id) {
-//        super.onListItemClick(list, view, position, id);
-//        displayMedDialog(sortedMeds.get(position));
-//    }
+    
 
     public void displayMedDialog(MedEntry entry) {
         final ArrayList selectedItems = new ArrayList();
@@ -286,12 +265,6 @@ public class CareRecipientActivity extends Activity implements ServiceConnection
             listValues.add(title + " Medications");
         }
 
-        // initiate list adapter
-        //ArrayAdapter<String> myAdapter = new ArrayAdapter<String>(this, R.layout.row_layout,
-        //        R.id.listText, listValues);
-
-        // assign the list adapter
-        //setListAdapter(myAdapter);
     }
 
     public ArrayList<MedicationAlert> getMedsForToday() {
@@ -401,69 +374,6 @@ public class CareRecipientActivity extends Activity implements ServiceConnection
         }
     }
 
-    /* –––––––––––––––– Testing ONLY –––––––––––––––– */
-
-//    public void createTestMeds() {
-//        Time time1 = new Time(10, 0, 0);
-//        Time time2 = new Time(15, 15, 0);
-//        Time time3 = new Time(8, 11, 0); //10
-//        Time time4 = new Time(7, 15, 0); //20 / 8pm
-//
-//        String name1 = "Test1";
-//        String name2 = "Test2";
-//        String name3 = "Test3";
-//        String name4 = "Test4";
-//
-//        int[] days1 = new int[7];
-//        days1[0] = 0;
-//        days1[1] = 0;
-//        days1[2] = 1;
-//        days1[3] = 0;
-//        days1[4] = 0;
-//        days1[5] = 0;
-//        days1[6] = 1;
-//
-//        int[] days2 = new int[7];
-//        days2[0] = 0;
-//        days2[1] = 0;
-//        days2[2] = 1;
-//        days2[3] = 0;
-//        days2[4] = 0;
-//        days2[5] = 0;
-//        days2[6] = 1;
-//
-//        int[] days3 = new int[7];
-//        days3[0] = 1;
-//        days3[1] = 1;
-//        days3[2] = 1;
-//        days3[3] = 1;
-//        days3[4] = 1;
-//        days3[5] = 1;
-//        days3[6] = 1;
-//
-//        ArrayList<String> meds1 = new ArrayList<>();
-//        meds1.add("Tylenol");
-//        meds1.add("Motrin");
-//
-//        ArrayList<String> meds2 = new ArrayList<>();
-//        meds2.add("Benedryl");
-//        meds2.add("Mucinex");
-//
-//        ArrayList<String> meds3 = new ArrayList<>();
-//        meds3.add("Valium");
-//
-//        MedicationAlert medAlert1 = new MedicationAlert(name1, time1, days1, meds1);
-//        MedicationAlert medAlert2 = new MedicationAlert(name2, time2, days2, meds2);
-//        MedicationAlert medAlert3 = new MedicationAlert(name3, time3, days3, meds3);
-//        MedicationAlert medAlert4 = new MedicationAlert(name4, time4, days3, meds3);
-//
-//        mReceiver.addAlert(medAlert1);
-//        mReceiver.addAlert(medAlert2);
-//        mReceiver.addAlert(medAlert3);
-//        mReceiver.addAlert(medAlert4);
-//    }
-
-
     // ****************** life cycle methods ***************************//
 
     @Override
@@ -544,39 +454,39 @@ public class CareRecipientActivity extends Activity implements ServiceConnection
     }
 
 
-    public class EMAAlarmReceiver extends BroadcastReceiver {
-
-        //Receive broadcast
-        @Override
-        public void onReceive(final Context context, Intent intent) {
-            int index = intent.getExtras().getInt("index");
-            System.out.println("starting PSM...");
-            startPSM(context, index);
-        }
-
-        // start CareRecipientActivity and load med dialog
-        private void startPSM(Context context, int i) {
-
-            // CareRecipientActivity
-            if (i != -1) {
-                Intent emaIntent = new Intent(context, CareRecipientActivity.class); //The activity you  want to start.
-                emaIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                CareRecipientActivity.loadMedDialog = true;
-                emaIntent.putExtra("index", i);
-                context.startActivity(emaIntent);
-            }
-
-            // Checkin activity
-            else {
-                Intent emaIntent = new Intent(context, Checkin.class);
-                emaIntent.putExtra("registration", mRegistrationID);
-                emaIntent.putExtra("email", mEmail);
-                emaIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                context.startActivity(emaIntent);
-            }
-
-        }
-    }
+//    public class EMAAlarmReceiver extends BroadcastReceiver {
+//
+//        //Receive broadcast
+//        @Override
+//        public void onReceive(final Context context, Intent intent) {
+//            int index = intent.getExtras().getInt("index");
+//            System.out.println("starting PSM...");
+//            startPSM(context, index);
+//        }
+//
+//        // start CareRecipientActivity and load med dialog
+//        private void startPSM(Context context, int i) {
+//
+//            // CareRecipientActivity
+//            if (i != -1) {
+//                Intent emaIntent = new Intent(context, CareRecipientActivity.class); //The activity you  want to start.
+//                emaIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+//                CareRecipientActivity.loadMedDialog = true;
+//                emaIntent.putExtra("index", i);
+//                context.startActivity(emaIntent);
+//            }
+//
+//            // Checkin activity
+//            else {
+//                Intent emaIntent = new Intent(context, Checkin.class);
+//                emaIntent.putExtra("registration", mRegistrationID);
+//                emaIntent.putExtra("email", mEmail);
+//                emaIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+//                context.startActivity(emaIntent);
+//            }
+//
+//        }
+//    }
 
 //    // GCM registration ... called in Main Activity
 //    class GcmRegistrationAsyncTask extends AsyncTask<Void, Void, String> {
