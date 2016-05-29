@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.TimePickerDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -15,6 +16,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -29,8 +31,11 @@ import android.widget.Toast;
 import android.content.DialogInterface;
 
 import java.sql.Time;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -138,8 +143,7 @@ public class NewMedicationActivity extends AppCompatActivity {
         } else {
             Log.d(TAG, "loading new instance");
             mMedications = new ArrayList<>();
-            // Add example medication.
-            mMedications.add("Example medication");
+            checkMedList();
         }
 
         setSpinnerAdapter();
@@ -234,9 +238,15 @@ public class NewMedicationActivity extends AppCompatActivity {
     public void onClickAddMedication(View v) {
 
         String medication = new_medication.getText().toString();
-        if (!"".equals(medication)) {
-            addMedication(medication);
+        if (!medication.equals("")){
+            if (mMedications.get(0).equals("i.e. Tylenol")){
+                mMedications.set(0,medication);
+            } else {
+                addMedication(medication);
+            }
         }
+        new_medication.setText("");
+        updateUI();
     }
 
     /**
@@ -301,7 +311,7 @@ public class NewMedicationActivity extends AppCompatActivity {
         } else if (checkRecurrences() == 0) {
             Toast.makeText(this,"Please Set Alert For At Least One Day In Week", Toast.LENGTH_SHORT).show();
             return false;
-        } else if (mMedications.size() == 0) {
+        } else if (mMedications.get(0).equals("i.e. Tylenol")) {
             Toast.makeText(this,"Please Add A Medication", Toast.LENGTH_SHORT).show();
             return false;
         }
@@ -311,31 +321,32 @@ public class NewMedicationActivity extends AppCompatActivity {
 
     public void updateUI() {
 
-//        TextView alert_name = (TextView) findViewById(R.id.alert_name);
-//        alert_name.setText(mAlertName);
-
-//        if (mAlertName == null) {
-//            alert_name.setText(mAlertName);
-//        }
-
         TextView alert_time = (TextView) findViewById(R.id.alert_time);
+
+        String standardTime = "";
+        try {
+            if (mAlertTime != null) {
+                final SimpleDateFormat sdf = new SimpleDateFormat("H:mm");
+                final Date dateObj = sdf.parse(mAlertTime.toString());
+                standardTime = new SimpleDateFormat("hh:mm a").format(dateObj);
+            }
+        } catch (final ParseException e) {
+            e.printStackTrace();
+        }
+
         if (mAlertTime != null) {
-            alert_time.setText(mAlertTime.toString());
+            alert_time.setText(standardTime);
         }
 
         Spinner recurrence = (Spinner) findViewById(R.id.recurrence_spinner);
         recurrence.setSelection(mRecurrenceType);
 
-//        if (mRecurrenceType == 1) {
-//            enableAllDays();
-//        } else {
-//            disableAllDays();
-//        }
-
+        ListView medications = (ListView) findViewById(R.id.medication_list);
+        ArrayAdapter list_adapter = (ArrayAdapter) medications.getAdapter();
+        list_adapter.notifyDataSetChanged();
     }
 
     public void setSpinnerAdapter() {
-
         Spinner recurrence_spinner = (Spinner) findViewById(R.id.recurrence_spinner);
         if (recurrence_spinner != null) {
             recurrence_spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -387,11 +398,10 @@ public class NewMedicationActivity extends AppCompatActivity {
             @Override
             public void onClick(DialogInterface arg0, int arg1) {
                 mMedications.remove(index);
+                checkMedList();
 
                 // update listview with new information
-                ListView medications = (ListView) findViewById(R.id.medication_list);
-                ArrayAdapter list_adapter = (ArrayAdapter)medications.getAdapter();
-                list_adapter.notifyDataSetChanged();
+                updateUI();
             }
         });
 
@@ -499,6 +509,11 @@ public class NewMedicationActivity extends AppCompatActivity {
         }
     }
 
+    private void checkMedList() {
+        if (mMedications.size() == 0){
+            mMedications.add(0,"i.e. Tylenol");
+        }
+    }
 
     /* ----------------------------- data controlling functions ----------------------------- */
 

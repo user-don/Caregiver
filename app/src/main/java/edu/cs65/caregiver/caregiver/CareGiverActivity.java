@@ -417,7 +417,7 @@ public class CareGiverActivity extends AppCompatActivity {
             try {
                 final SimpleDateFormat sdf = new SimpleDateFormat("H:mm");
                 final Date dateObj = sdf.parse(alert.mTime.toString());
-                standardTime = new SimpleDateFormat("K:mm a").format(dateObj);
+                standardTime = new SimpleDateFormat("hh:mm a").format(dateObj);
             } catch (final ParseException e) {
                 e.printStackTrace();
             }
@@ -445,7 +445,6 @@ public class CareGiverActivity extends AppCompatActivity {
     public boolean isToday(int[] arr){
         Calendar rightNow = Calendar.getInstance();
         int day = rightNow.get(Calendar.DAY_OF_WEEK);
-        System.out.print(day + " " + Calendar.SATURDAY);
         switch(day){
             case 1:
                 if (arr[6] == 1)

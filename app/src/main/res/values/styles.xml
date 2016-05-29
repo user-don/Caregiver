@@ -17,4 +17,5 @@
         <item name="colorControlActivated">@color/lightgrey</item>
         <item name="colorControlHighlight">@color/white</item>
     </style>
+
 </resources>

@@ -50,7 +50,8 @@
 
         <activity android:name=".NewMedicationActivity"
             android:windowSoftInputMode="adjustPan"
-            android:screenOrientation="portrait">
+            android:screenOrientation="portrait"
+            android:label="New Medication Alert">
         </activity>
 
         <activity android:name=".NewAccountSignUp"

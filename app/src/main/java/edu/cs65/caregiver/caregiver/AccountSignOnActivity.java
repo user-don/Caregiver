@@ -78,7 +78,6 @@ public class AccountSignOnActivity extends Activity {
         editor.apply();
 
         createCarerecipientAccount();
-        finish();
     }
 
     // wrong name appears
