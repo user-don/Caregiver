@@ -33,7 +33,7 @@ public class EMAAlarmReceiver extends BroadcastReceiver {
             notifyTakeMeds.putExtra("take meds", true);
             notifyTakeMeds.putExtra("index",i);
             context.sendBroadcast(notifyTakeMeds);
-            
+
             context.startActivity(emaIntent);
         }
 
