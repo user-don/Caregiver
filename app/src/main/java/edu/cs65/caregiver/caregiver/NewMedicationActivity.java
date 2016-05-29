@@ -311,7 +311,7 @@ public class NewMedicationActivity extends AppCompatActivity {
         } else if (checkRecurrences() == 0) {
             Toast.makeText(this,"Please Set Alert For At Least One Day In Week", Toast.LENGTH_SHORT).show();
             return false;
-        } else if (mMedications.size() == 0) {
+        } else if (mMedications.get(0).equals("i.e. Tylenol")) {
             Toast.makeText(this,"Please Add A Medication", Toast.LENGTH_SHORT).show();
             return false;
         }
