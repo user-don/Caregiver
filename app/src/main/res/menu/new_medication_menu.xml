@@ -4,7 +4,7 @@
     android:id="@+id/new_med_menu">
     <item
         android:title="@string/save"
-        android:icon="@drawable/checkbox_outlined"
+        android:icon="@drawable/checkmark_white"
         android:id="@+id/addMedButton"
         android:onClick="save"
         app:showAsAction="ifRoom"
