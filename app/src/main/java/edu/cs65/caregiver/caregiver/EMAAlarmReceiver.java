@@ -21,10 +21,19 @@ public class EMAAlarmReceiver extends BroadcastReceiver {
 
         // CareRecipientActivity
         if (i != -1) {
+            System.out.println("Trying to start CareRecipientActivity...");
+
             Intent emaIntent = new Intent(context, CareRecipientActivity.class);
+            emaIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             emaIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             CareRecipientActivity.loadMedDialog = true;
             emaIntent.putExtra("index", i);
+
+            Intent notifyTakeMeds = new Intent("edu.cs65.caregiver.caregiver.CARERECIPIENT_BROADCAST");
+            notifyTakeMeds.putExtra("take meds", true);
+            notifyTakeMeds.putExtra("index",i);
+            context.sendBroadcast(notifyTakeMeds);
+            
             context.startActivity(emaIntent);
         }
 
