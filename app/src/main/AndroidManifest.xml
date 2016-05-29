@@ -39,7 +39,7 @@
 
         <activity android:name=".CareGiverActivity"
             android:uiOptions="splitActionBarWhenNarrow"
-            android:launchMode="singleInstance"
+            android:launchMode="singleTask"
             android:screenOrientation="portrait">
             <receiver android:name=".CareGiverBroadcastReceiver" >
                 <intent-filter>
@@ -50,7 +50,8 @@
 
         <activity android:name=".NewMedicationActivity"
             android:windowSoftInputMode="adjustPan"
-            android:screenOrientation="portrait">
+            android:screenOrientation="portrait"
+            android:label="New Medication Alert">
         </activity>
 
         <activity android:name=".NewAccountSignUp"
@@ -92,7 +93,6 @@
         <service android:name=".GcmIntentService" />
 
         <receiver android:name=".EMAAlarmReceiver" />
-
 
     </application>
 

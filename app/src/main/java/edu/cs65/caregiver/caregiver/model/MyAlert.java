@@ -20,7 +20,7 @@ public class MyAlert {
 
     public MyAlert(Context c) {
         mVibrator = (Vibrator) c.getSystemService(Context.VIBRATOR_SERVICE);
-        mPlayer = MediaPlayer.create(c, RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION));
+        mPlayer = MediaPlayer.create(c, RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM));
     }
 
     public void startAlarms() {
