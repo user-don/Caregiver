@@ -39,7 +39,7 @@
 
         <activity android:name=".CareGiverActivity"
             android:uiOptions="splitActionBarWhenNarrow"
-            android:launchMode="singleInstance"
+            android:launchMode="singleTask"
             android:screenOrientation="portrait">
             <receiver android:name=".CareGiverBroadcastReceiver" >
                 <intent-filter>
@@ -92,7 +92,6 @@
         <service android:name=".GcmIntentService" />
 
         <receiver android:name=".EMAAlarmReceiver" />
-
 
     </application>
 

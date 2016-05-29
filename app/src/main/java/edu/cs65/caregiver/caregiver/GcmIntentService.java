@@ -82,13 +82,11 @@ public class GcmIntentService extends IntentService {
 
                         sendCareGiverNotification(mRecipientName + " NEEDS HELP!");
 
-                        if (CareGiverActivity.mAlert != null) {
-                            CareGiverActivity.mAlert.startAlarms();
-                        }
+                        CareGiverActivity.mAlert.startAlarms();
 
                         Intent CGi = new Intent(getApplicationContext(), CareGiverActivity.class); //The activity you  want to start
                         //CGi.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                        CGi.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                        //CGi.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                         startActivity(CGi);
 
                         Intent i2 = new Intent("edu.cs65.caregiver.caregiver.CAREGIVER_BROADCAST");
@@ -127,7 +125,6 @@ public class GcmIntentService extends IntentService {
                         // launch intent to send information to CareRecipient activity
                         Intent i5 = new Intent("edu.cs65.caregiver.caregiver.CARERECIPIENT_BROADCAST");
                         i5.putExtra("msg", extras.getString("message"));
-
                         sendBroadcast(i5);
                         break;
 

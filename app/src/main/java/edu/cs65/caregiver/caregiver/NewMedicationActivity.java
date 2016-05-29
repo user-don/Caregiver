@@ -411,49 +411,48 @@ public class NewMedicationActivity extends AppCompatActivity {
         int checked_days = 0;
 
         if (isChecked(R.id.chkbx_monday)) {
-            mDaysOfWeek[0] = 1;
-            checked_days++;
-        } else
-            mDaysOfWeek[0] = 0;
-
-        if (isChecked(R.id.chkbx_tuesday)){
             mDaysOfWeek[1] = 1;
             checked_days++;
         } else
             mDaysOfWeek[1] = 0;
 
-        if (isChecked(R.id.chkbx_wednesday)){
+        if (isChecked(R.id.chkbx_tuesday)){
             mDaysOfWeek[2] = 1;
             checked_days++;
         } else
             mDaysOfWeek[2] = 0;
 
-        if (isChecked(R.id.chkbx_thursday)){
+        if (isChecked(R.id.chkbx_wednesday)){
             mDaysOfWeek[3] = 1;
             checked_days++;
         } else
             mDaysOfWeek[3] = 0;
 
-        if (isChecked(R.id.chkbx_friday)){
+        if (isChecked(R.id.chkbx_thursday)){
             mDaysOfWeek[4] = 1;
             checked_days++;
-        } else {
+        } else
             mDaysOfWeek[4] = 0;
-        }
 
-        if (isChecked(R.id.chkbx_saturday)){
+        if (isChecked(R.id.chkbx_friday)){
             mDaysOfWeek[5] = 1;
             checked_days++;
         } else {
             mDaysOfWeek[5] = 0;
         }
 
-
-        if (isChecked(R.id.chkbx_sunday)){
+        if (isChecked(R.id.chkbx_saturday)){
             mDaysOfWeek[6] = 1;
             checked_days++;
         } else {
             mDaysOfWeek[6] = 0;
+        }
+
+        if (isChecked(R.id.chkbx_sunday)){
+            mDaysOfWeek[0] = 1;
+            checked_days++;
+        } else {
+            mDaysOfWeek[0] = 0;
         }
 
         return checked_days;
