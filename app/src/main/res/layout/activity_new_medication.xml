@@ -38,12 +38,15 @@
             android:layout_height="wrap_content"
             android:maxLines="1"
             android:inputType="textCapWords"
-            android:cursorVisible="false"
             android:id="@+id/alert_name"
             android:clickable="true"
             android:focusableInTouchMode="true"
             android:textColorHighlight="@color/darkgrey"
             android:textColor="@color/darkgrey"
+            android:backgroundTint="@color/darkgrey"
+            android:textColorHint="@color/darkgrey"
+            android:textCursorDrawable="@null"
+            android:singleLine = "true"
             android:textSize="20sp"/>
 
     </LinearLayout>
@@ -112,6 +115,8 @@
             android:focusable="false"
             android:textColorHighlight="@color/darkgrey"
             android:textColor="@color/darkgrey"
+            android:backgroundTint="@color/darkgrey"
+            android:textColorHint="@color/darkgrey"
             android:textSize="20sp"/>
 
     </LinearLayout>
@@ -216,6 +221,10 @@
             android:id="@+id/new_medication"
             android:textColorHighlight="@color/darkgrey"
             android:textColor="@color/darkgrey"
+            android:backgroundTint="@color/darkgrey"
+            android:textColorHint="@color/darkgrey"
+            android:textCursorDrawable="@null"
+            android:singleLine = "true"
             android:textSize="20sp"/>
 
     </LinearLayout>

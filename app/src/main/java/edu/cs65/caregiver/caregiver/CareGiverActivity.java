@@ -447,31 +447,31 @@ public class CareGiverActivity extends AppCompatActivity {
         int day = rightNow.get(Calendar.DAY_OF_WEEK);
         switch(day){
             case 1:
-                if (arr[6] == 1)
-                    return true;
-                break;
-            case 2:
                 if (arr[0] == 1)
                     return true;
                 break;
-            case 3:
+            case 2:
                 if (arr[1] == 1)
                     return true;
                 break;
-            case 4:
+            case 3:
                 if (arr[2] == 1)
                     return true;
                 break;
-            case 5:
+            case 4:
                 if (arr[3] == 1)
                     return true;
                 break;
-            case 6:
+            case 5:
                 if (arr[4] == 1)
                     return true;
                 break;
-            case 7:
+            case 6:
                 if (arr[5] == 1)
+                    return true;
+                break;
+            case 7:
+                if (arr[6] == 1)
                     return true;
                 break;
         }
@@ -483,31 +483,31 @@ public class CareGiverActivity extends AppCompatActivity {
 
         int days = 0;
         if (arr[0] == 1) {
-            sb.append("Mon ");
+            sb.append("Sun ");
             days++;
         }
         if (arr[1] == 1) {
-            sb.append("Tue ");
+            sb.append("Mon ");
             days++;
         }
         if (arr[2] == 1) {
-            sb.append("Wed ");
+            sb.append("Tues ");
             days++;
         }
         if (arr[3] == 1) {
-            sb.append("Thu ");
+            sb.append("Wed ");
             days++;
         }
         if (arr[4] == 1) {
-            sb.append("Fri ");
+            sb.append("Thurs ");
             days++;
         }
         if (arr[5] == 1) {
-            sb.append("Sat ");
+            sb.append("Fri ");
             days++;
         }
         if (arr[6] == 1) {
-            sb.append("Sun ");
+            sb.append("Sat ");
             days++;
         }
 
