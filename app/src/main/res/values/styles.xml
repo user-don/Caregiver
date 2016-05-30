@@ -23,4 +23,8 @@
         <item name="android:textSize">20sp</item>
     </style>
 
+    <style name="headerName" parent="@style/Base.TextAppearance.AppCompat.Title">
+        <item name="android:textSize">30sp</item>
+    </style>
+
 </resources>

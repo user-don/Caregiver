@@ -18,6 +18,7 @@
             android:minHeight="@dimen/abc_action_bar_default_height_material"
             android:background="?attr/colorPrimary"
             android:onClick="onMenuClicked"
+            app:titleTextAppearance="@style/headerName"
             app:title="@string/recipient_name"/>
 
     </LinearLayout>

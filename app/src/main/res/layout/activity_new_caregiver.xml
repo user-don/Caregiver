@@ -34,6 +34,7 @@
                 android:layout_height="wrap_content"
                 android:hint="@string/new_careGiver_default"
                 android:inputType="textCapWords"
+                android:textSize="22sp"
                 android:textColorHint="@color/middlegrey"
                 android:fontFamily="serif"
                 android:singleLine = "true"

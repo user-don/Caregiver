@@ -61,6 +61,7 @@
             android:screenOrientation="portrait"/>
 
         <activity android:name=".CareRecipientActivity"
+            android:screenOrientation="portrait"
             android:launchMode="singleTask">
             <!--<receiver android:name=".EMAAlarmReceiver" />-->
             <receiver android:name=".CareRecipientBroadcastReceiver" >
@@ -98,6 +99,11 @@
         <service android:name=".GcmIntentService" />
 
         <receiver android:name=".EMAAlarmReceiver" />
+        <!-- ATTENTION: This was auto-generated to add Google Play services to your project for
+             App Indexing.  See https://g.co/AppIndexing/AndroidStudio for more information. -->
+        <meta-data
+            android:name="com.google.android.gms.version"
+            android:value="@integer/google_play_services_version" />
 
     </application>
 

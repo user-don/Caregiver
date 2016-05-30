@@ -2,6 +2,7 @@ package edu.cs65.caregiver.caregiver;
 
 import android.app.AlarmManager;
 import android.app.PendingIntent;
+import android.app.TimePickerDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -14,6 +15,7 @@ import android.support.v4.content.WakefulBroadcastReceiver;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.InputType;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -25,10 +27,12 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.TimePicker;
 import android.widget.Toast;
 import android.support.v7.widget.Toolbar;
 
@@ -252,7 +256,39 @@ public class CareGiverActivity extends AppCompatActivity {
                 }
             });
         }
+        builder.setNeutralButton("Set Check-In Time", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface arg0, int arg1) {
+                // set up new check-in time
+                constructSetCheckInDialogModal();
+            }
+        });
         builder.create().show();
+    }
+
+    public void constructSetCheckInDialogModal() {
+        AlertDialog.Builder b = new AlertDialog.Builder(this);
+        b.setTitle("Set Check-In Time");
+        TimePickerDialog.OnTimeSetListener time_listener =
+                new TimePickerDialog.OnTimeSetListener() {
+                    @Override
+                    public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
+                        Time checkInTime = new Time(hourOfDay, minute, 0);
+                        mReceiver.mCheckIntime = checkInTime.getTime();
+                        // now update the receiver
+                        mDataController.setRecipientData(mReceiver);
+                        mDataController.saveData();
+                        new UpdateCareGiverAsyncTask().execute();
+                        new SendMessageToPatientAsyncTask().execute();
+                        // now set receiver with receiver object
+                        // mDc.setData
+                        // set caregiverupdateinfo async task
+                    }
+                };
+        Calendar calendar = Calendar.getInstance();
+        int hourOfDay = calendar.get(Calendar.HOUR_OF_DAY);
+        int minute = calendar.get(Calendar.MINUTE);
+        new TimePickerDialog(this, time_listener, hourOfDay, minute, false).show();
     }
 
     public void onClickAlertStatus(View v) {

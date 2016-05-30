@@ -3,22 +3,32 @@ package edu.cs65.caregiver.caregiver;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
+import android.graphics.Typeface;
 import android.os.Bundle;
+import android.text.SpannableString;
+import android.text.style.StyleSpan;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ExpandableListAdapter;
 import android.widget.ExpandableListView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.SimpleExpandableListAdapter;
 import android.widget.TextView;
+import android.widget.TwoLineListItem;
+
+import org.w3c.dom.Text;
 
 import java.lang.reflect.Array;
 import java.util.ArrayList;
@@ -75,12 +85,47 @@ public class CareGiverDialogFragment extends android.app.DialogFragment implemen
                     childData.add(children);
                 }
 
-                mAdapter = new SimpleExpandableListAdapter(getActivity(), groupData,
-                        android.R.layout.simple_expandable_list_item_1, new String[] { "parent" },
-                        new int[] { android.R.id.text1}, childData,
+                mAdapter = new SimpleExpandableListAdapter(getActivity().getApplicationContext(), groupData,
+                        android.R.layout.simple_expandable_list_item_1, new String[] { "parent"},
+                        new int[] { android.R.id.text1 }, childData,
                         android.R.layout.simple_expandable_list_item_2, new String[] {"child"},
                         new int[] { android.R.id.text1 }
                 ) {
+                    @Override
+                    public View getChildView(int groupPosition, int childPosition,
+                                             boolean isLastChild, View convertView, ViewGroup parent) {
+                        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
+                                ViewGroup.LayoutParams.MATCH_PARENT, 150);
+
+                        String child = getChild(groupPosition, childPosition).toString();
+                        String med = child.substring(7,child.length()-1);
+                        med = "          " + med;
+
+                        TextView text = new TextView(CareRecipientActivity.mContext);
+                        text.setLayoutParams(lp);
+                        text.setText(med);
+                        text.setTextColor(Color.DKGRAY);
+                        text.setTextSize(23);
+                        text.setGravity(Gravity.CENTER_VERTICAL);
+                        return text;
+                    }
+
+                    @Override
+                    public View getGroupView(int groupPosition, boolean isExpanded,
+                                             View convertView, ViewGroup parent) {
+                        // TODO Auto-generated method stub
+                        TextView tv = (TextView) super.getGroupView(groupPosition, isExpanded, convertView, parent);
+                        //change background of tv here
+                        tv.setTextColor(Color.DKGRAY);
+                        tv.setTextSize(25);
+
+                        String tempString=tv.getText().toString();
+                        SpannableString spanString = new SpannableString(tempString);
+                        spanString.setSpan(new StyleSpan(Typeface.BOLD), 0, spanString.length(), 0);
+                        tv.setText(spanString);
+                        return tv;
+                    }
+
                 };
                 medList.setAdapter(mAdapter);
                 medBuilder.setView(medList);

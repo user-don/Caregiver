@@ -2,24 +2,56 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:paddingBottom="7dp"
+    android:paddingLeft="7dp"
+    android:paddingRight="7dp"
+    android:paddingTop="5dp"
+    android:gravity="center">
 
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
-        android:textSize="20sp"
+        android:layout_marginTop="20dp"
+        android:layout_marginBottom="20dp"
+        android:textSize="40dp"
+        android:fontFamily="serif"
+        android:textStyle="bold"
+        android:gravity="center_horizontal"
         android:text="@string/ui_checkin_welcome_text" />
 
-    <Button
-        android:id="@+id/checkinButton"
+    <LinearLayout
+        android:id="@+id/LinearLayout1"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_vertical"
-        android:textSize="20sp"
-        android:text="@string/ui_Checkin_Btn"
-        android:onClick="onCheckInClicked">
-    </Button>
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+        <Button
+            android:id="@+id/CheckInBtnOk"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:fontFamily="serif"
+            android:textColor="@color/white"
+            android:layout_weight="1"
+            android:textSize="30dp"
+            android:textStyle="bold"
+            android:text="@string/ui_OK_Btn"
+            android:background="@drawable/green_button"
+            android:layout_marginBottom="10dp"
+            android:onClick="onCheckInClicked"/>
+
+        <Button
+            android:id="@+id/CheckInBtnHelp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:fontFamily="serif"
+            android:layout_weight="1"
+            android:textColor="@color/white"
+            android:textSize="30dp"
+            android:textStyle="bold"
+            android:text="@string/ui_HELP_Btn"
+            android:background="@drawable/red_button"
+            android:onClick="onCheckInHelpClicked"/>
+    </LinearLayout>
 
 
 </LinearLayout>
