@@ -305,47 +305,60 @@ public class CareRecipientActivity extends Activity implements ServiceConnection
 
     public void onHelpClicked(View v) {
 
-        new AsyncTask<Void, Void, Void>() {
-            private static final String TAG = "Notify HELP AT";
+        AlertDialog.Builder alertBuilder = new AlertDialog.Builder(this);
+        alertBuilder.setTitle("Did you mean to ask for help?");
 
+        alertBuilder.setPositiveButton("YES", new DialogInterface.OnClickListener() {
             @Override
-            protected Void doInBackground(Void... params) {
+            public void onClick(DialogInterface dialog, int which) {
 
-                edu.cs65.caregiver.backend.messaging.Messaging.Builder builder =
-                        new edu.cs65.caregiver.backend.messaging.Messaging
-                                .Builder(AndroidHttp.newCompatibleTransport(), new AndroidJsonFactory(), null)
-                                .setRootUrl(SERVER_ADDR + "/_ah/api/");
+                new AsyncTask<Void, Void, Void>() {
+                    private static final String TAG = "Notify HELP AT";
 
-                edu.cs65.caregiver.backend.messaging.Messaging backend = builder.build();
+                    @Override
+                    protected Void doInBackground(Void... params) {
 
+                        edu.cs65.caregiver.backend.messaging.Messaging.Builder builder =
+                                new edu.cs65.caregiver.backend.messaging.Messaging
+                                        .Builder(AndroidHttp.newCompatibleTransport(), new AndroidJsonFactory(), null)
+                                        .setRootUrl(SERVER_ADDR + "/_ah/api/");
 
-                Log.d(TAG, "Notifying caregiver of help: " + mEmail);
-                try {
-
-                    // make help message
-                    RecipientToCareGiverMessage msg =
-                            new RecipientToCareGiverMessage(RecipientToCareGiverMessage.HELP,
-                                    null,
-                                    Calendar.getInstance().getTime().getTime());
-
-                    backend.sendNotificationToCaregiver(mRegistrationID, mEmail, msg.selfToString()).execute();
-                } catch (IOException e) {
-                    Log.d(TAG, "send help failed");
-                    e.printStackTrace();
-                }
+                        edu.cs65.caregiver.backend.messaging.Messaging backend = builder.build();
 
 
-                return null;
+                        Log.d(TAG, "Notifying caregiver of help: " + mEmail);
+                        try {
+
+                            // make help message
+                            RecipientToCareGiverMessage msg =
+                                    new RecipientToCareGiverMessage(RecipientToCareGiverMessage.HELP,
+                                            null,
+                                            Calendar.getInstance().getTime().getTime());
+
+                            backend.sendNotificationToCaregiver(mRegistrationID, mEmail, msg.selfToString()).execute();
+                        } catch (IOException e) {
+                            Log.d(TAG, "send help failed");
+                            e.printStackTrace();
+                        }
+
+
+                        return null;
+                    }
+
+                    @Override
+                    protected void onPostExecute(Void result) {
+                        Log.d(TAG,"sent help message\n");
+                        Toast.makeText(getApplicationContext(), "CAREGIVER HAS BEEN ALERTED",
+                                Toast.LENGTH_LONG).show();
+                    }
+                }.execute();
+
             }
-
+        }).setNegativeButton("NO", new DialogInterface.OnClickListener() {
             @Override
-            protected void onPostExecute(Void result) {
-                Log.d(TAG,"sent help message\n");
-                Toast.makeText(getApplicationContext(), "CAREGIVER HAS BEEN ALERTED",
-                        Toast.LENGTH_LONG).show();
+            public void onClick(DialogInterface dialog, int which) {
             }
-        }.execute();
-
+        }).show();
     }
 
     public void onMedClicked(View v){
