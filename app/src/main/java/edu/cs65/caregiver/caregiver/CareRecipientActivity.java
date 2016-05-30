@@ -2,6 +2,7 @@ package edu.cs65.caregiver.caregiver;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.Dialog;
 import android.app.DialogFragment;
 import android.app.ListActivity;
 import android.content.BroadcastReceiver;
@@ -15,16 +16,25 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Color;
+import android.graphics.Typeface;
 import android.media.MediaPlayer;
 import android.media.RingtoneManager;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.os.Vibrator;
+import android.text.SpannableString;
+import android.text.style.StyleSpan;
 import android.util.Log;
+import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 import android.support.v7.widget.Toolbar;
 
@@ -45,6 +55,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import edu.cs65.caregiver.backend.messaging.Messaging;
+import edu.cs65.caregiver.backend.messaging.model.CaregiverEndpointsObject;
 import edu.cs65.caregiver.backend.registration.Registration;
 import edu.cs65.caregiver.caregiver.model.CareGiver;
 import edu.cs65.caregiver.caregiver.model.MedicationAlert;
@@ -95,7 +106,6 @@ public class CareRecipientActivity extends Activity implements ServiceConnection
     private static final String REGISTRATION_KEY = "registration key";
     private static final String RECIPIENT_NAME_KEY = "recipient name";
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         PSMScheduler.setCheckinAlarm(this);
@@ -107,7 +117,7 @@ public class CareRecipientActivity extends Activity implements ServiceConnection
         SharedPreferences preferences = getSharedPreferences(getString(R.string.profile_preference), 0);
         mEmail = preferences.getString(EMAIL_KEY, "");
         mRecipientName = preferences.getString(RECIPIENT_NAME_KEY, "");
-        mRegistrationID = preferences.getString(REGISTRATION_KEY,"");
+        mRegistrationID = preferences.getString(REGISTRATION_KEY, "");
 
 
         // register receiver for gcm message broadcasts
@@ -131,7 +141,7 @@ public class CareRecipientActivity extends Activity implements ServiceConnection
 //            displayMedDialog(entry);
 //        }
 
-        Toolbar header = (Toolbar)findViewById(R.id.toolbar);
+        Toolbar header = (Toolbar) findViewById(R.id.toolbar);
         header.setTitle(mRecipientName);
 
         GetCareGiverInfoAsyncTask task = new GetCareGiverInfoAsyncTask();
@@ -155,19 +165,26 @@ public class CareRecipientActivity extends Activity implements ServiceConnection
         meds = entry.meds.toArray(meds);
 
         AlertDialog.Builder alertBuilder = new AlertDialog.Builder(this);
-        alertBuilder.setTitle(entry.label);
-        alertBuilder.setMultiChoiceItems(meds, null, new DialogInterface.OnMultiChoiceClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which, boolean isChecked) {
 
-                if (isChecked) {
-                    selectedItems.add(which);
-                } else if (selectedItems.contains(which)) {
-                    selectedItems.remove(Integer.valueOf(which));
-                }
+        SpannableString spanString = new SpannableString(" " + entry.label);
+        spanString.setSpan(new StyleSpan(Typeface.BOLD), 0, spanString.length(), 0);
 
-            }
-        }).setPositiveButton("OK", new DialogInterface.OnClickListener() {
+        TextView title = new TextView(getApplicationContext());
+        title.setText(spanString);
+        title.setTextSize(32);
+        title.setTextColor(getColor(R.color.darkgrey));
+        title.setGravity(Gravity.BOTTOM);
+
+        alertBuilder.setCustomTitle(title);
+
+        LayoutInflater inflater = getLayoutInflater();
+        View convertView = (View) inflater.inflate(R.layout.custom, null);
+        alertBuilder.setView(convertView);
+        ListView lv = (ListView) convertView.findViewById(R.id.listView1);
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,R.layout.med_list,meds);
+        lv.setAdapter(adapter);
+
+        alertBuilder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int id) {
                 if (loadMedDialog) {
@@ -181,11 +198,11 @@ public class CareRecipientActivity extends Activity implements ServiceConnection
                         @Override
                         protected Void doInBackground(Void... params) {
 
-                            edu.cs65.caregiver.backend.messaging.Messaging.Builder builder =
-                                    new edu.cs65.caregiver.backend.messaging.Messaging
+                            Messaging.Builder builder =
+                                    new Messaging
                                             .Builder(AndroidHttp.newCompatibleTransport(), new AndroidJsonFactory(), null)
                                             .setRootUrl(SERVER_ADDR + "/_ah/api/");
-                            edu.cs65.caregiver.backend.messaging.Messaging backend = builder.build();
+                            Messaging backend = builder.build();
                             Log.d(TAG, "Notifying caregiver of meds taken: " + mEmail);
                             try {
 
@@ -211,50 +228,6 @@ public class CareRecipientActivity extends Activity implements ServiceConnection
                 }
 
             }
-        }).setNegativeButton("Back", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int id) {
-                if (loadMedDialog) {
-                    stopAlarm();
-                    loadMedDialog = false;
-
-                    // notify CareGiver that medicine was not taken
-                    new AsyncTask<Void, Void, Void>() {
-                        private static final String TAG = "Notify meds taken AT";
-
-                        @Override
-                        protected Void doInBackground(Void... params) {
-
-                            edu.cs65.caregiver.backend.messaging.Messaging.Builder builder =
-                                    new edu.cs65.caregiver.backend.messaging.Messaging
-                                            .Builder(AndroidHttp.newCompatibleTransport(), new AndroidJsonFactory(), null)
-                                            .setRootUrl(SERVER_ADDR + "/_ah/api/");
-                            edu.cs65.caregiver.backend.messaging.Messaging backend = builder.build();
-                            Log.d(TAG, "Notifying caregiver meds not taken: " + mEmail);
-                            try {
-
-                                // make help message
-                                RecipientToCareGiverMessage msg =
-                                        new RecipientToCareGiverMessage(RecipientToCareGiverMessage.MED_NOT_TAKEN,
-                                                entry.alerts,
-                                                Calendar.getInstance().getTime().getTime());
-
-                                backend.sendNotificationToCaregiver(mRegistrationID, mEmail, msg.selfToString()).execute();
-                            } catch (IOException e) {
-                                Log.d(TAG, "send med not taken failed");
-                                e.printStackTrace();
-                            }
-                            return null;
-                        }
-
-                        @Override
-                        protected void onPostExecute(Void result) {
-                            Log.d(TAG, "sent med not taken message\n");
-                        }
-                    }.execute();
-                }
-
-            }
         }).setOnDismissListener(new DialogInterface.OnDismissListener() {
             @Override
             public void onDismiss(DialogInterface dialog) {
@@ -269,11 +242,11 @@ public class CareRecipientActivity extends Activity implements ServiceConnection
                         @Override
                         protected Void doInBackground(Void... params) {
 
-                            edu.cs65.caregiver.backend.messaging.Messaging.Builder builder =
-                                    new edu.cs65.caregiver.backend.messaging.Messaging
+                            Messaging.Builder builder =
+                                    new Messaging
                                             .Builder(AndroidHttp.newCompatibleTransport(), new AndroidJsonFactory(), null)
                                             .setRootUrl(SERVER_ADDR + "/_ah/api/");
-                            edu.cs65.caregiver.backend.messaging.Messaging backend = builder.build();
+                            Messaging backend = builder.build();
                             Log.d(TAG, "Notifying caregiver meds not taken: " + mEmail);
                             try {
 
@@ -299,7 +272,20 @@ public class CareRecipientActivity extends Activity implements ServiceConnection
 
                 }
             }
-        }).show();
+        });
+
+        final AlertDialog alertDialog = alertBuilder.create();
+        alertDialog.setOnShowListener(new DialogInterface.OnShowListener() {
+            @Override
+            public void onShow(DialogInterface dialog) {
+                Button btnPositive = alertDialog.getButton(Dialog.BUTTON_POSITIVE);
+                btnPositive.setTextSize(25);
+
+            }
+        });
+
+        alertDialog.create();
+        alertDialog.show();
 
     }
 
@@ -316,12 +302,12 @@ public class CareRecipientActivity extends Activity implements ServiceConnection
                     @Override
                     protected Void doInBackground(Void... params) {
 
-                        edu.cs65.caregiver.backend.messaging.Messaging.Builder builder =
-                                new edu.cs65.caregiver.backend.messaging.Messaging
+                        Messaging.Builder builder =
+                                new Messaging
                                         .Builder(AndroidHttp.newCompatibleTransport(), new AndroidJsonFactory(), null)
                                         .setRootUrl(SERVER_ADDR + "/_ah/api/");
 
-                        edu.cs65.caregiver.backend.messaging.Messaging backend = builder.build();
+                        Messaging backend = builder.build();
 
 
                         Log.d(TAG, "Notifying caregiver of help: " + mEmail);
@@ -344,7 +330,7 @@ public class CareRecipientActivity extends Activity implements ServiceConnection
 
                     @Override
                     protected void onPostExecute(Void result) {
-                        Log.d(TAG,"sent help message\n");
+                        Log.d(TAG, "sent help message\n");
                         Toast.makeText(getApplicationContext(), "CAREGIVER HAS BEEN ALERTED",
                                 Toast.LENGTH_LONG).show();
                     }
@@ -358,7 +344,7 @@ public class CareRecipientActivity extends Activity implements ServiceConnection
         }).show();
     }
 
-    public void onMedClicked(View v){
+    public void onMedClicked(View v) {
         // update sortedMeds
         if (sortedMeds.size() != 0) {
             DialogFragment fragment = CareGiverDialogFragment.newInstance(CareGiverDialogFragment.DISPLAY_MED_LIST);
@@ -412,8 +398,8 @@ public class CareRecipientActivity extends Activity implements ServiceConnection
         }
 
         int countOfSortedMeds = 0; // if gotten here, already have added first
-        for (int i = 0; i < todaysMeds.size()-1; i++) {
-            int j = i+1;
+        for (int i = 0; i < todaysMeds.size() - 1; i++) {
+            int j = i + 1;
             // automatically add first medication
             if (i == 0) {
                 MedEntry newEntry = new MedEntry(todaysMeds.get(i).mTime.toString(),
@@ -499,7 +485,7 @@ public class CareRecipientActivity extends Activity implements ServiceConnection
         @Override
         public void onReceive(Context c, Intent i) {
 
-            if (i.getBooleanExtra("take meds", false) == true){
+            if (i.getBooleanExtra("take meds", false) == true) {
                 System.out.println("CareRecipientActivity loadMedDialog=TRUE");
 
                 startAlarm();
@@ -533,7 +519,7 @@ public class CareRecipientActivity extends Activity implements ServiceConnection
 
     // ****************** service methods ***************************//
 
-    private void automaticBind(){
+    private void automaticBind() {
         doBindService();
     }
 
@@ -550,6 +536,7 @@ public class CareRecipientActivity extends Activity implements ServiceConnection
             mIsBound = false;
         }
     }
+
     @Override
     public void onServiceConnected(ComponentName name, IBinder service) {
         SensorService.MyLocalBinder binder = (SensorService.MyLocalBinder) service;
@@ -708,7 +695,7 @@ public class CareRecipientActivity extends Activity implements ServiceConnection
 //        }
 //    }
 
-    class GetCareGiverInfoAsyncTask extends AsyncTask<Void,String,String> {
+    class GetCareGiverInfoAsyncTask extends AsyncTask<Void, String, String> {
 
         private static final String TAG = "Get Account Info AT";
         public String email = "";
@@ -716,13 +703,13 @@ public class CareRecipientActivity extends Activity implements ServiceConnection
 
         @Override
         protected String doInBackground(Void... params) {
-            edu.cs65.caregiver.backend.messaging.Messaging.Builder builder =
-                    new edu.cs65.caregiver.backend.messaging.Messaging
+            Messaging.Builder builder =
+                    new Messaging
                             .Builder(AndroidHttp.newCompatibleTransport(), new AndroidJsonFactory(), null)
                             .setRootUrl(SERVER_ADDR + "/_ah/api/");
 
-            edu.cs65.caregiver.backend.messaging.Messaging backend = builder.build();
-            edu.cs65.caregiver.backend.messaging.model.CaregiverEndpointsObject response = null;
+            Messaging backend = builder.build();
+            CaregiverEndpointsObject response = null;
 
             Log.d(TAG, "Executing getAccountInfo with email " + mEmail);
             try {
@@ -742,7 +729,7 @@ public class CareRecipientActivity extends Activity implements ServiceConnection
         protected void onPostExecute(String data) {
             gson = new Gson();
             if (data != null) {
-                Log.d(TAG,"Updating CareGiver Information");
+                Log.d(TAG, "Updating CareGiver Information");
                 Log.d(TAG, "got data: " + data);
                 cloudData = gson.fromJson(data, CareGiver.class);
                 updateUI();

@@ -59,7 +59,7 @@
                     android:textColorHint="@color/middlegrey"
                     android:backgroundTint="@color/grey"
                     android:textColor="@color/grey"
-                    android:inputType="text"
+                    android:inputType="textCapWords"
                     android:hint="@string/account_sign_username_default"
                     android:fontFamily="serif"
                     android:singleLine = "true"/>
