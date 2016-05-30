@@ -5,11 +5,13 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.os.Vibrator;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.api.client.extensions.android.http.AndroidHttp;
@@ -31,6 +33,7 @@ public class FallActivity extends Activity {
     private static final String SERVER_ADDR = "https://handy-empire-131521.appspot.com";
     private String mRegistration;
     private String mEmail;
+    private int countdownTime = 6000;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,6 +55,22 @@ public class FallActivity extends Activity {
                 finish();
             }
         });
+
+        CountDownTimer countDownTimer = new CountDownTimer(countdownTime,1000) {
+            private boolean warned = false;
+            @Override
+            public void onTick(long millisUntilFinished) {
+                // Getting reference to the TextView tv_counter of the layout activity_main
+                TextView tvCounter = (TextView) findViewById(R.id.fallTimer);
+
+                Long timeLeft = (millisUntilFinished / 1000);
+                // Updating the TextView
+                tvCounter.setText( Long.toString(timeLeft));
+            }
+
+            @Override
+            public void onFinish() {}
+        }.start();
 
         final Button helpButton = (Button) findViewById(R.id.FallBtnHelp);
         helpButton.setOnClickListener(new View.OnClickListener() {
@@ -147,12 +166,14 @@ public class FallActivity extends Activity {
                         Log.d(TAG,"sent help message\n");
                         Toast.makeText(getApplicationContext(), "CAREGIVER HAS BEEN ALERTED",
                                 Toast.LENGTH_LONG).show();
+                        SensorService.fallDetected = false;
+                        stopVibration();
                         finish();
                     }
                 }.execute();
 
             }
-        }, 60000);
+        }, countdownTime);
     }
 
     public void startVibration() {

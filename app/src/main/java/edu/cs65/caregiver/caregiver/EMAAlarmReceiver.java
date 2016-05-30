@@ -63,7 +63,7 @@ public class EMAAlarmReceiver extends BroadcastReceiver {
                 emaIntent, PendingIntent.FLAG_ONE_SHOT);
 
         NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(context)
-                .setSmallIcon(R.drawable.ic_done_black_24dp)
+                .setSmallIcon(R.drawable.logo_white)
                 .setContentTitle("CareGiver Message")
                 .setContentText(message)
                 .setAutoCancel(true)
