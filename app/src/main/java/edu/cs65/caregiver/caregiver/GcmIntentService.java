@@ -82,7 +82,9 @@ public class GcmIntentService extends IntentService {
 
                         sendCareGiverNotification(mRecipientName + " NEEDS HELP!");
 
-                        CareGiverActivity.mAlert.startAlarms();
+                        if (CareGiverActivity.mAlert != null) {
+                            CareGiverActivity.mAlert.startAlarms();
+                        }
 
 //                        Intent CGi = new Intent(getApplicationContext(), CareGiverActivity.class); //The activity you  want to start
 //                        //CGi.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);

@@ -65,7 +65,7 @@ public class Checkin extends AppCompatActivity {
                                     null,
                                     Calendar.getInstance().getTime().getTime());
 
-                    backend.sendNotificationToCaregiver(mRegistration, mEmail, msg.selfToString());
+                    backend.sendNotificationToCaregiver(mRegistration, mEmail, msg.selfToString()).execute();
                     backend.getAccountInfo(mEmail).execute();
                 } catch (IOException e) {
                     Log.d(TAG, "send checkin failed");

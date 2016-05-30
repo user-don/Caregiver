@@ -674,6 +674,7 @@ public class CareGiverActivity extends AppCompatActivity {
                 CareGiver cloudData = gson.fromJson(data, CareGiver.class);
                 mDataController.setData(cloudData);
                 mDataController.saveData();
+                mReceiver = mDataController.careGiver.getRecipient(mRecipientName);
                 updateUI();
             }
         }
