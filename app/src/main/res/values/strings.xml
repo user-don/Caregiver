@@ -34,7 +34,7 @@
     <string name="new_careGiver_default">John Doe</string>
     <string name="btn_next">Next</string>
     <string name="new_careRecipient_label">Who is caring for you?</string>
-    <string name="new_careRecipient_default">abc@xyz.com</string>
+    <string name="new_careRecipient_default">John Doe</string>
     <string name="btn_search">Search</string>
     <string name="new_careRecipient_search_label">Is this your name?</string>
     <string name="btn_yes">Yes</string>

@@ -17,6 +17,8 @@ import com.google.api.client.extensions.android.json.AndroidJsonFactory;
 
 import java.io.IOException;
 import java.util.Calendar;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import edu.cs65.caregiver.caregiver.model.RecipientToCareGiverMessage;
 
@@ -41,7 +43,6 @@ public class FallActivity extends Activity {
 
         startVibration();
 
-
         Button closeButton = (Button) findViewById(R.id.FallBtnOk);
         closeButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -52,7 +53,7 @@ public class FallActivity extends Activity {
             }
         });
 
-        Button helpButton = (Button) findViewById(R.id.FallBtnHelp);
+        final Button helpButton = (Button) findViewById(R.id.FallBtnHelp);
         helpButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -103,6 +104,55 @@ public class FallActivity extends Activity {
                 finish();
             }
         });
+
+        new Timer().schedule(new TimerTask() {
+            @Override
+            public void run() {
+
+                new AsyncTask<Void, Void, Void>() {
+                    private static final String TAG = "Notify HELP AT";
+
+                    @Override
+                    protected Void doInBackground(Void... params) {
+
+                        edu.cs65.caregiver.backend.messaging.Messaging.Builder builder =
+                                new edu.cs65.caregiver.backend.messaging.Messaging
+                                        .Builder(AndroidHttp.newCompatibleTransport(), new AndroidJsonFactory(), null)
+                                        .setRootUrl(SERVER_ADDR + "/_ah/api/");
+
+                        edu.cs65.caregiver.backend.messaging.Messaging backend = builder.build();
+
+
+                        Log.d(TAG, "Notifying caregiver of help: " + mEmail);
+                        try {
+
+                            // make help message
+                            RecipientToCareGiverMessage msg =
+                                    new RecipientToCareGiverMessage(RecipientToCareGiverMessage.HELP,
+                                            null,
+                                            Calendar.getInstance().getTime().getTime());
+
+                            backend.sendNotificationToCaregiver(mRegistration, mEmail, msg.selfToString()).execute();
+                        } catch (IOException e) {
+                            Log.d(TAG, "send help failed");
+                            e.printStackTrace();
+                        }
+
+
+                        return null;
+                    }
+
+                    @Override
+                    protected void onPostExecute(Void result) {
+                        Log.d(TAG,"sent help message\n");
+                        Toast.makeText(getApplicationContext(), "CAREGIVER HAS BEEN ALERTED",
+                                Toast.LENGTH_LONG).show();
+                        finish();
+                    }
+                }.execute();
+
+            }
+        }, 60000);
     }
 
     public void startVibration() {

@@ -59,10 +59,10 @@
                     android:textColorHint="@color/middlegrey"
                     android:backgroundTint="@color/grey"
                     android:textColor="@color/grey"
+                    android:inputType="textCapWords"
                     android:hint="@string/account_sign_username_default"
                     android:fontFamily="serif"
-                    android:singleLine = "true"
-                    android:inputType="text" />
+                    android:singleLine = "true"/>
 
             </LinearLayout>
 

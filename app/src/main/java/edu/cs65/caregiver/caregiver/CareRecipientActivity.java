@@ -44,6 +44,7 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import edu.cs65.caregiver.backend.messaging.Messaging;
 import edu.cs65.caregiver.backend.registration.Registration;
 import edu.cs65.caregiver.caregiver.model.CareGiver;
 import edu.cs65.caregiver.caregiver.model.MedicationAlert;
@@ -97,6 +98,8 @@ public class CareRecipientActivity extends Activity implements ServiceConnection
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        System.out.println("onCreate");
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_care_recipient);
         mContext = getApplicationContext();
@@ -120,12 +123,14 @@ public class CareRecipientActivity extends Activity implements ServiceConnection
 
         getDayOfWeek();
 
-        if (loadMedDialog) {
-            startAlarm();
-            int index = getIntent().getExtras().getInt("index");
-            MedEntry entry = sortedMeds.get(index);
-            displayMedDialog(entry);
-        }
+//        if (loadMedDialog) {
+//            System.out.println("CareRecipientActivity loadMedDialog=TRUE");
+//
+//            startAlarm();
+//            int index = getIntent().getExtras().getInt("index");
+//            MedEntry entry = sortedMeds.get(index);
+//            displayMedDialog(entry);
+//        }
 
         Toolbar header = (Toolbar)findViewById(R.id.toolbar);
         header.setTitle(mRecipientName);
@@ -139,11 +144,13 @@ public class CareRecipientActivity extends Activity implements ServiceConnection
     public void getDayOfWeek() {
         Calendar calendar = Calendar.getInstance();
         mDay = calendar.get(Calendar.DAY_OF_WEEK);
+        System.out.println("current day of week: " + mDay);
         dayIndex = mDay - 1; // convert to match MedicationAlert int values
+        System.out.println("dayIndex: " + dayIndex);
     }
 
 
-    public void displayMedDialog(MedEntry entry) {
+    public void displayMedDialog(final MedEntry entry) {
         final ArrayList selectedItems = new ArrayList();
         String meds[] = new String[entry.meds.size()];
         meds = entry.meds.toArray(meds);
@@ -167,7 +174,41 @@ public class CareRecipientActivity extends Activity implements ServiceConnection
                 if (loadMedDialog) {
                     stopAlarm();
                     loadMedDialog = false;
+
                     // notify CareGiver that medicine was taken
+                    new AsyncTask<Void, Void, Void>() {
+                        private static final String TAG = "Notify meds taken AT";
+
+                        @Override
+                        protected Void doInBackground(Void... params) {
+
+                            edu.cs65.caregiver.backend.messaging.Messaging.Builder builder =
+                                    new edu.cs65.caregiver.backend.messaging.Messaging
+                                            .Builder(AndroidHttp.newCompatibleTransport(), new AndroidJsonFactory(), null)
+                                            .setRootUrl(SERVER_ADDR + "/_ah/api/");
+                            edu.cs65.caregiver.backend.messaging.Messaging backend = builder.build();
+                            Log.d(TAG, "Notifying caregiver of meds taken: " + mEmail);
+                            try {
+
+                                // make help message
+                                RecipientToCareGiverMessage msg =
+                                        new RecipientToCareGiverMessage(RecipientToCareGiverMessage.MED_TAKEN,
+                                                entry.alerts,
+                                                Calendar.getInstance().getTime().getTime());
+
+                                backend.sendNotificationToCaregiver(mRegistrationID, mEmail, msg.selfToString()).execute();
+                            } catch (IOException e) {
+                                Log.d(TAG, "send med taken failed");
+                                e.printStackTrace();
+                            }
+                            return null;
+                        }
+
+                        @Override
+                        protected void onPostExecute(Void result) {
+                            Log.d(TAG, "sent med taken message\n");
+                        }
+                    }.execute();
                 }
 
             }
@@ -177,7 +218,41 @@ public class CareRecipientActivity extends Activity implements ServiceConnection
                 if (loadMedDialog) {
                     stopAlarm();
                     loadMedDialog = false;
-                    // notify CareGiver medicine not taken
+
+                    // notify CareGiver that medicine was not taken
+                    new AsyncTask<Void, Void, Void>() {
+                        private static final String TAG = "Notify meds taken AT";
+
+                        @Override
+                        protected Void doInBackground(Void... params) {
+
+                            edu.cs65.caregiver.backend.messaging.Messaging.Builder builder =
+                                    new edu.cs65.caregiver.backend.messaging.Messaging
+                                            .Builder(AndroidHttp.newCompatibleTransport(), new AndroidJsonFactory(), null)
+                                            .setRootUrl(SERVER_ADDR + "/_ah/api/");
+                            edu.cs65.caregiver.backend.messaging.Messaging backend = builder.build();
+                            Log.d(TAG, "Notifying caregiver meds not taken: " + mEmail);
+                            try {
+
+                                // make help message
+                                RecipientToCareGiverMessage msg =
+                                        new RecipientToCareGiverMessage(RecipientToCareGiverMessage.MED_NOT_TAKEN,
+                                                entry.alerts,
+                                                Calendar.getInstance().getTime().getTime());
+
+                                backend.sendNotificationToCaregiver(mRegistrationID, mEmail, msg.selfToString()).execute();
+                            } catch (IOException e) {
+                                Log.d(TAG, "send med not taken failed");
+                                e.printStackTrace();
+                            }
+                            return null;
+                        }
+
+                        @Override
+                        protected void onPostExecute(Void result) {
+                            Log.d(TAG, "sent med not taken message\n");
+                        }
+                    }.execute();
                 }
 
             }
@@ -187,7 +262,42 @@ public class CareRecipientActivity extends Activity implements ServiceConnection
                 if (loadMedDialog) {
                     stopAlarm();
                     loadMedDialog = false;
-                    // notify CareGiver medicine not taken
+
+                    // notify CareGiver that medicine was not taken
+                    new AsyncTask<Void, Void, Void>() {
+                        private static final String TAG = "Notify meds taken AT";
+
+                        @Override
+                        protected Void doInBackground(Void... params) {
+
+                            edu.cs65.caregiver.backend.messaging.Messaging.Builder builder =
+                                    new edu.cs65.caregiver.backend.messaging.Messaging
+                                            .Builder(AndroidHttp.newCompatibleTransport(), new AndroidJsonFactory(), null)
+                                            .setRootUrl(SERVER_ADDR + "/_ah/api/");
+                            edu.cs65.caregiver.backend.messaging.Messaging backend = builder.build();
+                            Log.d(TAG, "Notifying caregiver meds not taken: " + mEmail);
+                            try {
+
+                                // make help message
+                                RecipientToCareGiverMessage msg =
+                                        new RecipientToCareGiverMessage(RecipientToCareGiverMessage.MED_NOT_TAKEN,
+                                                entry.alerts,
+                                                Calendar.getInstance().getTime().getTime());
+
+                                backend.sendNotificationToCaregiver(mRegistrationID, mEmail, msg.selfToString()).execute();
+                            } catch (IOException e) {
+                                Log.d(TAG, "send med not taken failed");
+                                e.printStackTrace();
+                            }
+                            return null;
+                        }
+
+                        @Override
+                        protected void onPostExecute(Void result) {
+                            Log.d(TAG, "sent med not taken message\n");
+                        }
+                    }.execute();
+
                 }
             }
         }).show();
@@ -282,34 +392,47 @@ public class CareRecipientActivity extends Activity implements ServiceConnection
     }
 
     public ArrayList<MedEntry> getGroupedMeds(ArrayList<MedicationAlert> todaysMeds) {
-        ArrayList<MedEntry> sortedMeds = new ArrayList<>(todaysMeds.size());
+        ArrayList<MedEntry> sortedMeds = new ArrayList<>();
 
         if (todaysMeds.size() == 1) {
             MedEntry newEntry = new MedEntry(todaysMeds.get(0).mTime.toString(),
-                    todaysMeds.get(0).mMedications, todaysMeds.get(0).mTime);
+                    todaysMeds.get(0).mMedications, todaysMeds.get(0).mTime,
+                    todaysMeds.get(0).mName);
             sortedMeds.add(newEntry);
             return sortedMeds;
         }
 
+        int countOfSortedMeds = 0; // if gotten here, already have added first
         for (int i = 0; i < todaysMeds.size()-1; i++) {
             int j = i+1;
             // automatically add first medication
             if (i == 0) {
                 MedEntry newEntry = new MedEntry(todaysMeds.get(i).mTime.toString(),
-                        todaysMeds.get(i).mMedications, todaysMeds.get(i).mTime);
+                        todaysMeds.get(i).mMedications, todaysMeds.get(i).mTime,
+                        todaysMeds.get(i).mName);
                 sortedMeds.add(newEntry);
+                countOfSortedMeds++;
             }
             // compare medication alert times
             if (todaysMeds.get(i).compareTo(todaysMeds.get(j)) != 0) {
                 MedEntry entry = new MedEntry(todaysMeds.get(j).mTime.toString(),
-                        todaysMeds.get(j).mMedications, todaysMeds.get(j).mTime);
+                        todaysMeds.get(j).mMedications, todaysMeds.get(j).mTime,
+                        todaysMeds.get(j).mName);
                 sortedMeds.add(entry);
+                countOfSortedMeds++;
             }
             // if found duplicate time, append medications to existing MedEntry object
             else {
                 String name = todaysMeds.get(j).mTime.toString();
                 Time time = todaysMeds.get(j).mTime;
-                MedEntry entry = new MedEntry(name,todaysMeds.get(j).mMedications,time);
+
+                // add meds to current MedEntry
+                for (int k = 0; k < todaysMeds.get(j).mMedications.size(); k++) {
+                    sortedMeds.get(countOfSortedMeds - 1).addMedToEntry(todaysMeds.get(j).mMedications.get(k));
+                }
+
+                // add medication group name
+                sortedMeds.get(countOfSortedMeds - 1).addEntryName(todaysMeds.get(j).mName);
             }
         }
 
@@ -348,7 +471,6 @@ public class CareRecipientActivity extends Activity implements ServiceConnection
     }
 
     public void loadData() {
-        /* takes CareGiver object loaded from backend and parses data into locals */
         mReceiver = cloudData.getRecipient(mRecipientName);
         if (mReceiver != null) {
             mMedicationAlerts = mReceiver.mAlerts;
@@ -357,11 +479,9 @@ public class CareRecipientActivity extends Activity implements ServiceConnection
     }
 
     public void updateUI() {
-        /* takes locals and updates the appropriate UI components */
         loadData();
         setUpAdapter();
-
-        PSMScheduler.setSchedule(this); // update alarms
+        PSMScheduler.setSchedule(CareRecipientActivity.this); // update alarms
     }
 
     public class CareRecipientBroadcastReceiver extends BroadcastReceiver {
@@ -369,8 +489,20 @@ public class CareRecipientActivity extends Activity implements ServiceConnection
 
         @Override
         public void onReceive(Context c, Intent i) {
-            Log.d(TAG, "Received broadcast -> updating information");
-            new GetCareGiverInfoAsyncTask().execute();
+
+            if (i.getBooleanExtra("take meds", false) == true){
+                System.out.println("CareRecipientActivity loadMedDialog=TRUE");
+
+                startAlarm();
+                int index = i.getExtras().getInt("index");
+                MedEntry entry = sortedMeds.get(index);
+                displayMedDialog(entry);
+            } else {
+                Log.d(TAG, "Received broadcast -> updating information");
+                new GetCareGiverInfoAsyncTask().execute();
+            }
+
+
         }
     }
 
@@ -380,6 +512,8 @@ public class CareRecipientActivity extends Activity implements ServiceConnection
     protected void onDestroy() {
         super.onDestroy();
         Log.d(TAG, "C:onDestroy()");
+
+        unregisterReceiver(mBroadcastReceiver);
         try {
             doUnbindService();
         } catch (Throwable t) {
@@ -440,15 +574,21 @@ public class CareRecipientActivity extends Activity implements ServiceConnection
         public String label;
         public ArrayList<String> meds;
         public final Time time;
+        public ArrayList<String> alerts = new ArrayList<>();
 
-        public MedEntry(String name, ArrayList<String> meds, Time time) {
+        public MedEntry(String name, ArrayList<String> meds, Time time, String alertName) {
             this.label = name;
             this.meds = meds;
             this.time = time;
+            this.alerts.add(alertName);
         }
 
         public void addMedToEntry(String newMed) {
             this.meds.add(newMed);
+        }
+
+        public void addEntryName(String alertName) {
+            this.alerts.add(alertName);
         }
 
     }
