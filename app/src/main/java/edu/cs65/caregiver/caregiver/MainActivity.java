@@ -47,6 +47,8 @@ public class MainActivity extends Activity {
         if (!regId.equals("")) {
             new GcmUnRegistrationAsyncTask(this, regId).execute();
             new GcmRegistrationAsyncTask(this).execute();
+        } else {
+            new GcmRegistrationAsyncTask(this).execute();
         }
 
 
