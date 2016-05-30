@@ -304,7 +304,8 @@ public class CareGiverActivity extends AppCompatActivity {
                 if (resultCode == RESULT_OK) {
 
                     String updated_name = data.getStringExtra(NewMedicationActivity.ALERT_NAME);
-                    mReceiver.deleteAlert(updated_name);
+                    String old_name = data.getStringExtra(NewMedicationActivity.OLD_ALERT_NAME);
+                    mReceiver.deleteAlert(old_name);
 
                     Time time = new Time(data.getLongExtra(NewMedicationActivity.ALERT_TIME, 0));
                     MedicationAlert newAlert =

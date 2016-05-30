@@ -58,6 +58,7 @@ public class NewMedicationActivity extends AppCompatActivity {
     private int mRecurrenceType = 0;
     private int[] mDaysOfWeek = new int[7];
     private ArrayList<String> mMedications;
+    private String oldAlertName = "";
 
     public static String SERVER_ADDR = "https://handy-empire-131521.appspot.com";
 
@@ -67,6 +68,7 @@ public class NewMedicationActivity extends AppCompatActivity {
     public final static String ALERT_DAYS_OF_WEEK = "days_of_week";
     public final static String ALERT_MEDICATION = "medications";
     public final static String ALERT_MEDS_TAKEN = "medsTaken";
+    public final static String OLD_ALERT_NAME = "OLD_ALERT_NAME";
 
     private static DataController mDC;
 
@@ -105,6 +107,7 @@ public class NewMedicationActivity extends AppCompatActivity {
             Log.d(TAG, "loading edit entry");
 
             mAlertName = i.getStringExtra(ALERT_NAME);
+            oldAlertName = mAlertName;
             alert_name_et.setText(mAlertName);
             long time = i.getLongExtra(ALERT_TIME, 0);
             mAlertTime = new Time(time);
@@ -248,6 +251,7 @@ public class NewMedicationActivity extends AppCompatActivity {
 
         // need to save current information
         resultIntent.putExtra(ALERT_NAME, mAlertName);
+        resultIntent.putExtra(OLD_ALERT_NAME, oldAlertName);
 
         if (mAlertTime != null) {
             resultIntent.putExtra(ALERT_TIME, mAlertTime.getTime());
