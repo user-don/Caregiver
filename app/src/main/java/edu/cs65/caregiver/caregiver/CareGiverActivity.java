@@ -250,6 +250,9 @@ public class CareGiverActivity extends AppCompatActivity {
                 public void onClick(DialogInterface arg0, int arg1) {
                     mAlert.stopAlarms();
                     mReceiver.mRaisedAlert = false;
+                    mDataController.setRecipientData(mReceiver);
+                    mDataController.saveData();
+
                     alertToolbarButton.setBackgroundColor(getResources().getColor(R.color.canvas));
                     new UpdateCareGiverAsyncTask().execute();
                     updateUI();
@@ -585,7 +588,6 @@ public class CareGiverActivity extends AppCompatActivity {
 
                 case RecipientToCareGiverMessage.HELP:
                     Log.d(TAG, "Help!");
-                    onClickAlertStatus(null);
 
                     mReceiver.mRaisedAlert = true;
                     // set alert toolbar button to red
@@ -593,7 +595,7 @@ public class CareGiverActivity extends AppCompatActivity {
                     mDataController.setRecipientData(mReceiver);
                     mDataController.saveData();
 
-                    onClickCheckInStatus(null);
+                    onClickAlertStatus(null);
 
                     updateUI();
                     break;

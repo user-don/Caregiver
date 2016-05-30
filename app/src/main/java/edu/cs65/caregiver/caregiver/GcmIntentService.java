@@ -147,7 +147,7 @@ public class GcmIntentService extends IntentService {
         });
     }
 
-    private void sendBroadcast(String action, String message)  {
+    private void mySendBroadcast(String action, String message)  {
         Log.d(TAG, "sending broadcast: " + action);
         Intent i = new Intent(action);
         i.putExtra(BROADCAST_MESSAGE, message);
