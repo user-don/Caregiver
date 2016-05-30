@@ -46,6 +46,7 @@
                     <action android:name=".CAREGIVER_BROADCAST" />
                 </intent-filter>
             </receiver>
+            <receiver android:name=".AlarmReceiver" />
         </activity>
 
         <activity android:name=".NewMedicationActivity"
@@ -58,7 +59,8 @@
             android:screenOrientation="portrait"/>
 
         <activity android:name=".CareRecipientActivity"
-            android:screenOrientation="portrait">
+            android:screenOrientation="portrait"
+            android:launchMode="singleTask">
             <!--<receiver android:name=".EMAAlarmReceiver" />-->
             <receiver android:name=".CareRecipientBroadcastReceiver" >
                 <intent-filter>
@@ -71,6 +73,7 @@
             android:screenOrientation="portrait"></activity>
 
         <activity android:name=".Checkin"
+            android:launchMode="singleTask"
             android:screenOrientation="portrait"></activity>
 
         <service android:name=".SensorService" />

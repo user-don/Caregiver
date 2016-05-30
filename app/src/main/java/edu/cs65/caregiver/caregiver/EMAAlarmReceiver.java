@@ -1,9 +1,15 @@
 package edu.cs65.caregiver.caregiver;
 
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.media.RingtoneManager;
+import android.net.Uri;
 import android.os.Bundle;
+import android.support.v4.app.NotificationCompat;
 
 
 public class EMAAlarmReceiver extends BroadcastReceiver {
@@ -18,12 +24,15 @@ public class EMAAlarmReceiver extends BroadcastReceiver {
 
     // start CareRecipientActivity and load med dialog
     private void startPSM(Context context, int i) {
+        Intent emaIntent;
+        String message;
 
         // CareRecipientActivity
         if (i != -1) {
             System.out.println("Trying to start CareRecipientActivity...");
 
-            Intent emaIntent = new Intent(context, CareRecipientActivity.class);
+            message = "Time to take your medications!";
+            emaIntent = new Intent(context, CareRecipientActivity.class);
             emaIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             emaIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             CareRecipientActivity.loadMedDialog = true;
@@ -39,12 +48,35 @@ public class EMAAlarmReceiver extends BroadcastReceiver {
 
         // Checkin activity
         else {
-            Intent emaIntent = new Intent(context, Checkin.class);
+            message = "Time to check-in!";
+
+            emaIntent = new Intent(context, Checkin.class);
             emaIntent.putExtra("registration", CareRecipientActivity.mRegistrationID);
             emaIntent.putExtra("email", CareRecipientActivity.mEmail);
+            emaIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             emaIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             context.startActivity(emaIntent);
         }
+
+        Uri defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+        PendingIntent pendingIntent = PendingIntent.getActivity(context, 0 /* Request code */,
+                emaIntent, PendingIntent.FLAG_ONE_SHOT);
+
+        NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(context)
+                .setSmallIcon(R.drawable.ic_done_black_24dp)
+                .setContentTitle("CareGiver Message")
+                .setContentText(message)
+                .setAutoCancel(true)
+                .setSound(defaultSoundUri)
+                .setContentIntent(pendingIntent);
+
+        NotificationManager notificationManager =
+                (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+
+        notificationManager.notify(0 /* ID of notification */, notificationBuilder.build());
+
+
+
 
     }
 }

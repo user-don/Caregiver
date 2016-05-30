@@ -28,7 +28,7 @@ public class Recipient {
             mAlerts = _alerts;
         }
 
-        mCheckedIn = true;
+        //mCheckedIn = true;
         mRaisedAlert = false;
 
         mHasTakenMed = new ArrayList<>();
