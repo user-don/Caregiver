@@ -84,10 +84,10 @@ public class GcmIntentService extends IntentService {
 
                         CareGiverActivity.mAlert.startAlarms();
 
-                        Intent CGi = new Intent(getApplicationContext(), CareGiverActivity.class); //The activity you  want to start
-                        //CGi.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                        CGi.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                        startActivity(CGi);
+//                        Intent CGi = new Intent(getApplicationContext(), CareGiverActivity.class); //The activity you  want to start
+//                        //CGi.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+//                        CGi.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+//                        startActivity(CGi);
 
                         Intent i2 = new Intent("edu.cs65.caregiver.caregiver.CAREGIVER_BROADCAST");
                         i2.putExtra("msg", extras.getString("message"));

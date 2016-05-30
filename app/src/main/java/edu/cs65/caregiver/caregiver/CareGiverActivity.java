@@ -1,5 +1,7 @@
 package edu.cs65.caregiver.caregiver;
 
+import android.app.AlarmManager;
+import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -8,6 +10,7 @@ import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.AsyncTask;
+import android.support.v4.content.WakefulBroadcastReceiver;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -79,6 +82,7 @@ public class CareGiverActivity extends AppCompatActivity {
     private SharedPreferences mPrefs;
 
     public static MyAlert mAlert;
+    private boolean mHasSetResetAlarm = false;
 
     /* --- cloud stuff --- */
     private String mRegistrationID;
@@ -98,6 +102,11 @@ public class CareGiverActivity extends AppCompatActivity {
 
         mBroadcastReceiver = new CareGiverBroadcastReceiver();
         mIntentFilter = new IntentFilter("edu.cs65.caregiver.caregiver.CAREGIVER_BROADCAST");
+
+        if (!mHasSetResetAlarm) {
+            setClearAlert();
+            mHasSetResetAlarm = true;
+        }
 
         mDataController = DataController.getInstance(getApplicationContext());
         mDataController.initializeData(getApplicationContext());
@@ -154,41 +163,52 @@ public class CareGiverActivity extends AppCompatActivity {
 
     }
 
-    class SendMessageToPatientAsyncTask extends AsyncTask<Void,Void,Void> {
-        private static final String TAG = "Message Patient";
-
-        @Override
-        protected Void doInBackground(Void... params) {
-
-            edu.cs65.caregiver.backend.messaging.Messaging.Builder builder =
-                    new edu.cs65.caregiver.backend.messaging.Messaging
-                            .Builder(AndroidHttp.newCompatibleTransport(), new AndroidJsonFactory(), null)
-                            .setRootUrl(SERVER_ADDR + "/_ah/api/");
-
-            edu.cs65.caregiver.backend.messaging.Messaging backend = builder.build();
-            Gson gson = new Gson();
-            RecipientToCareGiverMessage message = new RecipientToCareGiverMessage(
-                    RecipientToCareGiverMessage.UPDATE_INFO, new ArrayList<String>(),
-                    Calendar.getInstance().getTime().getTime());
-
-            String msg = gson.toJson(message);
-            Log.d(TAG, "Sending message to recipient registered with email " + mEmail);
-            try {
-                backend.sendNotificationToPatient(mRegistrationID, mEmail, msg).execute();
-            } catch (IOException e) {
-                Log.d(TAG, "sendNotificationToPatient failed");
-                e.printStackTrace();
-            }
-
-            return null;
-        }
-
-    }
-
     @Override
     protected void onPause() {
         unregisterReceiver(mBroadcastReceiver);
         super.onPause();
+    }
+
+    public void setClearAlert() {
+        Log.d(TAG,"setting reset alarm");
+        // the request code distinguish different stress meter schedule instances
+        //int requestCode = 0 * 10000 + 22 * 100 + 00;   // go off at 11:59 pm
+        Intent intent = new Intent(this, CareGiverActivity.class);
+
+        PendingIntent pi = PendingIntent.getBroadcast(this, 1, intent,
+                PendingIntent.FLAG_CANCEL_CURRENT);
+
+
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(System.currentTimeMillis());
+        calendar.set(Calendar.HOUR_OF_DAY, 0);
+        calendar.set(Calendar.MINUTE, 30);
+        calendar.set(Calendar.SECOND, 00);
+        Log.d(TAG, "Current Time: " + calendar.getTime().toString());
+
+        //set repeating alarm, and pass the pending intent,
+        //so that the broadcast is sent everytime the alarm
+        // is triggered
+        AlarmManager alarmManager = (AlarmManager) this.getSystemService(Context.ALARM_SERVICE);
+        alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(),
+                AlarmManager.INTERVAL_DAY, pi);
+    }
+
+    public class AlarmReceiver extends WakefulBroadcastReceiver {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            Log.d(TAG,"Resetting data");
+            mReceiver.mCheckedInTime = -1;
+            mReceiver.mHasCheckedInToday = false;
+            for (int i = 0; i < mReceiver.mAlerts.size(); i++) {
+                mReceiver.mAlerts.get(i).mMedsTaken = false;
+            }
+
+            mDataController.setRecipientData(mReceiver);
+            mDataController.saveData();
+            new UpdateCareGiverAsyncTask().execute();
+            updateUI();
+        }
     }
 
     public void onClickNewMedication(MenuItem menuItem) {
@@ -302,10 +322,7 @@ public class CareGiverActivity extends AppCompatActivity {
 
         mDataController.saveData();
         new UpdateCareGiverAsyncTask().execute();
-
-        SendMessageToPatientAsyncTask task = new SendMessageToPatientAsyncTask();
-        task.execute();
-
+        new SendMessageToPatientAsyncTask().execute();
         updateUI();
     }
 
@@ -518,12 +535,12 @@ public class CareGiverActivity extends AppCompatActivity {
 
     }
 
-    public class CareGiverBroadcastReceiver extends BroadcastReceiver {
+    public class CareGiverBroadcastReceiver extends WakefulBroadcastReceiver {
         private static final String TAG = "CareGiverNotification";
 
         @Override
         public void onReceive(Context c, Intent i) {
-            Log.d(TAG, "received notification broadcast2");
+            Log.d(TAG, "received notification broadcast");
 
             Gson gson = new Gson();
             String message = i.getStringExtra("msg");
@@ -532,6 +549,7 @@ public class CareGiverActivity extends AppCompatActivity {
                 case RecipientToCareGiverMessage.CHECKIN:
                     Log.d(TAG, "checkin!");
                     mReceiver.mCheckedIn = true;
+                    mReceiver.mCheckedInTime = msg.time;
                     mDataController.setRecipientData(mReceiver);
                     mDataController.saveData();
 
@@ -601,7 +619,6 @@ public class CareGiverActivity extends AppCompatActivity {
                 regService = builder.build();
             }
 
-            String msg = "";
             try {
                 if (gcm == null) {
                     gcm = GoogleCloudMessaging.getInstance(context);
@@ -614,7 +631,6 @@ public class CareGiverActivity extends AppCompatActivity {
             } catch (IOException ex) {
                 ex.printStackTrace();
                 Log.d(TAG, "Error: " + ex.getMessage());
-                msg = null;
             }
             return null;
         }
@@ -696,35 +712,35 @@ public class CareGiverActivity extends AppCompatActivity {
         }
     }
 
-//    class SendMessageToPatientAsyncTask extends AsyncTask<Void,Void,Void> {
-//        private static final String TAG = "Message Patient";
-//
-//        @Override
-//        protected Void doInBackground(Void... params) {
-//
-//            edu.cs65.caregiver.backend.messaging.Messaging.Builder builder =
-//                    new edu.cs65.caregiver.backend.messaging.Messaging
-//                            .Builder(AndroidHttp.newCompatibleTransport(), new AndroidJsonFactory(), null)
-//                            .setRootUrl(SERVER_ADDR + "/_ah/api/");
-//
-//            edu.cs65.caregiver.backend.messaging.Messaging backend = builder.build();
-//            Gson gson = new Gson();
-//            RecipientToCareGiverMessage message = new RecipientToCareGiverMessage(
-//                    RecipientToCareGiverMessage.UPDATE_INFO, new ArrayList<String>(),
-//                    Calendar.getInstance().getTime().getTime());
-//
-//            String msg = gson.toJson(message);
-//            Log.d(TAG, "Sending message to recipient registered with email " + mEmail);
-//                try {
-//                    backend.sendNotificationToPatient(mRegistrationID, mEmail, msg).execute();
-//                } catch (IOException e) {
-//                    Log.d(TAG, "sendNotificationToPatient failed");
-//                    e.printStackTrace();
-//                }
-//
-//            return null;
-//        }
-//
-//    }
+    class SendMessageToPatientAsyncTask extends AsyncTask<Void,Void,Void> {
+        private static final String TAG = "Message Patient";
+
+        @Override
+        protected Void doInBackground(Void... params) {
+
+            edu.cs65.caregiver.backend.messaging.Messaging.Builder builder =
+                    new edu.cs65.caregiver.backend.messaging.Messaging
+                            .Builder(AndroidHttp.newCompatibleTransport(), new AndroidJsonFactory(), null)
+                            .setRootUrl(SERVER_ADDR + "/_ah/api/");
+
+            edu.cs65.caregiver.backend.messaging.Messaging backend = builder.build();
+            Gson gson = new Gson();
+            RecipientToCareGiverMessage message = new RecipientToCareGiverMessage(
+                    RecipientToCareGiverMessage.UPDATE_INFO, new ArrayList<String>(),
+                    Calendar.getInstance().getTime().getTime());
+
+            String msg = gson.toJson(message);
+            Log.d(TAG, "Sending message to recipient registered with email " + mEmail);
+            try {
+                backend.sendNotificationToPatient(mRegistrationID, mEmail, msg).execute();
+            } catch (IOException e) {
+                Log.d(TAG, "sendNotificationToPatient failed");
+                e.printStackTrace();
+            }
+
+            return null;
+        }
+
+    }
 
 }
