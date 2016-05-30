@@ -593,7 +593,8 @@ public class CareGiverActivity extends AppCompatActivity {
                     mDataController.setRecipientData(mReceiver);
                     mDataController.saveData();
 
-                    onClickCheckInStatus(null);
+                    //onClickCheckInStatus(null);
+                    //onClickAlertStatus(null);
 
                     updateUI();
                     break;
