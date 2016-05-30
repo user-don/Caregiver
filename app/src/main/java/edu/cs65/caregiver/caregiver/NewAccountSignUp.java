@@ -70,23 +70,27 @@ public class NewAccountSignUp extends Activity {
         EditText careRecipientInput = (EditText)findViewById(R.id.new_caregiver_recipient);
         careRecipient = careRecipientInput.getText().toString();
 
-        mDataController.careGiver = new CareGiver(username);
-        mDataController.careGiver.addRecipient(careRecipient);
-        createCaregiverAccount();
+        if (careRecipient.length() > 10){
+            displayToast("Name must be max 10 characters");
+        } else {
+            mDataController.careGiver = new CareGiver(username);
+            mDataController.careGiver.addRecipient(careRecipient);
+            createCaregiverAccount();
 
-        //add password and username and careRecipient to the database
-        SharedPreferences.Editor editor = getSharedPreferences(getString(R.string.profile_preference), MODE_PRIVATE).edit();
-        editor.clear();
-        editor.putString(ACCNT_KEY, "caregiver");
-        editor.putString(EMAIL_KEY, username);
-        editor.putString(PASSWORD_KEY, password);
-        editor.putString(REGISTRATION_KEY, registrationID);
-        editor.putString(RECIPIENT_NAME_KEY, careRecipient);
-        editor.apply();
+            //add password and username and careRecipient to the database
+            SharedPreferences.Editor editor = getSharedPreferences(getString(R.string.profile_preference), MODE_PRIVATE).edit();
+            editor.clear();
+            editor.putString(ACCNT_KEY, "caregiver");
+            editor.putString(EMAIL_KEY, username);
+            editor.putString(PASSWORD_KEY, password);
+            editor.putString(REGISTRATION_KEY, registrationID);
+            editor.putString(RECIPIENT_NAME_KEY, careRecipient);
+            editor.apply();
 
-        Intent newMedication = new Intent(getApplicationContext(), CareGiverActivity.class);
-        startActivity(newMedication);
-        finish();
+            Intent newMedication = new Intent(getApplicationContext(), CareGiverActivity.class);
+            startActivity(newMedication);
+            finish();
+        }
     }
 
     // If the user would like to sign into an existing account
