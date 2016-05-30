@@ -36,6 +36,7 @@
             android:textStyle="bold"
             android:gravity="left"
             android:layout_weight="1"
+            android:textColor="@color/darkred"
             android:text="@string/ui_title_fall_time"/>
 
     </LinearLayout>

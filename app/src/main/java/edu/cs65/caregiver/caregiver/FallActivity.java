@@ -33,6 +33,7 @@ public class FallActivity extends Activity {
     private static final String SERVER_ADDR = "https://handy-empire-131521.appspot.com";
     private String mRegistration;
     private String mEmail;
+    private int countdownTime = 6000;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,7 +56,7 @@ public class FallActivity extends Activity {
             }
         });
 
-        CountDownTimer countDownTimer = new CountDownTimer(60000,1000) {
+        CountDownTimer countDownTimer = new CountDownTimer(countdownTime,1000) {
             private boolean warned = false;
             @Override
             public void onTick(long millisUntilFinished) {
@@ -165,12 +166,14 @@ public class FallActivity extends Activity {
                         Log.d(TAG,"sent help message\n");
                         Toast.makeText(getApplicationContext(), "CAREGIVER HAS BEEN ALERTED",
                                 Toast.LENGTH_LONG).show();
+                        SensorService.fallDetected = false;
+                        stopVibration();
                         finish();
                     }
                 }.execute();
 
             }
-        }, 60000);
+        }, countdownTime);
     }
 
     public void startVibration() {
