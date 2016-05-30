@@ -162,6 +162,12 @@ public class CareGiverActivity extends AppCompatActivity {
         }
 
         new GetCareGiverInfoAsyncTask().execute();
+
+        if (mPrefs.getBoolean("reset", false) == true) {
+            resetRecipientInfo();
+            mPrefs.edit().putBoolean("reset",false).commit();
+        }
+
     }
 
     @Override
@@ -180,19 +186,20 @@ public class CareGiverActivity extends AppCompatActivity {
 
     public void setClearAlert() {
         Log.d(TAG,"setting reset alarm");
-        // the request code distinguish different stress meter schedule instances
-        //int requestCode = 0 * 10000 + 22 * 100 + 00;   // go off at 11:59 pm
-        Intent intent = new Intent(this, CareGiverActivity.class);
+
+        Intent intent = new Intent(this, AlarmReceiver.class);
 
         PendingIntent pi = PendingIntent.getBroadcast(this, 1, intent,
                 PendingIntent.FLAG_CANCEL_CURRENT);
 
+        // reset all data at 11:55 pm
         Calendar calendar = Calendar.getInstance();
         calendar.setTimeInMillis(System.currentTimeMillis());
-        calendar.set(Calendar.HOUR_OF_DAY, 0);
-        calendar.set(Calendar.MINUTE, 30);
+        calendar.set(Calendar.HOUR_OF_DAY, 23);
+        calendar.set(Calendar.MINUTE, 55);
         calendar.set(Calendar.SECOND, 00);
-        Log.d(TAG, "Current Time: " + calendar.getTime().toString());
+        Log.d(TAG, "Current time: " + Calendar.getInstance().getTime().toString());
+        Log.d(TAG, "Time: " + calendar.getTime().toString());
 
         //set repeating alarm, and pass the pending intent,
         //so that the broadcast is sent everytime the alarm
@@ -202,23 +209,20 @@ public class CareGiverActivity extends AppCompatActivity {
                 AlarmManager.INTERVAL_DAY, pi);
     }
 
-    public class AlarmReceiver extends WakefulBroadcastReceiver {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            Log.d(TAG,"Resetting data");
-            mReceiver.mCheckedInTime = -1;
-            mReceiver.mHasCheckedInToday = false;
-            // reset check-in button color back to canvas
-            checkInToolbarButton.setBackgroundColor(getResources().getColor(R.color.canvas));
-            for (int i = 0; i < mReceiver.mAlerts.size(); i++) {
-                mReceiver.mAlerts.get(i).mMedsTaken = false;
-            }
-
-            mDataController.setRecipientData(mReceiver);
-            mDataController.saveData();
-            new UpdateCareGiverAsyncTask().execute();
-            updateUI();
+    public void resetRecipientInfo() {
+        Log.d(TAG, "resetting recipient info");
+        mReceiver.mCheckedInTime = -1;
+        mReceiver.mHasCheckedInToday = false;
+        // reset check-in button color back to canvas
+        checkInToolbarButton.setBackgroundColor(getResources().getColor(R.color.canvas));
+        for (int i = 0; i < mReceiver.mAlerts.size(); i++) {
+            mReceiver.mAlerts.get(i).mMedsTaken = false;
         }
+
+        mDataController.setRecipientData(mReceiver);
+        mDataController.saveData();
+        new UpdateCareGiverAsyncTask().execute();
+        updateUI();
     }
 
     public void onClickNewMedication(MenuItem menuItem) {
@@ -352,6 +356,8 @@ public class CareGiverActivity extends AppCompatActivity {
         if (mReceiver.mHasCheckedInToday == true) {
             // now change the color of the check-in button to green
             checkInToolbarButton.setBackgroundColor(getResources().getColor(R.color.green));
+        } else {
+            checkInToolbarButton.setBackgroundColor(getResources().getColor(R.color.canvas));
         }
 
     }
@@ -607,7 +613,8 @@ public class CareGiverActivity extends AppCompatActivity {
                     alertToolbarButton.setBackgroundColor(getResources().getColor(R.color.red));
                     mDataController.setRecipientData(mReceiver);
                     mDataController.saveData();
-                    
+
+                    onClickAlertStatus(null);
 
                     updateUI();
                     break;

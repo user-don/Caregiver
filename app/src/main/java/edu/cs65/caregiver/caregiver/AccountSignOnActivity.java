@@ -74,6 +74,7 @@ public class AccountSignOnActivity extends Activity {
     // confirm that your name is correct
     public void onNameConfirm(View v){
         SharedPreferences.Editor editor = getSharedPreferences(getString(R.string.profile_preference), MODE_PRIVATE).edit();
+        careGiver = careGiver.toLowerCase();
         editor.clear();
         editor.putString(ACCNT_KEY, "care recipient");
         editor.putString(EMAIL_KEY, careGiver);
