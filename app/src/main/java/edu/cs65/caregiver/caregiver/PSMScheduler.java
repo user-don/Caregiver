@@ -7,7 +7,10 @@ import android.content.Intent;
 import android.os.Bundle;
 
 import java.sql.Time;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
 
 
 public class PSMScheduler {
@@ -27,8 +30,18 @@ public class PSMScheduler {
 
     }
 
-    public static void setCheckinAlarm(Context context) {
-        setSchedule(context, 14, 9, 0, -1);
+    public static void setCheckinAlarm(Context context, long time) {
+        if (time == 0) {
+            System.out.println("setting for 10am default !!!!!");
+            setSchedule(context, 10, 0, 0, -1);
+        }else {
+            Time checkinTime = new Time(time);
+            int hr = checkinTime.getHours();
+            int min = checkinTime.getMinutes();
+            int sec = checkinTime.getSeconds();
+
+            setSchedule(context, hr, min, sec, -1);
+        }
     }
 
 

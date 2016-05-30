@@ -108,7 +108,7 @@ public class CareRecipientActivity extends Activity implements ServiceConnection
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        PSMScheduler.setCheckinAlarm(this);
+//        PSMScheduler.setCheckinAlarm(this);
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_care_recipient);
@@ -479,6 +479,13 @@ public class CareRecipientActivity extends Activity implements ServiceConnection
         PSMScheduler.setSchedule(CareRecipientActivity.this); // update alarms
     }
 
+    public void updateCheckInTime() {
+        if ((Long) mCheckInTime != null) {
+            PSMScheduler.setCheckinAlarm(this, mCheckInTime);
+        }
+    }
+
+
     public class CareRecipientBroadcastReceiver extends BroadcastReceiver {
         private static final String TAG = "CareRecipientReceiver";
 
@@ -733,6 +740,7 @@ public class CareRecipientActivity extends Activity implements ServiceConnection
                 Log.d(TAG, "got data: " + data);
                 cloudData = gson.fromJson(data, CareGiver.class);
                 updateUI();
+                updateCheckInTime();
 
                 //mDataController.setData(cloudData);
                 // TODO -- updateUI();
