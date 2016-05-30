@@ -216,7 +216,7 @@
         <EditText
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="0.87"
+            android:layout_weight="1"
             android:maxLines="1"
             android:inputType="textCapWords"
             android:id="@+id/new_medication"
@@ -264,7 +264,8 @@
         android:layout_height="24dp"
         android:src="@drawable/plus"
         android:layout_gravity="right"
-        android:layout_marginBottom="10dp"
+        android:layout_marginBottom="15dp"
+        android:layout_marginRight="2dp"
         android:layout_alignParentEnd="true"
         android:layout_above="@+id/medication_list"
         android:id="@+id/plus_button"

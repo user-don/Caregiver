@@ -338,7 +338,20 @@ public class NewMedicationActivity extends AppCompatActivity {
 //                ActionBar.LayoutParams.MATCH_PARENT));
         //((ViewGroup)medications.getParent()).addView(empty);
         //medications.setEmptyView(empty);
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, mMedications);
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, mMedications){
+            @Override
+            public View getView(int position, View convertView,
+                                ViewGroup parent) {
+                View view =super.getView(position, convertView, parent);
+                TextView textView=(TextView) view.findViewById(android.R.id.text1);
+
+                if (mMedications.get(0).equals("i.e. Tylenol"))
+                    textView.setTextColor(Color.LTGRAY);
+                else
+                    textView.setTextColor(Color.DKGRAY);
+                return view;
+            }
+        };
         medications.setAdapter(adapter);
 
         medications.setOnItemClickListener(new AdapterView.OnItemClickListener() {
