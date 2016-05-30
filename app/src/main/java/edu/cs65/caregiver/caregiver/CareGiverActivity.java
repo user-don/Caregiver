@@ -178,7 +178,6 @@ public class CareGiverActivity extends AppCompatActivity {
         PendingIntent pi = PendingIntent.getBroadcast(this, 1, intent,
                 PendingIntent.FLAG_CANCEL_CURRENT);
 
-
         Calendar calendar = Calendar.getInstance();
         calendar.setTimeInMillis(System.currentTimeMillis());
         calendar.set(Calendar.HOUR_OF_DAY, 0);
@@ -329,9 +328,10 @@ public class CareGiverActivity extends AppCompatActivity {
     public void updateUI() {
 
         mDataController.loadData();
-        //mReceiver = mDataController.careGiver.getRecipient(mRecipientName);
+        mReceiver = mDataController.careGiver.getRecipient(mRecipientName);
 
         ListView alertList = (ListView) findViewById(R.id.medication_alert_list2);
+        setAlertAdapter();
         ((ArrayAdapter) alertList.getAdapter()).notifyDataSetChanged();
 
         TextView recipientText = (TextView) findViewById(R.id.caregiver_recipient);
@@ -548,7 +548,7 @@ public class CareGiverActivity extends AppCompatActivity {
             switch(msg.messageType) {
                 case RecipientToCareGiverMessage.CHECKIN:
                     Log.d(TAG, "checkin!");
-                    mReceiver.mCheckedIn = true;
+                    mReceiver.mHasCheckedInToday = true;
                     mReceiver.mCheckedInTime = msg.time;
                     mDataController.setRecipientData(mReceiver);
                     mDataController.saveData();
@@ -674,6 +674,7 @@ public class CareGiverActivity extends AppCompatActivity {
                 CareGiver cloudData = gson.fromJson(data, CareGiver.class);
                 mDataController.setData(cloudData);
                 mDataController.saveData();
+                mReceiver = mDataController.careGiver.getRecipient(mRecipientName);
                 updateUI();
             }
         }

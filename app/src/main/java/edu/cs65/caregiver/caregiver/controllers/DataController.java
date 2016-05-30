@@ -47,11 +47,6 @@ public class DataController {
     public void initializeData(Context context) {
         // call this with application context so that the DataController can access resources etc.
         this.context = context.getApplicationContext();
-
-//        if (careGiver == null) {
-//            careGiver = new CareGiver(user);
-//            saveData();
-//        }
     }
 
     public void setData(CareGiver newCareGiver) {
