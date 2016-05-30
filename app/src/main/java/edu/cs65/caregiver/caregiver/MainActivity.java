@@ -43,40 +43,40 @@ public class MainActivity extends Activity {
 
         //new GcmRegistrationAsyncTask(this).execute();
 
-        String regId = mDc.getRegistrationId();
-        if (!regId.equals("")) {
-            new GcmUnRegistrationAsyncTask(this, regId).execute();
+//        String regId = mDc.getRegistrationId();
+//        if (!regId.equals("")) {
+//            new GcmUnRegistrationAsyncTask(this, regId).execute();
+//            new GcmRegistrationAsyncTask(this).execute();
+//        } else {
+//            new GcmRegistrationAsyncTask(this).execute();
+//        }
+
+
+        String versionCode = "";
+        try {
+            PackageInfo packageInfo = getPackageManager().getPackageInfo(getPackageName(), 0);
+            versionCode = String.valueOf(packageInfo.versionCode);
+        } catch (PackageManager.NameNotFoundException e) {
+            e.printStackTrace();
+        }
+        String savedVersion = mDc.getStringFromPreferences(Globals.APP_VERSION_PREFS_FILE,
+                Globals.PREFS_VERSION_KEY);
+        if (savedVersion.equals("")) {
+            // First time loading application. Get a new registration ID
+            // Deregister if previous registration ID available, and register.
             new GcmRegistrationAsyncTask(this).execute();
-        } else {
+            mDc.saveToPreferences(Globals.APP_VERSION_PREFS_FILE, Globals.PREFS_VERSION_KEY, versionCode);
+        } else if (!versionCode.equals(savedVersion) || mDc.getRegistrationId().equals("")) {
+            // Updated version. Deregister previous registration ID and re-register.
+            new GcmUnRegistrationAsyncTask(this, savedVersion).execute();
             new GcmRegistrationAsyncTask(this).execute();
+            mDc.saveToPreferences(Globals.APP_VERSION_PREFS_FILE, Globals.PREFS_VERSION_KEY, versionCode);
         }
 
-
-//        String versionCode = "";
-//        try {
-//            PackageInfo packageInfo = getPackageManager().getPackageInfo(getPackageName(), 0);
-//            versionCode = String.valueOf(packageInfo.versionCode);
-//        } catch (PackageManager.NameNotFoundException e) {
-//            e.printStackTrace();
-//        }
-//        String savedVersion = mDc.getStringFromPreferences(Globals.APP_VERSION_PREFS_FILE,
-//                Globals.PREFS_VERSION_KEY);
-//        if (savedVersion.equals("")) {
-//            // First time loading application. Get a new registration ID
-//            // Deregister if previous registration ID available, and register.
-//            new GcmRegistrationAsyncTask(this).execute();
-//            mDc.saveToPreferences(Globals.APP_VERSION_PREFS_FILE, Globals.PREFS_VERSION_KEY, versionCode);
-//        } else if (!versionCode.equals(savedVersion)) {
-//            // Updated version. Deregister previous registration ID and re-register.
-//            new GcmUnRegistrationAsyncTask(this, savedVersion).execute();
-//            new GcmRegistrationAsyncTask(this).execute();
-//            mDc.saveToPreferences(Globals.APP_VERSION_PREFS_FILE, Globals.PREFS_VERSION_KEY, versionCode);
-//        }
-
         // TODO: REMOVE FOR PRODUCTION
-        SharedPreferences.Editor editor = getSharedPreferences(getString(R.string.profile_preference), MODE_PRIVATE).edit();
-        editor.clear();
-        editor.apply();
+//        SharedPreferences.Editor editor = getSharedPreferences(getString(R.string.profile_preference), MODE_PRIVATE).edit();
+//        editor.clear();
+//        editor.apply();
 
         SharedPreferences preferences = getSharedPreferences(getString(R.string.profile_preference), 0);
 
@@ -132,6 +132,7 @@ public class MainActivity extends Activity {
                 if (gcm == null) {
                     gcm = GoogleCloudMessaging.getInstance(context);
                 }
+
                 mRegistrationID = gcm.register(Globals.SENDER_ID);
                 mDc.saveRegistrationId(mRegistrationID);
                 msg = "Device registered, registration ID = " + mRegistrationID;

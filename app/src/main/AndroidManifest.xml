@@ -46,8 +46,10 @@
                     <action android:name=".CAREGIVER_BROADCAST" />
                 </intent-filter>
             </receiver>
-            <receiver android:name=".AlarmReceiver" />
+
         </activity>
+
+        <receiver android:name=".AlarmReceiver" />
 
         <activity android:name=".NewMedicationActivity"
             android:windowSoftInputMode="adjustPan"

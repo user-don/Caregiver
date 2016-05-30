@@ -70,6 +70,8 @@ public class NewAccountSignUp extends Activity {
         EditText careRecipientInput = (EditText)findViewById(R.id.new_caregiver_recipient);
         careRecipient = careRecipientInput.getText().toString();
 
+        username = username.toLowerCase();
+
         if (careRecipient.length() > 10){
             displayToast("Name must be max 10 characters");
         } else {
