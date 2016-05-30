@@ -46,6 +46,7 @@
             android:backgroundTint="@color/darkgrey"
             android:textColorHint="@color/darkgrey"
             android:textCursorDrawable="@null"
+            android:cursorVisible="false"
             android:singleLine = "true"
             android:textSize="20sp"/>
 
@@ -224,6 +225,7 @@
             android:backgroundTint="@color/darkgrey"
             android:textColorHint="@color/darkgrey"
             android:textCursorDrawable="@null"
+            android:cursorVisible="false"
             android:singleLine = "true"
             android:textSize="20sp"/>
 
@@ -265,6 +267,7 @@
         android:layout_marginBottom="10dp"
         android:layout_alignParentEnd="true"
         android:layout_above="@+id/medication_list"
+        android:id="@+id/plus_button"
         android:onClick="onClickAddMedication"/>
 
 </RelativeLayout>
