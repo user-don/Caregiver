@@ -84,7 +84,7 @@ public class CareRecipientActivity extends Activity implements ServiceConnection
     boolean myReceiverIsRegistered = false;
     boolean mIsBound;
     private ServiceConnection mConnection = this;
-    private Context mContext = this;
+    public static Context mContext;
 
     private CareRecipientBroadcastReceiver mBroadcastReceiver;
     private IntentFilter mIntentFilter;

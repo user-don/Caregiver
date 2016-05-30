@@ -57,7 +57,8 @@
         <activity android:name=".NewAccountSignUp"
             android:screenOrientation="portrait"/>
 
-        <activity android:name=".CareRecipientActivity">
+        <activity android:name=".CareRecipientActivity"
+            android:screenOrientation="portrait">
             <!--<receiver android:name=".EMAAlarmReceiver" />-->
             <receiver android:name=".CareRecipientBroadcastReceiver" >
                 <intent-filter>
