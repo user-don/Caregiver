@@ -50,7 +50,8 @@
     <string name="schedule_title">Upcoming Medications</string>
     <string name="ui_title_checkin_Btn">Check-in</string>
     <string name="ui_title_fall_Btn">Fall Alert</string>
-    <string name="ui_title_fall_activity">FALL DETECTED!</string>
+    <string name="ui_title_fall_activity">FALL DETECTED -</string>
+    <string name="ui_title_fall_time">60</string>
     <string name="recipient_medication_label">Below are todays medications</string>
 
     <!-- Fall Actvity Strings-->

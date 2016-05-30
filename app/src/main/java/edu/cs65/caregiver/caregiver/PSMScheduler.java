@@ -39,6 +39,7 @@ public class PSMScheduler {
             int hr = checkinTime.getHours();
             int min = checkinTime.getMinutes();
             int sec = checkinTime.getSeconds();
+            System.out.println("Set Check In Time: " + checkinTime.toString());
 
             setSchedule(context, hr, min, sec, -1);
         }

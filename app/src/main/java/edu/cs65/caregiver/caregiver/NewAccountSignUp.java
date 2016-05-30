@@ -119,8 +119,8 @@ public class NewAccountSignUp extends Activity {
             displayToast("Please enter both an email and password");
         } else {
             checkAccount(true);
+            UIswitch = true;
         }
-        UIswitch = true;
     }
 
     public void displayToast(String message){
@@ -130,7 +130,7 @@ public class NewAccountSignUp extends Activity {
     @Override
     public void onBackPressed() {
         if (UIswitch){
-            setContentView(R.layout.activity_new_account);
+            setContentView(R.layout.activity_account_sign_on);
             UIswitch = false;
         } else {
             super.onBackPressed();
