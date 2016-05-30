@@ -28,7 +28,7 @@ public class PSMScheduler {
     }
 
     public static void setCheckinAlarm(Context context) {
-        setSchedule(context, 12, 41, 0, -1);
+        setSchedule(context, 14, 9, 0, -1);
     }
 
 

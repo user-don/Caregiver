@@ -304,10 +304,8 @@ public class CareRecipientActivity extends Activity implements ServiceConnection
     }
 
     public void onHelpClicked(View v) {
-
         AlertDialog.Builder alertBuilder = new AlertDialog.Builder(this);
         alertBuilder.setTitle("Did you mean to ask for help?");
-
         alertBuilder.setPositiveButton("YES", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
@@ -340,7 +338,6 @@ public class CareRecipientActivity extends Activity implements ServiceConnection
                             Log.d(TAG, "send help failed");
                             e.printStackTrace();
                         }
-
 
                         return null;
                     }

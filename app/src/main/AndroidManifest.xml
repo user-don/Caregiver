@@ -71,6 +71,7 @@
             android:screenOrientation="portrait"></activity>
 
         <activity android:name=".Checkin"
+            android:launchMode="singleTask"
             android:screenOrientation="portrait"></activity>
 
         <service android:name=".SensorService" />
