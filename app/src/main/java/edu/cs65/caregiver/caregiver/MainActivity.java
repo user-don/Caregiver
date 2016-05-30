@@ -132,7 +132,6 @@ public class MainActivity extends Activity {
                 if (gcm == null) {
                     gcm = GoogleCloudMessaging.getInstance(context);
                 }
-                // check if registration ID already instantiated
 
                 mRegistrationID = gcm.register(Globals.SENDER_ID);
                 mDc.saveRegistrationId(mRegistrationID);
