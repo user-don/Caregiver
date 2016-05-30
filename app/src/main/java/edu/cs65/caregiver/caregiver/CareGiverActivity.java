@@ -159,7 +159,8 @@ public class CareGiverActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        new GcmUnRegistrationAsyncTask(this).execute();
+        // We do NOT want to unregister our GCM in onDestroy().
+        //new GcmUnRegistrationAsyncTask(this).execute();
 
     }
 
