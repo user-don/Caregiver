@@ -46,6 +46,7 @@
                     <action android:name=".CAREGIVER_BROADCAST" />
                 </intent-filter>
             </receiver>
+            <receiver android:name=".AlarmReceiver" />
         </activity>
 
         <activity android:name=".NewMedicationActivity"

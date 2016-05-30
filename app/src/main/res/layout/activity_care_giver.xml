@@ -76,39 +76,52 @@
 
     </LinearLayout>
 
-    <android.support.v7.widget.Toolbar
-        android:id="@+id/toolbar_bottom"
-        android:layout_height="wrap_content"
+
+    <LinearLayout
         android:layout_width="match_parent"
-        android:background="@color/canvas"
-        android:layout_alignParentBottom="true"
-        android:minHeight="?attr/actionBarSize" >
+        android:layout_height="55dp"
+        android:layout_gravity="bottom"
+        android:layout_alignParentBottom="true">
 
         <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:background="@color/canvas"
+            android:layout_weight="1"
+            android:id="@+id/checkInToolbarButton"
+            android:onClick="onClickCheckInStatus">
 
             <ImageView
                 android:layout_width="wrap_content"
                 android:layout_height="35dp"
                 android:src="@drawable/list_white"
                 android:layout_weight="115"
-                android:onClick="onClickCheckInStatus"/>
+                android:layout_gravity="center" />
+        </LinearLayout>
 
-            <View
-                android:layout_width="2dp"
-                android:layout_height="match_parent"
-                android:layout_gravity="center"
-                android:background="@color/white" />
+        <View
+            android:layout_width="2dp"
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
+            android:background="@color/white" />
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:background="@color/canvas"
+            android:layout_weight="1"
+            android:id="@+id/alertToolbarButton"
+            android:onClick="onClickAlertStatus">
 
             <ImageView
                 android:layout_width="wrap_content"
                 android:layout_height="35dp"
                 android:src="@drawable/alarm_white"
-                android:layout_weight="128"
-                android:onClick="onClickAlertStatus"/>
+                android:layout_weight="115"
+                android:layout_gravity="center" />
         </LinearLayout>
 
-    </android.support.v7.widget.Toolbar>
+    </LinearLayout>
+
 
 </RelativeLayout>

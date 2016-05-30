@@ -61,6 +61,9 @@ public class GcmIntentService extends IntentService {
         // in your BroadcastReceiver.
         String messageType = gcm.getMessageType(intent);
 
+        prefs = getSharedPreferences(getString(R.string.profile_preference), 0);
+        mRecipientName = prefs.getString(CareGiverActivity.RECIPIENT_NAME_KEY,"");
+
         if (extras != null && !extras.isEmpty()) {  // has effect of unparcelling Bundle
             if (GoogleCloudMessaging.MESSAGE_TYPE_MESSAGE.equals(messageType)) {
                 Logger.getLogger("GCM_RECEIVED").log(Level.INFO, extras.toString());
@@ -86,17 +89,22 @@ public class GcmIntentService extends IntentService {
                             CareGiverActivity.mAlert.startAlarms();
                         }
 
-//                        Intent CGi = new Intent(getApplicationContext(), CareGiverActivity.class); //The activity you  want to start
-//                        //CGi.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-//                        CGi.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-//                        startActivity(CGi);
-
                         Intent i2 = new Intent("edu.cs65.caregiver.caregiver.CAREGIVER_BROADCAST");
                         i2.putExtra("msg", extras.getString("message"));
                         sendBroadcast(i2);
 
                         PowerManager.WakeLock screenOn = ((PowerManager) getSystemService(POWER_SERVICE)).newWakeLock(PowerManager.SCREEN_BRIGHT_WAKE_LOCK | PowerManager.ACQUIRE_CAUSES_WAKEUP, "ALERT");
                         screenOn.acquire();
+
+                        prefs.edit().putBoolean("help", true).commit();
+
+//                        Intent CGi = new Intent(getApplicationContext(), CareGiverActivity.class); //The activity you  want to start
+//                        CGi.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+//                        CGi.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+//                        CGi.putExtra("help",true);
+//                        startActivity(CGi);
+
+
                         break;
 
                     case RecipientToCareGiverMessage.MED_TAKEN:
@@ -147,7 +155,7 @@ public class GcmIntentService extends IntentService {
         });
     }
 
-    private void sendBroadcast(String action, String message)  {
+    private void mySendBroadcast(String action, String message)  {
         Log.d(TAG, "sending broadcast: " + action);
         Intent i = new Intent(action);
         i.putExtra(BROADCAST_MESSAGE, message);
@@ -170,6 +178,7 @@ public class GcmIntentService extends IntentService {
                 .setSmallIcon(R.drawable.ic_done_black_24dp)
                 .setContentTitle("CareGiver Message")
                 .setContentText(message)
+                .setOngoing(true)
                 .setAutoCancel(true)
                 .setSound(defaultSoundUri)
                 .setContentIntent(pendingIntent);
