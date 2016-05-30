@@ -98,7 +98,7 @@ public class CareRecipientActivity extends Activity implements ServiceConnection
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        System.out.println("onCreate");
+        PSMScheduler.setCheckinAlarm(this);
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_care_recipient);
@@ -109,7 +109,6 @@ public class CareRecipientActivity extends Activity implements ServiceConnection
         mRecipientName = preferences.getString(RECIPIENT_NAME_KEY, "");
         mRegistrationID = preferences.getString(REGISTRATION_KEY,"");
 
-        PSMScheduler.setCheckinAlarm(this);
 
         // register receiver for gcm message broadcasts
         mBroadcastReceiver = new CareRecipientBroadcastReceiver();
