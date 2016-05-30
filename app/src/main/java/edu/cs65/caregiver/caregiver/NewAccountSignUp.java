@@ -90,6 +90,7 @@ public class NewAccountSignUp extends Activity {
     // If the user would like to sign into an existing account
     public void onLogIn (View v) {
         username = userText.getText().toString();
+        username = username.toLowerCase();
         password = passText.getText().toString();
 
         if (username.equals("") || password.equals("")){
@@ -103,6 +104,7 @@ public class NewAccountSignUp extends Activity {
     // If the user would like to create a new account
     public void onSignUp (View v){
         username = userText.getText().toString();
+        username.toLowerCase();
         password = passText.getText().toString();
 
         if (username.equals("") || password.equals("")){

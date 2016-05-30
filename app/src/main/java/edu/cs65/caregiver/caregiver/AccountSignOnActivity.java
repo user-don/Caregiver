@@ -63,6 +63,7 @@ public class AccountSignOnActivity extends Activity {
     public void onSearch(View v){
         EditText careGiverInput = (EditText)findViewById(R.id.find_caregiver);
         careGiver = careGiverInput.getText().toString();
+        careGiver = careGiver.toLowerCase();
 
         searchAccount();
     }
@@ -126,7 +127,7 @@ public class AccountSignOnActivity extends Activity {
                         // connect to patient status page
                         Intent intent = new Intent(getApplicationContext(), CareRecipientActivity.class);
                         startActivity(intent);
-                        finish();
+                            finish();
                         }
                     });
                 } catch (IOException e) {
