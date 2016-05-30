@@ -87,6 +87,54 @@ public class Checkin extends AppCompatActivity {
         finish();
     }
 
+
+    public void onCheckInHelpClicked(View v) {
+        new AsyncTask<Void, Void, Void>() {
+            private static final String TAG = "Notify HELP AT";
+
+            @Override
+            protected Void doInBackground(Void... params) {
+
+                edu.cs65.caregiver.backend.messaging.Messaging.Builder builder =
+                        new edu.cs65.caregiver.backend.messaging.Messaging
+                                .Builder(AndroidHttp.newCompatibleTransport(), new AndroidJsonFactory(), null)
+                                .setRootUrl(SERVER_ADDR + "/_ah/api/");
+
+                edu.cs65.caregiver.backend.messaging.Messaging backend = builder.build();
+
+
+                Log.d(TAG, "Notifying caregiver of help: " + mEmail);
+                try {
+
+                    // make help message
+                    RecipientToCareGiverMessage msg =
+                            new RecipientToCareGiverMessage(RecipientToCareGiverMessage.HELP,
+                                    null,
+                                    Calendar.getInstance().getTime().getTime());
+
+                    backend.sendNotificationToCaregiver(mRegistration, mEmail, msg.selfToString()).execute();
+                } catch (IOException e) {
+                    Log.d(TAG, "send help failed");
+                    e.printStackTrace();
+                }
+
+
+                return null;
+            }
+
+            @Override
+            protected void onPostExecute(Void result) {
+                Log.d(TAG,"sent help message\n");
+                Toast.makeText(getApplicationContext(), "CAREGIVER HAS BEEN ALERTED",
+                        Toast.LENGTH_LONG).show();
+            }
+        }.execute();
+
+        stopVibration();
+        finish();
+    }
+
+
     public void startVibration() {
         v = (Vibrator) this.getSystemService(Context.VIBRATOR_SERVICE);
         long[] pattern = {0, 500, 1000};

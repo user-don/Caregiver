@@ -59,7 +59,7 @@
 
     <string name="profile_preference">caregiver_profile_preferences</string>
     <!-- Checkin Activity Strings -->
-    <string name="ui_checkin_welcome_text">Click the button below to check-in!</string>
+    <string name="ui_checkin_welcome_text">Time to Check-in!</string>
     <string name="ui_Checkin_Btn">Check-in!</string>
 
 </resources>
