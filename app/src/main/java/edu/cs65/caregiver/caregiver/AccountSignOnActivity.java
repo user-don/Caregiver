@@ -20,6 +20,7 @@ import com.google.gson.Gson;
 import java.io.IOException;
 import java.util.HashMap;
 
+import edu.cs65.caregiver.caregiver.controllers.DataController;
 import edu.cs65.caregiver.caregiver.model.CareGiver;
 
 public class AccountSignOnActivity extends Activity {
@@ -36,14 +37,16 @@ public class AccountSignOnActivity extends Activity {
     private static final String REGISTRATION_KEY = "registration key";
     private static final String RECIPIENT_NAME_KEY = "recipient name";
     private static final String SERVER_ADDR = "https://handy-empire-131521.appspot.com";
+    private static DataController mDc;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_new_account);
+        mDc = DataController.getInstance(getApplicationContext());
         mContext = getApplicationContext();
-
-        registrationID = MainActivity.mRegistrationID;
+        registrationID = mDc.getRegistrationId();
+        //registrationID = MainActivity.mRegistrationID;
         history = 0;
     }
 

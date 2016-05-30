@@ -58,7 +58,8 @@
         <activity android:name=".NewAccountSignUp"
             android:screenOrientation="portrait"/>
 
-        <activity android:name=".CareRecipientActivity">
+        <activity android:name=".CareRecipientActivity"
+            android:launchMode="singleTask">
             <!--<receiver android:name=".EMAAlarmReceiver" />-->
             <receiver android:name=".CareRecipientBroadcastReceiver" >
                 <intent-filter>

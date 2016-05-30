@@ -48,6 +48,8 @@ import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import edu.cs65.caregiver.backend.registration.Registration;
 import edu.cs65.caregiver.caregiver.controllers.DataController;
 import edu.cs65.caregiver.caregiver.model.CareGiver;
@@ -58,6 +60,8 @@ import edu.cs65.caregiver.backend.messaging.Messaging;
 import edu.cs65.caregiver.caregiver.model.RecipientToCareGiverMessage;
 
 public class CareGiverActivity extends AppCompatActivity {
+    @BindView(R.id.checkInToolbarButton) LinearLayout checkInToolbarButton;
+    @BindView(R.id.alertToolbarButton) LinearLayout alertToolbarButton;
 
     private static final String TAG = "CareGiverActivity";
     public static String SERVER_ADDR = "https://handy-empire-131521.appspot.com";
@@ -93,7 +97,7 @@ public class CareGiverActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_care_giver);
-
+        ButterKnife.bind(this);
         mAlert = new MyAlert(this);
         mPrefs = getSharedPreferences(getString(R.string.profile_preference), 0);
         mEmail = mPrefs.getString(EMAIL_KEY,"");
@@ -133,14 +137,6 @@ public class CareGiverActivity extends AppCompatActivity {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.care_giver_activity_menu, menu);
 
-        Toolbar toolbarBottom = (Toolbar) findViewById(R.id.toolbar_bottom);
-        toolbarBottom.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
-            @Override
-            public boolean onMenuItemClick(MenuItem item) {
-                return true;
-            }
-        });
-
         return true;
     }
 
@@ -159,7 +155,8 @@ public class CareGiverActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        new GcmUnRegistrationAsyncTask(this).execute();
+        // We do NOT want to unregister our GCM in onDestroy().
+        //new GcmUnRegistrationAsyncTask(this).execute();
 
     }
 
@@ -199,6 +196,8 @@ public class CareGiverActivity extends AppCompatActivity {
             Log.d(TAG,"Resetting data");
             mReceiver.mCheckedInTime = -1;
             mReceiver.mHasCheckedInToday = false;
+            // reset check-in button color back to canvas
+            checkInToolbarButton.setBackgroundColor(getResources().getColor(R.color.canvas));
             for (int i = 0; i < mReceiver.mAlerts.size(); i++) {
                 mReceiver.mAlerts.get(i).mMedsTaken = false;
             }
@@ -251,6 +250,7 @@ public class CareGiverActivity extends AppCompatActivity {
                 public void onClick(DialogInterface arg0, int arg1) {
                     mAlert.stopAlarms();
                     mReceiver.mRaisedAlert = false;
+                    alertToolbarButton.setBackgroundColor(getResources().getColor(R.color.canvas));
                     new UpdateCareGiverAsyncTask().execute();
                     updateUI();
                 }
@@ -303,7 +303,8 @@ public class CareGiverActivity extends AppCompatActivity {
                 if (resultCode == RESULT_OK) {
 
                     String updated_name = data.getStringExtra(NewMedicationActivity.ALERT_NAME);
-                    mReceiver.deleteAlert(updated_name);
+                    String old_name = data.getStringExtra(NewMedicationActivity.OLD_ALERT_NAME);
+                    mReceiver.deleteAlert(old_name);
 
                     Time time = new Time(data.getLongExtra(NewMedicationActivity.ALERT_TIME, 0));
                     MedicationAlert newAlert =
@@ -548,7 +549,10 @@ public class CareGiverActivity extends AppCompatActivity {
             switch(msg.messageType) {
                 case RecipientToCareGiverMessage.CHECKIN:
                     Log.d(TAG, "checkin!");
+
                     mReceiver.mHasCheckedInToday = true;
+                    // now change the color of the check-in button to green
+                    checkInToolbarButton.setBackgroundColor(getResources().getColor(R.color.green));
                     mReceiver.mCheckedInTime = msg.time;
                     mDataController.setRecipientData(mReceiver);
                     mDataController.saveData();
@@ -584,6 +588,8 @@ public class CareGiverActivity extends AppCompatActivity {
                     onClickAlertStatus(null);
 
                     mReceiver.mRaisedAlert = true;
+                    // set alert toolbar button to red
+                    alertToolbarButton.setBackgroundColor(getResources().getColor(R.color.red));
                     mDataController.setRecipientData(mReceiver);
                     mDataController.saveData();
 

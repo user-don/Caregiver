@@ -7,6 +7,8 @@ import android.util.Log;
 import com.google.gson.Gson;
 
 import edu.cs65.caregiver.backend.messaging.model.CaregiverEndpointsObject;
+import edu.cs65.caregiver.caregiver.Globals;
+import edu.cs65.caregiver.caregiver.R;
 import edu.cs65.caregiver.caregiver.model.CareGiver;
 import edu.cs65.caregiver.caregiver.model.Recipient;
 
@@ -72,6 +74,32 @@ public class DataController {
         String saved_data = gson.toJson(careGiver);
         prefsEditor.putString(SAVED_DATA_KEY, saved_data);
         prefsEditor.commit();
+    }
+
+    public void saveRegistrationId(String regId) {
+        SharedPreferences preferences = context.getSharedPreferences(Globals.REG_PREF_FILE, Context.MODE_PRIVATE);
+        SharedPreferences.Editor prefsEditor = preferences.edit();
+        prefsEditor.putString("regId", regId);
+        prefsEditor.commit();
+    }
+
+    public String getRegistrationId() {
+        SharedPreferences preferences = context.getSharedPreferences(Globals.REG_PREF_FILE, Context.MODE_PRIVATE);
+        return preferences.getString("regId", "");
+    }
+
+    public void saveToPreferences(String prefsFileName, String key, String value) {
+        SharedPreferences preferences = context.getSharedPreferences(
+                prefsFileName, Context.MODE_PRIVATE);
+        SharedPreferences.Editor prefsEditor = preferences.edit();
+        prefsEditor.putString(key, value);
+        prefsEditor.apply();
+    }
+
+    public String getStringFromPreferences(String prefsFileName, String key) {
+        SharedPreferences preferences = context.getSharedPreferences(
+                prefsFileName, Context.MODE_PRIVATE);
+        return preferences.getString(key, "");
     }
 
     public void loadData() {
