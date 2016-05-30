@@ -290,8 +290,19 @@ public class CareRecipientActivity extends Activity implements ServiceConnection
     }
 
     public void onHelpClicked(View v) {
-        AlertDialog.Builder alertBuilder = new AlertDialog.Builder(this);
-        alertBuilder.setTitle("Did you mean to ask for help?");
+        final AlertDialog.Builder alertBuilder = new AlertDialog.Builder(this);
+
+        SpannableString spanString = new SpannableString("  Do you need help?" + "\n");
+        spanString.setSpan(new StyleSpan(Typeface.NORMAL), 0, spanString.length(), 0);
+
+        TextView title = new TextView(getApplicationContext());
+        title.setText(spanString);
+        title.setTextSize(32);
+        title.setTextColor(getColor(R.color.darkgrey));
+        title.setGravity(Gravity.LEFT | Gravity.BOTTOM);
+
+        alertBuilder.setCustomTitle(title);
+
         alertBuilder.setPositiveButton("YES", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
@@ -341,7 +352,24 @@ public class CareRecipientActivity extends Activity implements ServiceConnection
             @Override
             public void onClick(DialogInterface dialog, int which) {
             }
-        }).show();
+        });
+
+        final AlertDialog alertDialog = alertBuilder.create();
+        alertDialog.setOnShowListener(new DialogInterface.OnShowListener() {
+            @Override
+            public void onShow(DialogInterface dialog) {
+                Button btnPositive = alertDialog.getButton(Dialog.BUTTON_POSITIVE);
+                btnPositive.setTextSize(25);
+                btnPositive.setGravity(Gravity.CENTER);
+
+                Button btnNegative = alertDialog.getButton(Dialog.BUTTON_NEGATIVE);
+                btnNegative.setTextSize(25);
+                btnNegative.setGravity(Gravity.CENTER);
+            }
+        });
+        alertDialog.create();
+        alertDialog.show();
+
     }
 
     public void onMedClicked(View v) {
@@ -481,6 +509,15 @@ public class CareRecipientActivity extends Activity implements ServiceConnection
 
     public void updateCheckInTime() {
         if ((Long) mCheckInTime != null) {
+            Time rawTime = new Time(mCheckInTime);
+
+            StringBuilder sb = new StringBuilder(50);
+            sb.append("Set Check In Time To: ");
+            sb.append(rawTime.getHours());
+            sb.append(":");
+            sb.append(rawTime.getMinutes());
+
+            Toast.makeText(this, sb.toString(), Toast.LENGTH_SHORT).show();
             PSMScheduler.setCheckinAlarm(this, mCheckInTime);
         }
     }
@@ -742,8 +779,6 @@ public class CareRecipientActivity extends Activity implements ServiceConnection
                 updateUI();
                 updateCheckInTime();
 
-                //mDataController.setData(cloudData);
-                // TODO -- updateUI();
             }
         }
     }
