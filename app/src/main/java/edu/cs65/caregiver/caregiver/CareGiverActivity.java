@@ -80,9 +80,9 @@ public class CareGiverActivity extends AppCompatActivity {
     private String mRecipientName;
     private Recipient mReceiver;
 
-    private static final String EMAIL_KEY = "email key";
-    private static final String REGISTRATION_KEY = "registration key";
-    private static final String RECIPIENT_NAME_KEY = "recipient name";
+    public static final String EMAIL_KEY = "email key";
+    public static final String REGISTRATION_KEY = "registration key";
+    public static final String RECIPIENT_NAME_KEY = "recipient name";
     private SharedPreferences mPrefs;
 
     public static MyAlert mAlert;
@@ -150,6 +150,19 @@ public class CareGiverActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         registerReceiver(mBroadcastReceiver, mIntentFilter);
+
+        if (mPrefs.getBoolean("help", false) == true) {
+            Log.d(TAG,"help message has been raised");
+            mReceiver.mRaisedAlert = true;
+            // set alert toolbar button to red
+            alertToolbarButton.setBackgroundColor(getResources().getColor(R.color.red));
+            mDataController.setRecipientData(mReceiver);
+            mDataController.saveData();
+
+            onClickAlertStatus(null);
+
+            mPrefs.edit().putBoolean("help",false).commit();
+        }
     }
 
     @Override
@@ -340,6 +353,11 @@ public class CareGiverActivity extends AppCompatActivity {
 
         TextView recipientText = (TextView) findViewById(R.id.caregiver_recipient);
         recipientText.setText(" " + mRecipientName);
+
+        if (mReceiver.mHasCheckedInToday == true) {
+            // now change the color of the check-in button to green
+            checkInToolbarButton.setBackgroundColor(getResources().getColor(R.color.green));
+        }
 
     }
 
