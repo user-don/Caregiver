@@ -5,17 +5,20 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ExpandableListAdapter;
 import android.widget.ExpandableListView;
 import android.widget.ListView;
 import android.widget.SimpleExpandableListAdapter;
+import android.widget.TextView;
 
 import java.lang.reflect.Array;
 import java.util.ArrayList;
@@ -77,7 +80,8 @@ public class CareGiverDialogFragment extends android.app.DialogFragment implemen
                         new int[] { android.R.id.text1}, childData,
                         android.R.layout.simple_expandable_list_item_2, new String[] {"child"},
                         new int[] { android.R.id.text1 }
-                );
+                ) {
+                };
                 medList.setAdapter(mAdapter);
                 medBuilder.setView(medList);
                 return medBuilder.create();

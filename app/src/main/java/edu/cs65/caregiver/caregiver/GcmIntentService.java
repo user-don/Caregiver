@@ -128,6 +128,8 @@ public class GcmIntentService extends IntentService {
                         sendBroadcast(i5);
                         break;
 
+                    default:
+                        Log.d(TAG, "unrecognized message");
                 }
             }
         }

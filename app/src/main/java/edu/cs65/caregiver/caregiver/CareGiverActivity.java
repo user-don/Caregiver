@@ -72,8 +72,8 @@ public class CareGiverActivity extends AppCompatActivity {
     DataController mDataController;
 
     //private CareGiver mCareGiver;
-    private String mEmail = "dummy";
-    private String mRecipientName = "test";
+    private String mEmail;
+    private String mRecipientName;
     private Recipient mReceiver;
 
     private static final String EMAIL_KEY = "email key";
