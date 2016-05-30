@@ -255,7 +255,7 @@ public class CareGiverActivity extends AppCompatActivity {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
 
         if (mReceiver.mRaisedAlert) {
-            String time_str = new Time(mReceiver.mCheckedInTime).toString();
+            builder.setCancelable(false);
             builder.setTitle(mReceiver.mName + " needs assistance!");
             builder.setPositiveButton("CLEAR", new DialogInterface.OnClickListener() {
                 @Override
@@ -270,12 +270,6 @@ public class CareGiverActivity extends AppCompatActivity {
                     alertToolbarButton.setBackgroundColor(getResources().getColor(R.color.canvas));
                     new UpdateCareGiverAsyncTask().execute();
                     updateUI();
-                }
-            });
-            builder.setNegativeButton("CANCEL", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface arg0, int arg1) {
-
                 }
             });
         } else {
@@ -613,8 +607,7 @@ public class CareGiverActivity extends AppCompatActivity {
                     alertToolbarButton.setBackgroundColor(getResources().getColor(R.color.red));
                     mDataController.setRecipientData(mReceiver);
                     mDataController.saveData();
-
-                    onClickAlertStatus(null);
+                    
 
                     updateUI();
                     break;
