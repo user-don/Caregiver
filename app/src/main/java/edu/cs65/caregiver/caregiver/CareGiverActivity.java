@@ -607,8 +607,7 @@ public class CareGiverActivity extends AppCompatActivity {
                     alertToolbarButton.setBackgroundColor(getResources().getColor(R.color.red));
                     mDataController.setRecipientData(mReceiver);
                     mDataController.saveData();
-
-                    onClickAlertStatus(null);
+                    
 
                     updateUI();
                     break;
