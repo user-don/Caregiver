@@ -126,10 +126,7 @@ public class CareGiverActivity extends AppCompatActivity {
         setAlertAdapter();
         updateUI();
 
-        GetCareGiverInfoAsyncTask task = new GetCareGiverInfoAsyncTask();
-        task.email = mEmail;
-        task.execute();
-
+        new GetCareGiverInfoAsyncTask().execute();
     }
 
     @Override
@@ -163,6 +160,8 @@ public class CareGiverActivity extends AppCompatActivity {
 
             mPrefs.edit().putBoolean("help",false).commit();
         }
+
+        new GetCareGiverInfoAsyncTask().execute();
     }
 
     @Override
@@ -265,6 +264,8 @@ public class CareGiverActivity extends AppCompatActivity {
                     mReceiver.mRaisedAlert = false;
                     mDataController.setRecipientData(mReceiver);
                     mDataController.saveData();
+
+                    mPrefs.edit().putBoolean("help",false).commit();
 
                     alertToolbarButton.setBackgroundColor(getResources().getColor(R.color.canvas));
                     new UpdateCareGiverAsyncTask().execute();
@@ -608,7 +609,6 @@ public class CareGiverActivity extends AppCompatActivity {
                     Log.d(TAG, "Help!");
 
                     mReceiver.mRaisedAlert = true;
-                    onClickAlertStatus(null);
                     // set alert toolbar button to red
                     alertToolbarButton.setBackgroundColor(getResources().getColor(R.color.red));
                     mDataController.setRecipientData(mReceiver);
@@ -669,7 +669,6 @@ public class CareGiverActivity extends AppCompatActivity {
 
     class GetCareGiverInfoAsyncTask extends AsyncTask<Void,String,String> {
         private static final String TAG = "Get Account Info AT";
-        public String email = "";
         Gson gson;
 
         @Override
@@ -683,9 +682,9 @@ public class CareGiverActivity extends AppCompatActivity {
             edu.cs65.caregiver.backend.messaging.Messaging backend = builder.build();
             edu.cs65.caregiver.backend.messaging.model.CaregiverEndpointsObject response = null;
 
-            Log.d(TAG, "Executing getAccountInfo with email " + email);
+            Log.d(TAG, "Executing getAccountInfo with email " + mEmail);
             try {
-                response = backend.getAccountInfo(email).execute();
+                response = backend.getAccountInfo(mEmail).execute();
             } catch (IOException e) {
                 Log.d(TAG, "getAccountInfo failed");
                 e.printStackTrace();
