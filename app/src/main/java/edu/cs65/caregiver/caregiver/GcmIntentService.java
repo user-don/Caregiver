@@ -170,6 +170,7 @@ public class GcmIntentService extends IntentService {
                 .setSmallIcon(R.drawable.ic_done_black_24dp)
                 .setContentTitle("CareGiver Message")
                 .setContentText(message)
+                .setOngoing(true)
                 .setAutoCancel(true)
                 .setSound(defaultSoundUri)
                 .setContentIntent(pendingIntent);

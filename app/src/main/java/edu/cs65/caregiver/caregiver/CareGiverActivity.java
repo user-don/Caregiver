@@ -585,9 +585,8 @@ public class CareGiverActivity extends AppCompatActivity {
 
                 case RecipientToCareGiverMessage.HELP:
                     Log.d(TAG, "Help!");
-                    onClickAlertStatus(null);
-
                     mReceiver.mRaisedAlert = true;
+                    onClickAlertStatus(null);
                     // set alert toolbar button to red
                     alertToolbarButton.setBackgroundColor(getResources().getColor(R.color.red));
                     mDataController.setRecipientData(mReceiver);
