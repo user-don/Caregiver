@@ -59,6 +59,7 @@
             android:screenOrientation="portrait"/>
 
         <activity android:name=".CareRecipientActivity"
+            android:screenOrientation="portrait"
             android:launchMode="singleTask">
             <!--<receiver android:name=".EMAAlarmReceiver" />-->
             <receiver android:name=".CareRecipientBroadcastReceiver" >
