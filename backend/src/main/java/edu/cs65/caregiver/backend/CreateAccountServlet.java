@@ -32,7 +32,7 @@ public class CreateAccountServlet extends HttpServlet {
 //        resp.setHeader("result", "successful_account_register");
 
         // Here we are passed an email and password for creating a new account.
-        String email = req.getParameter("email").trim();
+        String email = req.getParameter("email").trim().toLowerCase();
         String password = req.getParameter("password");
         String regId = req.getParameter("registrationId");
         String caregiverJson = req.getParameter("caregiver");
