@@ -31,7 +31,7 @@ public class LogInServlet extends HttpServlet {
         //super.doPost(req, resp);
 
         // Here we are passed an email and password for logging in
-        String email = req.getParameter("email");
+        String email = req.getParameter("email").trim().toLowerCase();
         String password = req.getParameter("password");
         String regId = req.getParameter("registrationId");
         String hashedPw = computeMD5Hash(password);

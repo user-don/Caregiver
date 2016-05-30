@@ -18,4 +18,9 @@
         <item name="colorControlHighlight">@color/white</item>
     </style>
 
+    <style name="mySpinnerItemStyle" parent="@android:style/Widget.Holo.DropDownItem.Spinner">
+        <item name="android:textColor">@color/darkgrey</item>
+        <item name="android:textSize">20sp</item>
+    </style>
+
 </resources>

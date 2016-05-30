@@ -15,6 +15,7 @@ import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
@@ -22,6 +23,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.Spinner;
@@ -46,6 +48,7 @@ public class NewMedicationActivity extends AppCompatActivity {
     @BindView(R.id.alert_time) TextView alert_time;
     @BindView(R.id.alert_name) EditText alert_name_et;
     @BindView(R.id.new_medication) EditText new_medication;
+    @BindView(R.id.plus_button) ImageView plus_button;
 
     private static final String TAG = "new medication activity";
 
@@ -73,6 +76,7 @@ public class NewMedicationActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_new_medication);
+        setupUI(findViewById(R.id.newMedPage));
         ButterKnife.bind(this);
         mDC = DataController.getInstance(getApplicationContext());
 
@@ -91,18 +95,8 @@ public class NewMedicationActivity extends AppCompatActivity {
             }
         });
 
-//        new_medication.setOnClickListener(alertNameClickListener);
-//        new_medication.setOnEditorActionListener(new TextView.OnEditorActionListener() {
-//            @Override
-//            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-//                alert_name_et.setCursorVisible(false);
-//                if (event != null && event.getKeyCode() == KeyEvent.KEYCODE_ENTER) {
-//                    InputMethodManager in = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-//                    in.hideSoftInputFromWindow(alert_name_et.getApplicationWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
-//                }
-//                return false;
-//            }
-//        });
+        //plus_button.setOnClickListener(plusButtonClickListener);
+        new_medication.setOnClickListener(newMedicationClickListener);
 
         Intent i = getIntent();
 
@@ -179,43 +173,6 @@ public class NewMedicationActivity extends AppCompatActivity {
 
     /* ----------------------------- UI callbacks ----------------------------- */
 
-    public void onClickSetName(View v) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-
-        builder.setTitle("Set Alert Name");
-
-        final EditText input = new EditText(this);
-        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.MATCH_PARENT,
-                LinearLayout.LayoutParams.MATCH_PARENT);
-        input.setLayoutParams(lp);
-        builder.setView(input); // uncomment this line
-
-        builder.setPositiveButton("Set Name", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface arg0, int arg1) {
-
-                if (!input.getText().toString().equals("")) {
-                    mAlertName = input.getText().toString();
-                } else {
-                    Toast.makeText(NewMedicationActivity.this, "Entry Failed -- Please enter a name",
-                            Toast.LENGTH_SHORT).show();
-                }
-                updateUI();
-            }
-        });
-
-        builder.setNegativeButton("CANCEL", new DialogInterface.OnClickListener() {
-
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                dialog.cancel();
-            }
-        });
-
-        builder.create().show();
-    }
-
     public void onClickSetTime(View v) {
         TimePickerDialog.OnTimeSetListener time_listener =
                 new TimePickerDialog.OnTimeSetListener() {
@@ -236,6 +193,12 @@ public class NewMedicationActivity extends AppCompatActivity {
     }
 
     public void onClickAddMedication(View v) {
+        // Hide cursor on new_medication EditText and hide the keyboard
+        new_medication.setCursorVisible(false);
+        InputMethodManager inputManager = (InputMethodManager)
+                getSystemService(Context.INPUT_METHOD_SERVICE);
+        inputManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(),
+                InputMethodManager.HIDE_NOT_ALWAYS);
 
         String medication = new_medication.getText().toString();
         if (!medication.equals("")){
@@ -261,18 +224,17 @@ public class NewMedicationActivity extends AppCompatActivity {
         }
     };
 
-
-//    /**
-//     * Remove cursor from medication name EditText when not selected
-//     */
-//    View.OnClickListener alertNameClickListener = new View.OnClickListener() {
-//        @Override
-//        public void onClick(View v) {
-//            if (v.getId() == alert_name_et.getId()) {
-//                alert_name_et.setCursorVisible(true);
-//            }
-//        }
-//    };
+    /**
+     * Show cursor on new_medication EditText when it is highlighted
+     */
+    View.OnClickListener newMedicationClickListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            if (v.getId() == new_medication.getId()) {
+                new_medication.setCursorVisible(true);
+            }
+        }
+    };
 
     public void save (MenuItem v) {
 
@@ -378,7 +340,20 @@ public class NewMedicationActivity extends AppCompatActivity {
 //                ActionBar.LayoutParams.MATCH_PARENT));
         //((ViewGroup)medications.getParent()).addView(empty);
         //medications.setEmptyView(empty);
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, mMedications);
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, mMedications){
+            @Override
+            public View getView(int position, View convertView,
+                                ViewGroup parent) {
+                View view =super.getView(position, convertView, parent);
+                TextView textView=(TextView) view.findViewById(android.R.id.text1);
+
+                if (mMedications.get(0).equals("i.e. Tylenol"))
+                    textView.setTextColor(Color.LTGRAY);
+                else
+                    textView.setTextColor(Color.DKGRAY);
+                return view;
+            }
+        };
         medications.setAdapter(adapter);
 
         medications.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -515,10 +490,33 @@ public class NewMedicationActivity extends AppCompatActivity {
         }
     }
 
-    /* ----------------------------- data controlling functions ----------------------------- */
-
     public void addMedication(String medication) {
         mMedications.add(medication);
+    }
+
+    public void setupUI(View view) {
+        //Set up touch listener for non-text box views to hide keyboard.
+        if(!(view instanceof EditText)) {
+            view.setOnTouchListener(new View.OnTouchListener() {
+                public boolean onTouch(View v, MotionEvent event) {
+                    hideSoftKeyboard();
+                    return false;
+                }
+            });
+        }
+
+        //If a layout container, iterate over children and seed recursion.
+        if (view instanceof ViewGroup) {
+            for (int i = 0; i < ((ViewGroup) view).getChildCount(); i++) {
+                View innerView = ((ViewGroup) view).getChildAt(i);
+                setupUI(innerView);
+            }
+        }
+    }
+
+    public void hideSoftKeyboard() {
+        InputMethodManager inputMethodManager = (InputMethodManager)  getSystemService(Activity.INPUT_METHOD_SERVICE);
+        inputMethodManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), 0);
     }
 
 }

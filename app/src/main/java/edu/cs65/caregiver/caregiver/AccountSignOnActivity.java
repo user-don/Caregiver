@@ -126,6 +126,7 @@ public class AccountSignOnActivity extends Activity {
                         // connect to patient status page
                         Intent intent = new Intent(getApplicationContext(), CareRecipientActivity.class);
                         startActivity(intent);
+                        finish();
                         }
                     });
                 } catch (IOException e) {
