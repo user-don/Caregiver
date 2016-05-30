@@ -83,6 +83,7 @@
             android:layout_height="wrap_content"
             android:id="@+id/recurrence_spinner"
             android:entries="@array/recurrence_options"
+            android:theme="@style/mySpinnerItemStyle"
             android:layout_weight="1"/>
     </LinearLayout>
 
