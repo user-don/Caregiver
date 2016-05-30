@@ -481,6 +481,15 @@ public class CareRecipientActivity extends Activity implements ServiceConnection
 
     public void updateCheckInTime() {
         if ((Long) mCheckInTime != null) {
+            Time rawTime = new Time(mCheckInTime);
+
+            StringBuilder sb = new StringBuilder(50);
+            sb.append("Set Check In Time To: ");
+            sb.append(rawTime.getHours());
+            sb.append(":");
+            sb.append(rawTime.getMinutes());
+
+            Toast.makeText(this, sb.toString(), Toast.LENGTH_SHORT).show();
             PSMScheduler.setCheckinAlarm(this, mCheckInTime);
         }
     }
@@ -742,8 +751,6 @@ public class CareRecipientActivity extends Activity implements ServiceConnection
                 updateUI();
                 updateCheckInTime();
 
-                //mDataController.setData(cloudData);
-                // TODO -- updateUI();
             }
         }
     }
