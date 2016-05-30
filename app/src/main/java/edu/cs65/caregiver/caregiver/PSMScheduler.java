@@ -32,7 +32,6 @@ public class PSMScheduler {
 
     public static void setCheckinAlarm(Context context, long time) {
         if (time == 0) {
-            System.out.println("setting for 10am default !!!!!");
             setSchedule(context, 10, 0, 0, -1);
         }else {
             Time checkinTime = new Time(time);

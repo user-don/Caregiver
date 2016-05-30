@@ -33,7 +33,8 @@ public class FallActivity extends Activity {
     private static final String SERVER_ADDR = "https://handy-empire-131521.appspot.com";
     private String mRegistration;
     private String mEmail;
-    private int countdownTime = 6000;
+    private Timer mTimer;
+    private int countdownTime = 60000;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,6 +51,8 @@ public class FallActivity extends Activity {
         closeButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                mTimer.cancel();
+                mTimer.purge();
                 SensorService.fallDetected = false;
                 stopVibration();
                 finish();
@@ -76,6 +79,9 @@ public class FallActivity extends Activity {
         helpButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
+                mTimer.cancel();
+                mTimer.purge();
 
                 new AsyncTask<Void, Void, Void>() {
                     private static final String TAG = "Notify HELP AT";
@@ -124,7 +130,8 @@ public class FallActivity extends Activity {
             }
         });
 
-        new Timer().schedule(new TimerTask() {
+        mTimer = new Timer();
+        mTimer.schedule(new TimerTask() {
             @Override
             public void run() {
 
