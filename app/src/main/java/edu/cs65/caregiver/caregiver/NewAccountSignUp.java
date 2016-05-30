@@ -57,10 +57,12 @@ public class NewAccountSignUp extends Activity {
         passText = (EditText)findViewById(R.id.password);
 
         valid = false;
-        registrationID = MainActivity.mRegistrationID;
 
         mDataController = DataController.getInstance(getApplicationContext());
         mDataController.initializeData(getApplicationContext());
+
+        registrationID = mDataController.getRegistrationId();
+        //registrationID = MainActivity.mRegistrationID;
     }
 
     // once a new caregiver is created, take them to the medication page
