@@ -280,6 +280,7 @@ public class CareGiverActivity extends AppCompatActivity {
                         mDataController.saveData();
                         new UpdateCareGiverAsyncTask().execute();
                         new SendMessageToPatientAsyncTask().execute();
+                        Toast.makeText(getApplicationContext(), "Check-in time scheduled", Toast.LENGTH_LONG).show();
                         // now set receiver with receiver object
                         // mDc.setData
                         // set caregiverupdateinfo async task
