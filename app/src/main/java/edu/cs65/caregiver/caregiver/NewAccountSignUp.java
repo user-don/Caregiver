@@ -62,7 +62,6 @@ public class NewAccountSignUp extends Activity {
         mDataController.initializeData(getApplicationContext());
 
         registrationID = mDataController.getRegistrationId();
-        //registrationID = MainActivity.mRegistrationID;
     }
 
     // once a new caregiver is created, take them to the medication page
@@ -137,10 +136,8 @@ public class NewAccountSignUp extends Activity {
         }
     }
 
+    // create new caregiver account in the datastore
     public void createCaregiverAccount() {
-        // TODO -- should have some account management activity
-
-        // dummy information below
         Log.d(TAG, "executing account post");
         new AsyncTask<Void,Void,Void>() {
             @Override
@@ -166,10 +163,9 @@ public class NewAccountSignUp extends Activity {
         }.execute();
     }
 
-    public void checkAccount(final boolean newAccount) {
-        // TODO -- should have some account management activity
 
-        // dummy information below
+    // check to see if account already exists in the data store
+    public void checkAccount(final boolean newAccount) {
         Log.d(TAG, "executing account post");
         new AsyncTask<Void,Void,Void>() {
             @Override

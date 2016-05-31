@@ -106,9 +106,8 @@ public class AccountSignOnActivity extends Activity {
         }
     }
 
+    // create new care recipient account in the backend
     public void createCarerecipientAccount() {
-
-        // dummy information below
         Log.d(TAG, "executing recipient creation");
         new AsyncTask<Void,Void,Void>() {
             @Override
@@ -141,8 +140,8 @@ public class AccountSignOnActivity extends Activity {
         }.execute();
     }
 
+    // search the backend for an existing account
     private void searchAccount(){
-        // dummy information below
         Log.d(TAG, "executing account post");
         new AsyncTask<Void,Void,Void>() {
             @Override
