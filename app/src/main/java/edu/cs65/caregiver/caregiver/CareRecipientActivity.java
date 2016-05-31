@@ -511,13 +511,20 @@ public class CareRecipientActivity extends Activity implements ServiceConnection
         if ((Long) mCheckInTime != null) {
             Time rawTime = new Time(mCheckInTime);
 
-            StringBuilder sb = new StringBuilder(50);
-            sb.append("Set Check In Time To: ");
-            sb.append(rawTime.getHours());
-            sb.append(":");
-            sb.append(rawTime.getMinutes());
+            String sb = "Set Check In Time To: ";
 
-            Toast.makeText(this, sb.toString(), Toast.LENGTH_SHORT).show();
+            String standardTime = "";
+            try {
+                final SimpleDateFormat sdf = new SimpleDateFormat("H:mm");
+                final Date dateObj = sdf.parse(rawTime.toString());
+                standardTime = new SimpleDateFormat("hh:mm a").format(dateObj);
+            } catch (final ParseException e) {
+                e.printStackTrace();
+            }
+
+            sb += standardTime;
+
+            Toast.makeText(this, sb, Toast.LENGTH_SHORT).show();
             PSMScheduler.setCheckinAlarm(this, mCheckInTime);
         }
     }
