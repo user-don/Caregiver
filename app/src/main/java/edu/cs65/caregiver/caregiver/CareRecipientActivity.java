@@ -76,15 +76,15 @@ public class CareRecipientActivity extends Activity implements ServiceConnection
     private List<String> listValues;
     private ArrayList<MedicationAlert> mMedicationAlerts;
 
+    /* --- medication stuff --- */
     public static ArrayList<MedEntry> sortedMeds;
     public static MediaPlayer mediaPlayer;
     public static Vibrator v;
     public static boolean loadMedDialog = false;
 
+    /* --- cloud stuff --- */
     public static String SERVER_ADDR = "https://handy-empire-131521.appspot.com";
     private static final String SENDER_ID = "1059275309009";
-
-    /* --- cloud stuff --- */
     CareGiver cloudData;
     private boolean mReceiverRegistered = false;
     public static String mRegistrationID;
@@ -112,11 +112,11 @@ public class CareRecipientActivity extends Activity implements ServiceConnection
         setContentView(R.layout.activity_care_recipient);
         mContext = getApplicationContext();
 
+        // get email and registrationID
         SharedPreferences preferences = getSharedPreferences(getString(R.string.profile_preference), 0);
         mEmail = preferences.getString(EMAIL_KEY, "");
         mRecipientName = preferences.getString(RECIPIENT_NAME_KEY, "");
         mRegistrationID = preferences.getString(REGISTRATION_KEY, "");
-
 
         // register receiver for gcm message broadcasts
         mBroadcastReceiver = new CareRecipientBroadcastReceiver();
@@ -128,11 +128,14 @@ public class CareRecipientActivity extends Activity implements ServiceConnection
         mIsBound = false;
         automaticBind();
 
+        // store current day of week
         getDayOfWeek();
 
+        // show recipient name in toolbar
         Toolbar header = (Toolbar) findViewById(R.id.toolbar);
         header.setTitle(mRecipientName);
 
+        // get CareGiver info
         GetCareGiverInfoAsyncTask task = new GetCareGiverInfoAsyncTask();
         task.email = mEmail;
         task.execute();
@@ -147,13 +150,12 @@ public class CareRecipientActivity extends Activity implements ServiceConnection
         System.out.println("dayIndex: " + dayIndex);
     }
 
-
+    /* ––––– displays a custom dialog for the current medication to take ––––– */
     public void displayMedDialog(final MedEntry entry) {
         String meds[] = new String[entry.meds.size()];
         meds = entry.meds.toArray(meds);
 
         AlertDialog.Builder alertBuilder = new AlertDialog.Builder(this);
-
         SpannableString spanString = new SpannableString(" " + entry.label);
         spanString.setSpan(new StyleSpan(Typeface.BOLD), 0, spanString.length(), 0);
 
@@ -277,6 +279,8 @@ public class CareRecipientActivity extends Activity implements ServiceConnection
 
     }
 
+    /* ––––– HELP button handler ––––– */
+    // when help is pressed, send HELP message to the associated CareGiver
     public void onHelpClicked(View v) {
         final AlertDialog.Builder alertBuilder = new AlertDialog.Builder(this);
 
@@ -342,6 +346,7 @@ public class CareRecipientActivity extends Activity implements ServiceConnection
             }
         });
 
+        // custom dialog box with bigger font for elderly users
         final AlertDialog alertDialog = alertBuilder.create();
         alertDialog.setOnShowListener(new DialogInterface.OnShowListener() {
             @Override
@@ -360,6 +365,8 @@ public class CareRecipientActivity extends Activity implements ServiceConnection
 
     }
 
+    /* ––––– MEDICATION DETAILS button handler ––––– */
+    // when clicked, loads custom expandable list view for today's scheduled meds
     public void onMedClicked(View v) {
         // update sortedMeds
         if (sortedMeds.size() != 0) {
@@ -374,6 +381,7 @@ public class CareRecipientActivity extends Activity implements ServiceConnection
     public void onMenuClicked(View v) {
     }
 
+    /* ––––– helper function to load medications by time for current day ––––– */
     public void setUpAdapter() {
         ArrayList<MedicationAlert> todaysMeds = getMedsForToday();
         sortedMeds = getGroupedMeds(todaysMeds);
@@ -387,6 +395,7 @@ public class CareRecipientActivity extends Activity implements ServiceConnection
 
     }
 
+    /* ––––– sorts medications, returning only those for current day ––––– */
     public ArrayList<MedicationAlert> getMedsForToday() {
         ArrayList<MedicationAlert> medsForToday = new ArrayList<>();
 
@@ -401,9 +410,11 @@ public class CareRecipientActivity extends Activity implements ServiceConnection
         return medsForToday;
     }
 
+    /* ––––– groups medications by time of day ––––– */
     public ArrayList<MedEntry> getGroupedMeds(ArrayList<MedicationAlert> todaysMeds) {
         ArrayList<MedEntry> sortedMeds = new ArrayList<>();
 
+        // if only one medication is scheduled, create MedEntry and return
         if (todaysMeds.size() == 1) {
             MedEntry newEntry = new MedEntry(todaysMeds.get(0).mTime.toString(),
                     todaysMeds.get(0).mMedications, todaysMeds.get(0).mTime,
@@ -412,11 +423,12 @@ public class CareRecipientActivity extends Activity implements ServiceConnection
             return sortedMeds;
         }
 
-        int countOfSortedMeds = 0; // if gotten here, already have added first
+        // Otherwise, compare times of todaysMeds and group by time
+        int countOfSortedMeds = 0;
         for (int i = 0; i < todaysMeds.size() - 1; i++) {
             int j = i + 1;
-            // automatically add first medication
-            if (i == 0) {
+
+            if (i == 0) { // automatically add first medication
                 MedEntry newEntry = new MedEntry(todaysMeds.get(i).mTime.toString(),
                         todaysMeds.get(i).mMedications, todaysMeds.get(i).mTime,
                         todaysMeds.get(i).mName);
@@ -462,10 +474,11 @@ public class CareRecipientActivity extends Activity implements ServiceConnection
             e.printStackTrace();
         }
 
-        return convertedTime;
+        return convertedTime; // return time in String 12-hour AM/PM format
     }
 
     private void startAlarm() {
+        // start vibration and alarm sound
         mediaPlayer = MediaPlayer.create(this,
                 RingtoneManager.getDefaultUri((RingtoneManager.TYPE_ALARM)));
         mediaPlayer.start();
@@ -476,11 +489,13 @@ public class CareRecipientActivity extends Activity implements ServiceConnection
     }
 
     public static void stopAlarm() {
+        // stop vibration and alarm sound
         mediaPlayer.stop();
         v.cancel();
     }
 
     public void loadData() {
+        // load data from cloud and save locally
         mReceiver = cloudData.getRecipient(mRecipientName);
         if (mReceiver != null) {
             mMedicationAlerts = mReceiver.mAlerts;
@@ -494,12 +509,14 @@ public class CareRecipientActivity extends Activity implements ServiceConnection
         PSMScheduler.setSchedule(CareRecipientActivity.this); // update alarms
     }
 
+    /* ––––– sets new check-in time ––––– */
     public void updateCheckInTime() {
         if ((Long) mCheckInTime != null) {
             PSMScheduler.setCheckinAlarm(this, mCheckInTime);
         }
     }
 
+    // –––––––––––––––––––––––––– BroadcastReceiver –––––––––––––––––––––––––– //
 
     public class CareRecipientBroadcastReceiver extends BroadcastReceiver {
         private static final String TAG = "CareRecipientReceiver";
@@ -588,13 +605,19 @@ public class CareRecipientActivity extends Activity implements ServiceConnection
 
     // –––––––––––––––––––––––––– inner classes –––––––––––––––––––––––––– //
 
-
+    /* –– class for displaying grouped medications –– */
+    //      instance variables:
+    //      1. String label: time of medications to be displayed in UI
+    //      2. Arraylist<String> meds: list of medications associated with time
+    //      3. Time time: time of medications
+    //      4. Arraylist<String> alerts: list of MedicationAlert.mNames associated with each med
     public class MedEntry {
         public String label;
         public ArrayList<String> meds;
         public final Time time;
         public ArrayList<String> alerts = new ArrayList<>();
 
+        // constructor
         public MedEntry(String name, ArrayList<String> meds, Time time, String alertName) {
             this.label = name;
             this.meds = meds;
@@ -602,16 +625,19 @@ public class CareRecipientActivity extends Activity implements ServiceConnection
             this.alerts.add(alertName);
         }
 
+        // method to add medication to MedEntry.meds
         public void addMedToEntry(String newMed) {
             this.meds.add(newMed);
         }
 
+        // method to add medication name to MedEntry.alerts
         public void addEntryName(String alertName) {
             this.alerts.add(alertName);
         }
 
     }
 
+    /* –– AsyncTask for getting CareGiver information –– */
     class GetCareGiverInfoAsyncTask extends AsyncTask<Void, String, String> {
 
         private static final String TAG = "Get Account Info AT";
