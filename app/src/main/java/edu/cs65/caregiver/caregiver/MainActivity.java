@@ -145,6 +145,7 @@ public class MainActivity extends Activity {
             //Toast.makeText(context, msg, Toast.LENGTH_LONG).show();
             if (msg != null) {
                 Logger.getLogger("REGISTRATION").log(Level.INFO, msg);
+                Toast.makeText(context, "Connected to Cloud!", Toast.LENGTH_SHORT).show();
             } else {
                 Toast.makeText(context, "Failed to Connect to Cloud", Toast.LENGTH_SHORT).show();
             }
