@@ -1,5 +1,6 @@
 package edu.cs65.caregiver.caregiver;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
@@ -19,7 +20,7 @@ import java.util.Calendar;
 import edu.cs65.caregiver.caregiver.model.RecipientToCareGiverMessage;
 
 
-public class Checkin extends AppCompatActivity {
+public class Checkin extends Activity {
 
     private Vibrator v;
     private static final String SERVER_ADDR = "https://handy-empire-131521.appspot.com";
