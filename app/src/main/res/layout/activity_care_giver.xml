@@ -20,7 +20,6 @@
             android:layout_width="match_parent"
             android:minHeight="@dimen/abc_action_bar_default_height_material"
             android:background="?attr/colorPrimary"
-            app:titleTextAppearance="@style/headerName"
             android:layout_weight=".25"
             app:title="@string/app_name">
         </android.support.v7.widget.Toolbar>
@@ -31,7 +30,7 @@
             android:layout_weight="1"
             android:text="LOGOUT"
             android:textColor="@color/white"
-            android:textSize="20sp"
+            android:textSize="18sp"
             android:onClick="onLogoutClick"
             android:layout_gravity="center"
             />
@@ -158,13 +157,13 @@
         android:id="@+id/myFAB"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:background="@android:color/transparent"
-        android:src="@drawable/plus"
+        android:src="@drawable/plus_white"
+        app:backgroundTint="@color/lightgrey"
         android:layout_alignParentBottom="true"
         android:layout_alignParentRight="true"
         android:layout_marginRight="15dp"
         android:layout_marginBottom="70dp"
         app:fabSize="normal"
-        app:elevation="10dp"/>
+        app:elevation="0dp"/>
 
 </RelativeLayout>
