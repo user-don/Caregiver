@@ -80,9 +80,8 @@ public class CareGiverActivity extends Activity {
     public static final int EDIT_MEDICATION_REQUEST = 2;
     public static final String ADDED_MEDICATION_ALERT = "new alert";
 
+    // use data controller to store recipient information
     DataController mDataController;
-
-    //private CareGiver mCareGiver;
     private String mEmail;
     private String mRecipientName;
     private Recipient mReceiver;
@@ -106,14 +105,18 @@ public class CareGiverActivity extends Activity {
         setContentView(R.layout.activity_care_giver);
         ButterKnife.bind(this);
         mAlert = new MyAlert(this);
+
+        // load account data that was saved by the account logon activity
         mPrefs = getSharedPreferences(getString(R.string.profile_preference), 0);
         mEmail = mPrefs.getString(EMAIL_KEY,"");
         mRecipientName = mPrefs.getString(RECIPIENT_NAME_KEY,"");
         mRegistrationID = mPrefs.getString(REGISTRATION_KEY,"");
 
+        // register receiver
         mBroadcastReceiver = new CareGiverBroadcastReceiver();
         mIntentFilter = new IntentFilter("edu.cs65.caregiver.caregiver.CAREGIVER_BROADCAST");
 
+        // set midnight reset alarm if it isn't already
         if (!mHasSetResetAlarm) {
             setClearAlert();
             mHasSetResetAlarm = true;
