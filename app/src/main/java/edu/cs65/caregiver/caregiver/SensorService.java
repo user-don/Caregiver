@@ -57,6 +57,7 @@ public class SensorService extends Service implements SensorEventListener {
 
         mAsyncTask = new OnSensorChangedTask();
 
+        // detect sensor changes with separate worker thread
         mReadData = new Runnable() {
             private static final String TAG = "Sensor Thread";
 
@@ -175,7 +176,6 @@ public class SensorService extends Service implements SensorEventListener {
     }
 
 
-
     @Override
     public void onAccuracyChanged(Sensor sensor, int accuracy) {
     }
@@ -186,14 +186,15 @@ public class SensorService extends Service implements SensorEventListener {
         return null;
     }
 
+
     public void onDestroy() {
-        mDataThread.interrupt();
+        mDataThread.interrupt(); // stop thread
         try {
             Thread.sleep(100);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        sensorManager.unregisterListener(this);
+        sensorManager.unregisterListener(this); // unregister listener
 
         super.onDestroy();
     }

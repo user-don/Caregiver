@@ -190,9 +190,6 @@ public class CareGiverActivity extends Activity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        // We do NOT want to unregister our GCM in onDestroy().
-        //new GcmUnRegistrationAsyncTask(this).execute();
-
     }
 
     @Override
@@ -201,6 +198,7 @@ public class CareGiverActivity extends Activity {
         super.onPause();
     }
 
+    // clear and reset all alarms when a new day begins
     public void setClearAlert() {
         Log.d(TAG,"setting reset alarm");
 
@@ -226,6 +224,7 @@ public class CareGiverActivity extends Activity {
                 AlarmManager.INTERVAL_DAY, pi);
     }
 
+    // reset caregiver notifications at the start of a new day
     public void resetRecipientInfo() {
         Log.d(TAG, "resetting recipient info");
         mReceiver.mCheckedInTime = -1;
@@ -242,11 +241,13 @@ public class CareGiverActivity extends Activity {
         updateUI();
     }
 
+    // add new medication alert
     public void onClickNewMedication() {
         Intent i = new Intent(this, NewMedicationActivity.class);
         startActivityForResult(i, NEW_MEDICATION_REQUEST);
     }
 
+    // view checkin status
     public void onClickCheckInStatus(View v) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
 
@@ -279,6 +280,7 @@ public class CareGiverActivity extends Activity {
         builder.create().show();
     }
 
+    // set a custom checkin time
     public void constructSetCheckInDialogModal() {
         AlertDialog.Builder b = new AlertDialog.Builder(this);
         b.setTitle("Set Check-In Time");
@@ -294,9 +296,6 @@ public class CareGiverActivity extends Activity {
                         new UpdateCareGiverAsyncTask().execute();
                         new SendMessageToPatientAsyncTask().execute();
                         Toast.makeText(getApplicationContext(), "Check-in time scheduled", Toast.LENGTH_LONG).show();
-                        // now set receiver with receiver object
-                        // mDc.setData
-                        // set caregiverupdateinfo async task
                     }
                 };
         Calendar calendar = Calendar.getInstance();
@@ -305,6 +304,7 @@ public class CareGiverActivity extends Activity {
         new TimePickerDialog(this, time_listener, hourOfDay, minute, false).show();
     }
 
+    // check alert status
     public void onClickAlertStatus(View v) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
 
@@ -389,6 +389,7 @@ public class CareGiverActivity extends Activity {
         updateUI();
     }
 
+    // update the UI with most recent data
     public void updateUI() {
 
         mDataController.loadData();
@@ -530,6 +531,7 @@ public class CareGiverActivity extends Activity {
         }
     }
 
+    // check if medication occurs today
     public boolean isToday(int[] arr){
         Calendar rightNow = Calendar.getInstance();
         int day = rightNow.get(Calendar.DAY_OF_WEEK);
@@ -566,6 +568,7 @@ public class CareGiverActivity extends Activity {
         return false;
     }
 
+    // get day in string format
     public String getDayString(int[] arr) {
         StringBuilder sb = new StringBuilder(100);
 

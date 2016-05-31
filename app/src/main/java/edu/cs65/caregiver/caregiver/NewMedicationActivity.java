@@ -176,6 +176,7 @@ public class NewMedicationActivity extends AppCompatActivity {
 
     /* ----------------------------- UI callbacks ----------------------------- */
 
+    // displays time picker for new mdication
     public void onClickSetTime(View v) {
         TimePickerDialog.OnTimeSetListener time_listener =
                 new TimePickerDialog.OnTimeSetListener() {
@@ -195,6 +196,7 @@ public class NewMedicationActivity extends AppCompatActivity {
         updateUI();
     }
 
+    // adds a medication to medList
     public void onClickAddMedication(View v) {
         // Hide cursor on new_medication EditText and hide the keyboard
         new_medication.setCursorVisible(false);
@@ -239,6 +241,7 @@ public class NewMedicationActivity extends AppCompatActivity {
         }
     };
 
+    // saves the new med alert
     public void save (MenuItem v) {
 
         // save all information to and update account
@@ -285,6 +288,7 @@ public class NewMedicationActivity extends AppCompatActivity {
         return true;
     }
 
+    // updates UI with most recent data
     public void updateUI() {
 
         TextView alert_time = (TextView) findViewById(R.id.alert_time);
@@ -312,6 +316,7 @@ public class NewMedicationActivity extends AppCompatActivity {
         list_adapter.notifyDataSetChanged();
     }
 
+    // locks and unlocks checkbox options based on spinner input
     public void setSpinnerAdapter() {
         Spinner recurrence_spinner = (Spinner) findViewById(R.id.recurrence_spinner);
         if (recurrence_spinner != null) {
@@ -389,6 +394,7 @@ public class NewMedicationActivity extends AppCompatActivity {
         builder.create().show();
     }
 
+    // find which days were checked off
     int checkRecurrences() {
 
         int checked_days = 0;

@@ -37,10 +37,12 @@ public class MainActivity extends Activity {
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
+        // create activity and initialiaze data controller
         super.onCreate(savedInstanceState);
         mDc = DataController.getInstance(getApplicationContext());
         mDc.initializeData(getApplicationContext());
 
+        // retrieve package information
         String versionCode = "";
         try {
             PackageInfo packageInfo = getPackageManager().getPackageInfo(getPackageName(), 0);
@@ -62,8 +64,10 @@ public class MainActivity extends Activity {
             mDc.saveToPreferences(Globals.APP_VERSION_PREFS_FILE, Globals.PREFS_VERSION_KEY, versionCode);
         }
 
+        // retrieve shared preferences
         SharedPreferences preferences = getSharedPreferences(getString(R.string.profile_preference), 0);
 
+        // if shared preferences exist, open appropriate activity
         if (!preferences.getString(Globals.EMAIL_KEY,"").equals("")){
             if (preferences.getString(Globals.ACCNT_KEY,"").equals("care recipient")){
                 Intent newMedication = new Intent(getApplicationContext(), CareRecipientActivity.class);
@@ -77,6 +81,7 @@ public class MainActivity extends Activity {
         } else {
             setContentView(R.layout.main_landing_page);
 
+            // initial landing page animation
             ImageView myImageView= (ImageView)findViewById(R.id.landing_image);
             Animation myFadeInAnimation = AnimationUtils.loadAnimation(this, R.anim.fadein);
             myImageView.startAnimation(myFadeInAnimation);
@@ -92,6 +97,7 @@ public class MainActivity extends Activity {
         }
     }
 
+    // register phone with backend
     class GcmRegistrationAsyncTask extends AsyncTask<Void, Void, String> {
         private Registration regService = null;
         private GoogleCloudMessaging gcm;
@@ -145,6 +151,7 @@ public class MainActivity extends Activity {
         }
     }
 
+    // unregister phone with backend
     class GcmUnRegistrationAsyncTask extends AsyncTask<Void, Void, Void> {
         private Registration regService = null;
         private GoogleCloudMessaging gcm;
