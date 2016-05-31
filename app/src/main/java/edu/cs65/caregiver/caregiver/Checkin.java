@@ -30,6 +30,7 @@ public class Checkin extends Activity {
     public void onCreate(Bundle SavedInstanceState) {
         super.onCreate(SavedInstanceState);
 
+        // get registrationID and email for sending messages
         Intent i = getIntent();
         mRegistration = i.getStringExtra("registration");
         System.out.println("registration: " + mRegistration);
@@ -40,6 +41,8 @@ public class Checkin extends Activity {
         startVibration();
     }
 
+    /* ––––– I AM OK button handler ––––– */
+    // When clicked, send check-in message to caregiver
     public void onCheckInClicked(View v) {
 
         new AsyncTask<Void, Void, Void>() {
@@ -58,7 +61,7 @@ public class Checkin extends Activity {
                 Log.d(TAG, "Notifying caregiver of checkin: " + mEmail);
                 try {
 
-                    // make help message
+                    // make checkin message
                     RecipientToCareGiverMessage msg =
                             new RecipientToCareGiverMessage(RecipientToCareGiverMessage.CHECKIN,
                                     null,
@@ -86,7 +89,8 @@ public class Checkin extends Activity {
         finish();
     }
 
-
+    /* ––––– HELP button handler ––––– */
+    // When clicked, send help message to caregiver
     public void onCheckInHelpClicked(View v) {
         new AsyncTask<Void, Void, Void>() {
             private static final String TAG = "Notify HELP AT";

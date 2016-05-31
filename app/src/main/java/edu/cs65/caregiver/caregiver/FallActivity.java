@@ -40,12 +40,15 @@ public class FallActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_fall);
 
+        // get registrationID and email for sending messages
         Intent i = getIntent();
         mRegistration = i.getStringExtra("registration");
         mEmail = i.getStringExtra("email");
 
+        // start vibration
         startVibration();
 
+        // stop vibration, cancel time, and close activity when "I AM OK" is pressed
         Button closeButton = (Button) findViewById(R.id.FallBtnOk);
         closeButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -58,6 +61,7 @@ public class FallActivity extends Activity {
             }
         });
 
+        // Display timer countdown
         CountDownTimer countDownTimer = new CountDownTimer(countdownTime,1000) {
             private boolean warned = false;
             @Override
@@ -74,14 +78,16 @@ public class FallActivity extends Activity {
             public void onFinish() {}
         }.start();
 
+        // Send HELP message when button is clicked
         final Button helpButton = (Button) findViewById(R.id.FallBtnHelp);
         helpButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                // Stop timer
                 mTimer.cancel();
                 mTimer.purge();
 
+                // Send help message
                 new AsyncTask<Void, Void, Void>() {
                     private static final String TAG = "Notify HELP AT";
 
@@ -123,12 +129,14 @@ public class FallActivity extends Activity {
                     }
                 }.execute();
 
+                // stop vibration and finish activity
                 SensorService.fallDetected = false;
                 stopVibration();
                 finish();
             }
         });
 
+        // Timer
         mTimer = new Timer();
         mTimer.schedule(new TimerTask() {
             @Override

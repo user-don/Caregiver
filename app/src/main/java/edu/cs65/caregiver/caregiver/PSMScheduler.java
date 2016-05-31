@@ -15,6 +15,7 @@ import java.util.Date;
 
 public class PSMScheduler {
 
+    // Method to set medication alarm
     public static void setSchedule(Context context) {
 
         // get times of all medications and set alarm
@@ -30,6 +31,7 @@ public class PSMScheduler {
 
     }
 
+    // Method to set Checkin alarm -- repeats daily
     public static void setCheckinAlarm(Context context, long time) {
         if (time == 0) {
             setSchedule(context, 10, 0, 0, -1);

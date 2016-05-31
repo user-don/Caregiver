@@ -60,6 +60,7 @@ public class EMAAlarmReceiver extends BroadcastReceiver {
         PendingIntent pendingIntent = PendingIntent.getActivity(context, 0 /* Request code */,
                 emaIntent, PendingIntent.FLAG_ONE_SHOT);
 
+        // Setup notification
         NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(context)
                 .setSmallIcon(R.drawable.logo_white)
                 .setContentTitle("CareGiver Message")
