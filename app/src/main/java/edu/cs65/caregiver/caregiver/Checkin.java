@@ -138,12 +138,14 @@ public class Checkin extends Activity {
     }
 
 
+    // starts phone vibration
     public void startVibration() {
         v = (Vibrator) this.getSystemService(Context.VIBRATOR_SERVICE);
         long[] pattern = {0, 500, 1000};
         v.vibrate(pattern, 0);
     }
 
+    // stops phone vibration
     public void stopVibration() {
         v.cancel();
     }

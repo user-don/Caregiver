@@ -190,12 +190,14 @@ public class FallActivity extends Activity {
         }, countdownTime);
     }
 
+    // start phone vibrations
     public void startVibration() {
         v = (Vibrator) this.getSystemService(Context.VIBRATOR_SERVICE);
         long[] pattern = {0, 500, 1000};
         v.vibrate(pattern, 0);
     }
 
+    // stop phone vibrations
     public void stopVibration() {
         v.cancel();
     }
