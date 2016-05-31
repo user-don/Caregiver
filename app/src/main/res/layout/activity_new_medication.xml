@@ -40,14 +40,11 @@
             android:maxLines="1"
             android:inputType="textCapWords"
             android:id="@+id/alert_name"
-            android:clickable="true"
-            android:focusableInTouchMode="true"
             android:textColorHighlight="@color/darkgrey"
             android:textColor="@color/darkgrey"
             android:backgroundTint="@color/darkgrey"
             android:textColorHint="@color/darkgrey"
-            android:textCursorDrawable="@null"
-            android:cursorVisible="false"
+            android:textCursorDrawable="@drawable/cursor_color"
             android:singleLine = "true"
             android:textSize="20sp"/>
 
@@ -226,8 +223,7 @@
             android:textColor="@color/darkgrey"
             android:backgroundTint="@color/darkgrey"
             android:textColorHint="@color/darkgrey"
-            android:textCursorDrawable="@null"
-            android:cursorVisible="false"
+            android:textCursorDrawable="@drawable/cursor_color"
             android:singleLine = "true"
             android:textSize="20sp"/>
 
