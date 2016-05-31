@@ -346,8 +346,6 @@ public class CareGiverActivity extends AppCompatActivity {
                     Log.d(TAG, "adding alert name " + newAlert.mName);
                     mReceiver.addAlert(newAlert);
                     mReceiver = mDataController.setRecipientData(mReceiver);
-                    //mDataController.careGiver.setAlert(mRecipientName,newAlert);
-                    //mDataController.careGiver.getRecipient(mRecipientName).addAlert(newAlert);
                 }
                 break;
 

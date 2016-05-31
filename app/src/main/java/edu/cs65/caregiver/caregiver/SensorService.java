@@ -188,7 +188,6 @@ public class SensorService extends Service implements SensorEventListener {
 
     public void onDestroy() {
         mDataThread.interrupt();
-//        mAsyncTask.cancel(true);
         try {
             Thread.sleep(100);
         } catch (InterruptedException e) {

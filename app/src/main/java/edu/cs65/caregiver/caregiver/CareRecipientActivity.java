@@ -108,8 +108,6 @@ public class CareRecipientActivity extends Activity implements ServiceConnection
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-//        PSMScheduler.setCheckinAlarm(this);
-
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_care_recipient);
         mContext = getApplicationContext();
@@ -132,15 +130,6 @@ public class CareRecipientActivity extends Activity implements ServiceConnection
 
         getDayOfWeek();
 
-//        if (loadMedDialog) {
-//            System.out.println("CareRecipientActivity loadMedDialog=TRUE");
-//
-//            startAlarm();
-//            int index = getIntent().getExtras().getInt("index");
-//            MedEntry entry = sortedMeds.get(index);
-//            displayMedDialog(entry);
-//        }
-
         Toolbar header = (Toolbar) findViewById(R.id.toolbar);
         header.setTitle(mRecipientName);
 
@@ -160,7 +149,6 @@ public class CareRecipientActivity extends Activity implements ServiceConnection
 
 
     public void displayMedDialog(final MedEntry entry) {
-        final ArrayList selectedItems = new ArrayList();
         String meds[] = new String[entry.meds.size()];
         meds = entry.meds.toArray(meds);
 
@@ -384,7 +372,6 @@ public class CareRecipientActivity extends Activity implements ServiceConnection
     }
 
     public void onMenuClicked(View v) {
-//        displayMedDialog(CareGiverDialogFragment.DIALOG_MENU);
     }
 
     public void setUpAdapter() {
@@ -509,15 +496,6 @@ public class CareRecipientActivity extends Activity implements ServiceConnection
 
     public void updateCheckInTime() {
         if ((Long) mCheckInTime != null) {
-            Time rawTime = new Time(mCheckInTime);
-
-            StringBuilder sb = new StringBuilder(50);
-            sb.append("Set Check In Time To: ");
-            sb.append(rawTime.getHours());
-            sb.append(":");
-            sb.append(rawTime.getMinutes());
-
-            Toast.makeText(this, sb.toString(), Toast.LENGTH_SHORT).show();
             PSMScheduler.setCheckinAlarm(this, mCheckInTime);
         }
     }
@@ -545,7 +523,7 @@ public class CareRecipientActivity extends Activity implements ServiceConnection
         }
     }
 
-    // ****************** life cycle methods ***************************//
+    // –––––––––––––––––––––––––– life cycle methods –––––––––––––––––––––––––– //
 
     @Override
     protected void onDestroy() {
@@ -561,7 +539,7 @@ public class CareRecipientActivity extends Activity implements ServiceConnection
     }
 
 
-    // ****************** service methods ***************************//
+    // –––––––––––––––––––––––––– service methods –––––––––––––––––––––––––– //
 
     private void automaticBind() {
         doBindService();
@@ -592,7 +570,8 @@ public class CareRecipientActivity extends Activity implements ServiceConnection
     public void onServiceDisconnected(ComponentName name) {
         mIsBound = false;
     }
-    // ****************** receiver methods ***************************//
+
+    // –––––––––––––––––––––––––– receiver methods –––––––––––––––––––––––––– //
 
     public class ReceiveMessages extends BroadcastReceiver {
         @Override
@@ -607,7 +586,7 @@ public class CareRecipientActivity extends Activity implements ServiceConnection
     }
 
 
-    // ****************** inner classes ***************************//
+    // –––––––––––––––––––––––––– inner classes –––––––––––––––––––––––––– //
 
 
     public class MedEntry {
@@ -632,112 +611,6 @@ public class CareRecipientActivity extends Activity implements ServiceConnection
         }
 
     }
-
-
-//    public class EMAAlarmReceiver extends BroadcastReceiver {
-//
-//        //Receive broadcast
-//        @Override
-//        public void onReceive(final Context context, Intent intent) {
-//            int index = intent.getExtras().getInt("index");
-//            System.out.println("starting PSM...");
-//            startPSM(context, index);
-//        }
-//
-//        // start CareRecipientActivity and load med dialog
-//        private void startPSM(Context context, int i) {
-//
-//            // CareRecipientActivity
-//            if (i != -1) {
-//                Intent emaIntent = new Intent(context, CareRecipientActivity.class); //The activity you  want to start.
-//                emaIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-//                CareRecipientActivity.loadMedDialog = true;
-//                emaIntent.putExtra("index", i);
-//                context.startActivity(emaIntent);
-//            }
-//
-//            // Checkin activity
-//            else {
-//                Intent emaIntent = new Intent(context, Checkin.class);
-//                emaIntent.putExtra("registration", mRegistrationID);
-//                emaIntent.putExtra("email", mEmail);
-//                emaIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-//                context.startActivity(emaIntent);
-//            }
-//
-//        }
-//    }
-
-//    // GCM registration ... called in Main Activity
-//    class GcmRegistrationAsyncTask extends AsyncTask<Void, Void, String> {
-//        private Registration regService = null;
-//        private GoogleCloudMessaging gcm;
-//        private Context context;
-//
-//        public GcmRegistrationAsyncTask(Context context) {
-//            this.context = context;
-//        }
-//
-//        @Override
-//        protected String doInBackground(Void... params) {
-//            if (regService == null) {
-//                Registration.Builder builder = new Registration.Builder(AndroidHttp.newCompatibleTransport(),
-//                        new AndroidJsonFactory(), null)
-//                        .setRootUrl(SERVER_ADDR + "/_ah/api/");
-//                // UNCOMMENT TO RUN LOCALLY
-////                        .setGoogleClientRequestInitializer(new GoogleClientRequestInitializer() {
-////                            @Override
-////                            public void initialize(AbstractGoogleClientRequest<?> abstractGoogleClientRequest)
-////                                    throws IOException {
-////                                abstractGoogleClientRequest.setDisableGZipContent(true);
-////                            }
-////                        });
-//                // end of optional local run code
-//
-//                regService = builder.build();
-//            }
-//
-//            String msg = "";
-//            try {
-//                if (gcm == null) {
-//                    gcm = GoogleCloudMessaging.getInstance(context);
-//                }
-//                mRegistrationID = gcm.register(SENDER_ID);
-//                msg = "Device registered, registration ID = " + mRegistrationID;
-//
-//                // Send registration ID to server over HTTP so it can use GCM/HTTP
-//                // to send messages to the app.
-//                regService.register(mRegistrationID).execute();
-//
-//            } catch (IOException ex) {
-//                ex.printStackTrace();
-//                Log.d(TAG, "Error: " + ex.getMessage());
-//                msg = null;
-//            }
-//            return msg;
-//        }
-//
-//        @Override
-//        protected void onPostExecute(String msg) {
-//
-//            //Toast.makeText(context, msg, Toast.LENGTH_LONG).show();
-//            if (msg != null) {
-//                Logger.getLogger("REGISTRATION").log(Level.INFO, msg);
-//                Toast.makeText(context, "Connected to Cloud!", Toast.LENGTH_SHORT).show();
-//                mReceiverRegistered = true;
-//
-//                // update info
-////                GetCareGiverInfoAsyncTask task = new GetCareGiverInfoAsyncTask();
-////                task.email = mEmail;
-////                task.execute();
-//                GetCareGiverInfoAsyncTask task = new GetCareGiverInfoAsyncTask();
-//                task.execute();
-//
-//            } else {
-//                Toast.makeText(context, "Failed to Connect to Cloud", Toast.LENGTH_SHORT).show();
-//            }
-//        }
-//    }
 
     class GetCareGiverInfoAsyncTask extends AsyncTask<Void, String, String> {
 

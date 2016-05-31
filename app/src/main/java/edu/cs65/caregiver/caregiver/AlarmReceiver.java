@@ -18,7 +18,5 @@ public class AlarmReceiver extends WakefulBroadcastReceiver {
         SharedPreferences mPrefs = context.getSharedPreferences(context.getString(R.string.profile_preference), 0);
         mPrefs.edit().putBoolean("reset", true).commit();
 
-        Intent i = new Intent("edu.cs65.caregiver.caregiver.CareGiverActivity");
-        //i.setFlags()
     }
 }

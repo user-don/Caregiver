@@ -41,17 +41,6 @@ public class MainActivity extends Activity {
         mDc = DataController.getInstance(getApplicationContext());
         mDc.initializeData(getApplicationContext());
 
-        //new GcmRegistrationAsyncTask(this).execute();
-
-//        String regId = mDc.getRegistrationId();
-//        if (!regId.equals("")) {
-//            new GcmUnRegistrationAsyncTask(this, regId).execute();
-//            new GcmRegistrationAsyncTask(this).execute();
-//        } else {
-//            new GcmRegistrationAsyncTask(this).execute();
-//        }
-
-
         String versionCode = "";
         try {
             PackageInfo packageInfo = getPackageManager().getPackageInfo(getPackageName(), 0);

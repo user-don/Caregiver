@@ -337,14 +337,8 @@ public class NewMedicationActivity extends AppCompatActivity {
     public void setMedicationAdapter() {
         // set array adapter for listview of medication
         final ListView medications = (ListView) findViewById(R.id.medication_list);
-
-        // TODO -- set empty entry text; not working right now
-        /// View empty = getLayoutInflater().inflate(R.layout.empty_list_view, null, false);
-//        addContentView(empty, new ActionBar.LayoutParams(ActionBar.LayoutParams.MATCH_PARENT,
-//                ActionBar.LayoutParams.MATCH_PARENT));
-        //((ViewGroup)medications.getParent()).addView(empty);
-        //medications.setEmptyView(empty);
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, mMedications){
+
             @Override
             public View getView(int position, View convertView,
                                 ViewGroup parent) {

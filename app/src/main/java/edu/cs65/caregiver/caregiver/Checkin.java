@@ -6,7 +6,6 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Vibrator;
-import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
@@ -42,7 +41,6 @@ public class Checkin extends Activity {
     }
 
     public void onCheckInClicked(View v) {
-        // TODO -- send message to caregiver
 
         new AsyncTask<Void, Void, Void>() {
             private static final String TAG = "check in AT";

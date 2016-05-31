@@ -5,7 +5,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -18,7 +17,6 @@ import com.google.api.client.extensions.android.json.AndroidJsonFactory;
 import com.google.gson.Gson;
 
 import java.io.IOException;
-import java.util.HashMap;
 
 import edu.cs65.caregiver.caregiver.controllers.DataController;
 import edu.cs65.caregiver.caregiver.model.CareGiver;
@@ -46,7 +44,6 @@ public class AccountSignOnActivity extends Activity {
         mDc = DataController.getInstance(getApplicationContext());
         mContext = getApplicationContext();
         registrationID = mDc.getRegistrationId();
-        //registrationID = MainActivity.mRegistrationID;
         history = 0;
     }
 

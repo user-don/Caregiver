@@ -97,14 +97,6 @@ public class GcmIntentService extends IntentService {
                         screenOn.acquire();
 
                         prefs.edit().putBoolean("help", true).commit();
-
-//                        Intent CGi = new Intent(getApplicationContext(), CareGiverActivity.class); //The activity you  want to start
-//                        CGi.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-//                        CGi.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-//                        CGi.putExtra("help",true);
-//                        startActivity(CGi);
-
-
                         break;
 
                     case RecipientToCareGiverMessage.MED_TAKEN:
