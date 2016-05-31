@@ -8,7 +8,8 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical" >
+        android:orientation="horizontal"
+        android:background="@color/colorPrimary">
 
         <android.support.v7.widget.Toolbar
             style="@style/custom_toolbar"
@@ -17,10 +18,22 @@
             android:layout_width="match_parent"
             android:minHeight="@dimen/abc_action_bar_default_height_material"
             android:background="?attr/colorPrimary"
-            android:onClick="onMenuClicked"
             app:titleTextAppearance="@style/headerName"
-            app:title="@string/recipient_name"/>
+            android:layout_weight=".25"
+            app:title="@string/recipient_name">
+        </android.support.v7.widget.Toolbar>
 
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="LOGOUT"
+            android:textColor="@color/white"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:onClick="onLogoutClick"
+            android:layout_gravity="center"
+            />
     </LinearLayout>
 
     <LinearLayout

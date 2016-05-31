@@ -25,11 +25,15 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.os.Vibrator;
+import android.support.v7.app.AppCompatActivity;
 import android.text.SpannableString;
 import android.text.style.StyleSpan;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -138,6 +142,15 @@ public class CareRecipientActivity extends Activity implements ServiceConnection
         task.execute();
     }
 
+    public void onLogoutClick(View v){
+        SharedPreferences.Editor editor = getSharedPreferences(getString(R.string.profile_preference), MODE_PRIVATE).edit();
+        editor.clear();
+        editor.apply();
+
+        Intent mainIntent = new Intent(getApplicationContext(), AccountSignOnActivity.class);
+        startActivity(mainIntent);
+        finish();
+    }
 
     public void getDayOfWeek() {
         Calendar calendar = Calendar.getInstance();

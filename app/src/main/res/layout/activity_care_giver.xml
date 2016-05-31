@@ -3,8 +3,39 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:background="@color/lightpaper"
     tools:context="edu.cs65.caregiver.caregiver.CareGiverActivity">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:background="@color/colorPrimary">
+
+        <android.support.v7.widget.Toolbar
+            style="@style/custom_toolbar"
+            android:id="@+id/toolbar"
+            android:layout_height="@dimen/abc_action_bar_default_height_material"
+            android:layout_width="match_parent"
+            android:minHeight="@dimen/abc_action_bar_default_height_material"
+            android:background="?attr/colorPrimary"
+            app:titleTextAppearance="@style/headerName"
+            android:layout_weight=".25"
+            app:title="@string/app_name">
+        </android.support.v7.widget.Toolbar>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="LOGOUT"
+            android:textColor="@color/white"
+            android:textSize="20sp"
+            android:onClick="onLogoutClick"
+            android:layout_gravity="center"
+            />
+    </LinearLayout>
 
     <LinearLayout
         android:id="@+id/table_header"
@@ -12,7 +43,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="70dp"
         android:layout_marginBottom="10dp"
         android:gravity="center_horizontal"
         android:layout_alignParentStart="false">
@@ -45,7 +76,7 @@
         android:layout_height="match_parent"
         android:layout_below="@+id/table_header"
         android:layout_centerHorizontal="true"
-        android:layout_marginBottom="70dp">
+        android:layout_marginBottom="80dp">
 
         <ListView
             android:layout_width="match_parent"
@@ -123,5 +154,17 @@
 
     </LinearLayout>
 
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/myFAB"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@android:color/transparent"
+        android:src="@drawable/plus"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:layout_marginRight="15dp"
+        android:layout_marginBottom="70dp"
+        app:fabSize="normal"
+        app:elevation="10dp"/>
 
 </RelativeLayout>

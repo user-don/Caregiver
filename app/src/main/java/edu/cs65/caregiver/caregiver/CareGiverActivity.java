@@ -1,5 +1,6 @@
 package edu.cs65.caregiver.caregiver;
 
+import android.app.Activity;
 import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.app.TimePickerDialog;
@@ -11,6 +12,8 @@ import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.AsyncTask;
+import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
 import android.support.v4.content.WakefulBroadcastReceiver;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -63,7 +66,7 @@ import edu.cs65.caregiver.caregiver.model.Recipient;
 import edu.cs65.caregiver.backend.messaging.Messaging;
 import edu.cs65.caregiver.caregiver.model.RecipientToCareGiverMessage;
 
-public class CareGiverActivity extends AppCompatActivity {
+public class CareGiverActivity extends Activity {
     @BindView(R.id.checkInToolbarButton) LinearLayout checkInToolbarButton;
     @BindView(R.id.alertToolbarButton) LinearLayout alertToolbarButton;
 
@@ -131,14 +134,14 @@ public class CareGiverActivity extends AppCompatActivity {
         updateUI();
 
         new GetCareGiverInfoAsyncTask().execute();
-    }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.care_giver_activity_menu, menu);
-
-        return true;
+        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.myFAB);
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                onClickNewMedication();
+            }
+        });
     }
 
     @Override
@@ -229,7 +232,7 @@ public class CareGiverActivity extends AppCompatActivity {
         updateUI();
     }
 
-    public void onClickNewMedication(MenuItem menuItem) {
+    public void onClickNewMedication() {
         Intent i = new Intent(this, NewMedicationActivity.class);
         startActivityForResult(i, NEW_MEDICATION_REQUEST);
     }
