@@ -150,6 +150,16 @@ public class CareGiverActivity extends Activity {
         mDataController.saveData();
     }
 
+    public void onLogoutClick(View v){
+        SharedPreferences.Editor editor = getSharedPreferences(getString(R.string.profile_preference), MODE_PRIVATE).edit();
+        editor.clear();
+        editor.apply();
+
+        Intent mainIntent = new Intent(getApplicationContext(), AccountSignOnActivity.class);
+        startActivity(mainIntent);
+        finish();
+    }
+
     @Override
     protected void onResume() {
         super.onResume();
