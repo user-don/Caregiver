@@ -339,6 +339,7 @@ public class NewMedicationActivity extends AppCompatActivity {
         }
     }
 
+    // creating adapter for medication listview
     public void setMedicationAdapter() {
         // set array adapter for listview of medication
         final ListView medications = (ListView) findViewById(R.id.medication_list);
@@ -368,6 +369,7 @@ public class NewMedicationActivity extends AppCompatActivity {
         });
     }
 
+    // option to delete medication in alert
     public void displayDeleteMedicationDialog(String name, final int index) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
 
@@ -447,11 +449,13 @@ public class NewMedicationActivity extends AppCompatActivity {
         return checked_days;
     }
 
+    // checks to see if checkbox is checked
     public boolean isChecked(int id) {
         CheckBox box = (CheckBox) findViewById(id);
         return box.isChecked();
     }
 
+    // endable all days to be checkable
     public void enableAllDays() {
         enableCheckbox(R.id.chkbx_monday);
         enableCheckbox(R.id.chkbx_tuesday);
@@ -462,6 +466,7 @@ public class NewMedicationActivity extends AppCompatActivity {
         enableCheckbox(R.id.chkbx_sunday);
     }
 
+    // disable all days from being checkable
     public void disableAllDays() {
         disableCheckbox(R.id.chkbx_monday);
         disableCheckbox(R.id.chkbx_tuesday);
@@ -472,6 +477,7 @@ public class NewMedicationActivity extends AppCompatActivity {
         disableCheckbox(R.id.chkbx_sunday);
     }
 
+    // enable checkbox
     public void enableCheckbox(int id) {
         CheckBox box = (CheckBox) findViewById(id);
         if (box != null) {
@@ -480,6 +486,7 @@ public class NewMedicationActivity extends AppCompatActivity {
         }
     }
 
+    // disable check box
     public void disableCheckbox(int id) {
         CheckBox box = (CheckBox) findViewById(id);
         if (box != null) {
@@ -488,6 +495,7 @@ public class NewMedicationActivity extends AppCompatActivity {
         }
     }
 
+    // check that medlist isn't empty
     private void checkMedList() {
         if (mMedications.size() == 0){
             mMedications.add(0,"i.e. Tylenol");
