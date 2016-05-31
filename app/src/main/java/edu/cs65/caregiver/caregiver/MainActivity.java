@@ -62,11 +62,6 @@ public class MainActivity extends Activity {
             mDc.saveToPreferences(Globals.APP_VERSION_PREFS_FILE, Globals.PREFS_VERSION_KEY, versionCode);
         }
 
-        // TODO: REMOVE FOR PRODUCTION
-//        SharedPreferences.Editor editor = getSharedPreferences(getString(R.string.profile_preference), MODE_PRIVATE).edit();
-//        editor.clear();
-//        editor.apply();
-
         SharedPreferences preferences = getSharedPreferences(getString(R.string.profile_preference), 0);
 
         if (!preferences.getString(Globals.EMAIL_KEY,"").equals("")){
@@ -144,7 +139,6 @@ public class MainActivity extends Activity {
             //Toast.makeText(context, msg, Toast.LENGTH_LONG).show();
             if (msg != null) {
                 Logger.getLogger("REGISTRATION").log(Level.INFO, msg);
-                Toast.makeText(context, "Connected to Cloud!", Toast.LENGTH_SHORT).show();
             } else {
                 Toast.makeText(context, "Failed to Connect to Cloud", Toast.LENGTH_SHORT).show();
             }
