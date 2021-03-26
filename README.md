@@ -15,4 +15,4 @@ You can see the fall detection functionality by falling while the patient app is
 
 On the patient side, an alarm will go off when it is time to take a medication, or time to check in. Once you have acknowledged the alert on the patient side, it will send an alert notification to the caregiver side
 
-** Note: this app operates under the assumption of constant internet access. It will not function properly without internet access.
+** Note: this app operates under the assumption of constant internet access. It will not function properly without internet access
